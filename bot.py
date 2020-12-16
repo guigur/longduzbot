@@ -154,6 +154,10 @@ def saveToFile():
         json.dump(saveFile, json_file)
 
 
+def pDT():
+    now = datetime.datetime.now()
+    return (now.strftime("%m/%d/%Y %H:%M:%S]"))
+
 @client.event
 async def on_ready():
     print(f'{client.user.name} has connected to Discord!')
@@ -192,21 +196,23 @@ async def on_message(message):
             global timeReady
             armytotmembers = 0
             if time.time() > timeReady:
+                print(pDT() + "User " + message.author.name + " summoned a megaarmy")
                 timeReady = time.time() + 1200
                 armyLines = random.randint(5, 20)
                 for x in range(0, armyLines):
                     retarmy = spawnArmy()
                     army = retarmy[0]
                     armytotmembers += retarmy[1]
-                    print(armytotmembers)
                     await message.channel.send(army)
                 for emojinmb in numbersToEmojis(armyLines):
                     await message.add_reaction(emojinmb)
+                print(pDT() + "User " + message.author.name + " summoned " + str(armytotmembers))
                 await message.channel.send("Votre armée compte **" + str(armytotmembers) + "** saloperies. Beau travail.")
                 
                 
                 if armytotmembers > saveFile['maitre']['best']:
-                
+                    print(pDT() + "User " + message.author.name + " is now the master")
+
                     user = message.author
 
                     #oldmaitre = user.guild.members() #199222032787963904) #user = client.get_user()
@@ -215,12 +221,14 @@ async def on_message(message):
                     saveFile['maitre']['best'] = armytotmembers;
                     saveFile['maitre']['user'] = message.author.name
                     saveFile['maitre']['userid'] = message.author.id
+                    saveFile['maitre']['date'] = datetime.datetime.timestamp(datetime.datetime.now())
+
 
                     saveToFile()
                     await message.channel.send("Félicitations " + user.mention + " vous êtes le nouveau **Maître des Saloperies**")
                     url = message.author.avatar_url_as(format='png')          
                     picture = certif.certifGen(requests.get(url, stream=True).raw, message.author.name, armytotmembers)
-                    await message.channel.send(file=discord.File('certif_filled.png'))
+                    await message.channel.send(file=discord.File('tmp/certif_filled.png'))
                     await message.channel.send("Ce certificat prouve votre titre de **Maître des Saloperies**\nN'hésitez pas à mentionner ce titre prestigieux sur votre CV.")
                     await user.add_roles(discord.utils.get(user.guild.roles, name="Maître des Saloperies"))
 

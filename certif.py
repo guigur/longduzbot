@@ -9,9 +9,9 @@ def certifGen(profilePictureLink, pseudo, score):
     profile = Image.open(profilePictureLink) #profileg profile
     profile = profile.resize([512, 512]) #just to be sure
 
-    certif = Image.open('certif.png', 'r')
-    tampon = Image.open('academie.png', 'r')
-    signature = Image.open('signature.png', 'r')
+    certif = Image.open('img/certif.png', 'r')
+    tampon = Image.open('img/academie.png', 'r')
+    signature = Image.open('img/signature.png', 'r')
 
     profile_w, profile_h  = profile.size
     profileg_w, profileg_h = certif.size
@@ -31,10 +31,9 @@ def certifGen(profilePictureLink, pseudo, score):
     certif.paste(profile, (768, 364, 768 + profile_w, 364 + profile_h), profile)
     
     draw = ImageDraw.Draw(certif)
-    font = ImageFont.truetype(r'Times New Roman 400.ttf', 48) 
+    font = ImageFont.truetype(r'font/Times New Roman 400.ttf', 48) 
 
     now = datetime.now()
-    print("now =", now)
     date = now.strftime("%d %B %Y")
     time = now.strftime("%H:%M")
     
@@ -55,4 +54,4 @@ def certifGen(profilePictureLink, pseudo, score):
     certif.paste(tampon, (1700, 750, 1700 + tampon_w, 750 + tampon_h), tampon)
     certif.paste(signature, (1400, 750, 1400 + signature_w, 750 + signature_h), signature)
 
-    return certif.save("certif_filled.png")
+    return certif.save("tmp/certif_filled.png")
