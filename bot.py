@@ -5,6 +5,8 @@ import time
 import math
 import json
 import datetime
+import requests
+import certif
 
 import discord
 from dotenv import load_dotenv
@@ -216,7 +218,10 @@ async def on_message(message):
 
                     saveToFile()
                     await message.channel.send("Félicitations " + user.mention + " vous êtes le nouveau **Maître des Saloperies**")
-                    
+                    url = message.author.avatar_url_as(format='png')          
+                    picture = certif.certifGen(requests.get(url, stream=True).raw, message.author.name, armytotmembers)
+                    await message.channel.send(file=discord.File('certif_filled.png'))
+                    await message.channel.send("Ce certificat prouve votre titre de **Maître des Saloperies**\nN'hésitez pas à mentionner ce titre prestigieux sur votre CV.")
                     await user.add_roles(discord.utils.get(user.guild.roles, name="Maître des Saloperies"))
 
                 else:
@@ -227,12 +232,17 @@ async def on_message(message):
 
 
         if message.content.startswith('!test'):
+            await message.add_reaction("❌")
+
+
+
+
             #await member.add_roles(rank)
             
-            user = message.author
+            #user = message.author
             
             #await user.add_roles(discord.utils.get(user.guild.roles, name="Maître des Saloperies")) #add the role
-            await user.remove_roles(discord.utils.get(user.guild.roles, name="Maître des Saloperies")) #add the role
+            #await user.remove_roles(discord.utils.get(user.guild.roles, name="Maître des Saloperies")) #add the role
             #role = discord.utils.get("787148372397129748")
             #await member.add_roles(role)
 
