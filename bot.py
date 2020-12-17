@@ -7,17 +7,20 @@ import json
 import datetime
 import requests
 import certif
+import asyncio
 
 import discord
 from dotenv import load_dotenv
 load_dotenv()
 
 TOKEN = os.getenv("DISCORD_TOKEN")
-GUILD = "Tryland [FR] (Alias Chômeur-Land)"
+
 client = discord.Client()
 
 flingued = "<:flingued:784167892668252181>"
 flingueg = "<:flingueg:784167860930609172>"
+
+salty = "<a:salty:788971656726839306>"
 
 maing = "<:maing:>"
 maind = "<:maind:>"
@@ -240,10 +243,12 @@ async def on_message(message):
 
 
         if message.content.startswith('!test'):
-            await message.add_reaction("❌")
+            message = await message.channel.send(salty)
+           
 
 
-
+        if message.content.startswith('!balance'):
+            message = await message.channel.send(salty)
 
             #await member.add_roles(rank)
             
@@ -264,3 +269,4 @@ async def on_message(message):
             await message.channel.send(msg)
         
 client.run(TOKEN)
+print("prout")

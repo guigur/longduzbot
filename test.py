@@ -1,8 +1,9 @@
 import math
 import discord
+from dotenv import load_dotenv
+load_dotenv()
 
-TOKEN = "MjY0NDg5OTA2MDg3MjY0MjY4.WGbDaw.hq2Hb37sByl27JI62zH3OqeWTVU"
-
+TOKEN = os.getenv("DISCORD_TOKEN")
 
 client = discord.Client()
 
