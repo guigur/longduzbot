@@ -198,48 +198,51 @@ async def on_message(message):
         if message.content.startswith('!megaarmy'):
             global timeReady
             armytotmembers = 0
-            if time.time() > timeReady:
-                print(pDT() + "User " + message.author.name + " summoned a megaarmy")
-                timeReady = time.time() + 1200
-                armyLines = random.randint(5, 20)
-                for x in range(0, armyLines):
-                    retarmy = spawnArmy()
-                    army = retarmy[0]
-                    armytotmembers += retarmy[1]
-                    await message.channel.send(army)
-                for emojinmb in numbersToEmojis(armyLines):
-                    await message.add_reaction(emojinmb)
-                print(pDT() + "User " + message.author.name + " summoned " + str(armytotmembers))
-                await message.channel.send("Votre armée compte **" + str(armytotmembers) + "** saloperies. Beau travail.")
-                
-                
-                if armytotmembers > saveFile['maitre']['best']:
-                    print(pDT() + "User " + message.author.name + " is now the master")
-
-                    user = message.author
-
-                    #oldmaitre = user.guild.members() #199222032787963904) #user = client.get_user()
-                    #await user.remove_roles(discord.utils.get(user.guild.roles, name="Maître des Saloperies")) #remove the role
+            if message.author.name != saveFile['maitre']['user']:
+                if time.time() > timeReady:
+                    print(pDT() + "User " + message.author.name + " summoned a megaarmy")
+                    timeReady = time.time() + 1200
+                    armyLines = random.randint(5, 20)
+                    for x in range(0, armyLines):
+                        retarmy = spawnArmy()
+                        army = retarmy[0]
+                        armytotmembers += retarmy[1]
+                        await message.channel.send(army)
+                    for emojinmb in numbersToEmojis(armyLines):
+                        await message.add_reaction(emojinmb)
+                    print(pDT() + "User " + message.author.name + " summoned " + str(armytotmembers))
+                    await message.channel.send("Votre armée compte **" + str(armytotmembers) + "** saloperies. Beau travail.")
                     
-                    saveFile['maitre']['best'] = armytotmembers;
-                    saveFile['maitre']['user'] = message.author.name
-                    saveFile['maitre']['userid'] = message.author.id
-                    saveFile['maitre']['date'] = datetime.datetime.timestamp(datetime.datetime.now())
+                    
+                    if armytotmembers > saveFile['maitre']['best']:
+                        print(pDT() + "User " + message.author.name + " is now the master")
+
+                        user = message.author
+
+                        #oldmaitre = user.guild.members() #199222032787963904) #user = client.get_user()
+                        #await user.remove_roles(discord.utils.get(user.guild.roles, name="Maître des Saloperies")) #remove the role
+                        
+                        saveFile['maitre']['best'] = armytotmembers;
+                        saveFile['maitre']['user'] = message.author.name
+                        saveFile['maitre']['userid'] = message.author.id
+                        saveFile['maitre']['date'] = datetime.datetime.timestamp(datetime.datetime.now())
 
 
-                    saveToFile()
-                    await message.channel.send("Félicitations " + user.mention + " vous êtes le nouveau **Maître des Saloperies**")
-                    url = message.author.avatar_url_as(format='png')          
-                    picture = certif.certifGen(requests.get(url, stream=True).raw, message.author.name, armytotmembers)
-                    await message.channel.send(file=discord.File('tmp/certif_filled.png'))
-                    await message.channel.send("Ce certificat prouve votre titre de **Maître des Saloperies**\nN'hésitez pas à mentionner ce titre prestigieux sur votre CV.")
-                    await user.add_roles(discord.utils.get(user.guild.roles, name="Maître des Saloperies"))
+                        saveToFile()
+                        await message.channel.send("Félicitations " + user.mention + " vous êtes le nouveau **Maître des Saloperies**")
+                        url = message.author.avatar_url_as(format='png')          
+                        picture = certif.certifGen(requests.get(url, stream=True).raw, message.author.name, armytotmembers)
+                        await message.channel.send(file=discord.File('tmp/certif_filled.png'))
+                        await message.channel.send("Ce certificat prouve votre titre de **Maître des Saloperies**\nN'hésitez pas à mentionner ce titre prestigieux sur votre CV.")
+                        await user.add_roles(discord.utils.get(user.guild.roles, name="Maître des Saloperies"))
 
+                    else:
+                        await message.channel.send("Bien mais il y a mieux")
                 else:
-                    await message.channel.send("Bien mais il y a mieux")
+                    await message.channel.send("La méga armée de saloperies n'est pas prête.\nRéessayez dans quelques minutes.")
+                    await message.add_reaction("❌")
             else:
-                await message.channel.send("La méga armée de saloperies n'est pas prête.\nRéessayez dans quelques minutes.")
-                await message.add_reaction("❌")
+                await message.channel.send("Un maître n'a pas besoin de prouver sa valeur.\nLa votre est de **" + str(saveFile['maitre']['best']) + "** Saloperies.")
 
 
         if message.content.startswith('!test'):
