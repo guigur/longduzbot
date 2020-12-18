@@ -1,6 +1,7 @@
 from PIL import Image, ImageOps, ImageDraw, ImageFont
 from datetime import datetime
 import locale
+
 locale.setlocale(locale.LC_ALL, 'fr_FR') #For the french date
 
 textColor = (0,0,0,255)
