@@ -1,53 +1,23 @@
-import math
 import discord
-from dotenv import load_dotenv
-load_dotenv()
+from discord.ext import commands
+import ggr_utilities
+import ggr_emotes
 
-TOKEN = os.getenv("DISCORD_TOKEN")
+class Test(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
 
-client = discord.Client()
+    @commands.command()
+    async def test(self, ctx):
+        """Test cmd"""
+        await ctx.send('test ! {0.name}'.format(ctx.author))
+        rankName = "caca"#Maître des Saloperies"
+        user = ctx.message.author
+        try:
+            await user.add_roles(discord.utils.get(user.guild.roles, name=rankName))
+        except discord.Forbidden:
+            print(ggr_utilities.pDT() + "Probleme de droits pour ajouter le rank " + rankName + " à " + user.name)
+            pass
 
-def digitToEmoji(digit):
-    if digit == 0:
-        return ":zero:"
-    elif digit == 1:
-        return ":one:"
-    elif digit == 2:
-        return ":two:"
-    elif digit == 3:
-        return ":three:"
-    elif digit == 4:
-        return ":four:"
-    elif digit == 5:
-        return ":five:"
-    elif digit == 6:
-        return ":six:"
-    elif digit == 7:
-        return ":seven:"
-    elif digit == 8:
-        return ":eight:"
-    elif digit == 9:
-        return ":nine:"
-
-def numbersToEmojis(number):
-    decade = math.trunc( number / 10)
-    print(digitToEmoji(decade) + digitToEmoji(number % 10))
-    
-
-#guild = discord.guild
-
-#user = guild.get_member(234672235342856202)
-
-
-
-@client.event
-async def on_ready():
-    for guild in client.guilds:
-        print(
-            f'{client.user} is connected to the following guild:\n'
-            f'{guild.name}(id: {guild.id})'
-        )
-
-
-
-client.run(TOKEN)
+def setup(bot):
+    bot.add_cog(Test(bot))

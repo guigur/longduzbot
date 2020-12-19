@@ -1,7 +1,7 @@
-﻿import discord
+﻿#import discord
+import datetime
+import math
 
-maintenance = True
-client = None
 
 def digitToEmoji(digit):
     if digit == 0:
@@ -25,15 +25,11 @@ def digitToEmoji(digit):
     elif digit == 9:
         return "9️⃣"
 
-def setup(masterClient):
-    global client
-    client = type(masterClient)
-    client = masterClient
+def pDT():
+    now = datetime.datetime.now()
+    return (now.strftime("%m/%d/%Y %H:%M:%S]"))
 
-@client.event
-async def checkMaintenance(channel):
-    if maintenance:
-        print("je suis en maintenance, réessayer plus tard !")
-        await channel.send("je suis en maintenance, réessayer plus tard !")
-        return True
-    return False
+def numbersToEmojis(number):
+    decade = digitToEmoji(math.trunc( number / 10))
+    dec = digitToEmoji(number % 10)
+    return [decade, dec]
