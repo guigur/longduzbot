@@ -10,10 +10,10 @@ class Test(commands.Cog):
 	@commands.command()
 	async def test(self, ctx):
 		"""Test"""
-		ggr_utilities.logger(ctx.message.author + " test")
+		ggr_utilities.logger(ctx, "test")
 		await ctx.send('test ! {0.name}'.format(ctx.author))
-		rankName = "caca"#Maître des Saloperies"
-		user = ctx.message.author.name
+		rankName = "Maître des Saloperies"
+		user = ctx.message.author
 		try:
 			await user.add_roles(discord.utils.get(user.guild.roles, name=rankName))
 		except discord.Forbidden:

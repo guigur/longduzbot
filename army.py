@@ -30,7 +30,7 @@ def spawnArmy():
 
 
 def saveToFile():
-	print("Saving to file")
+	ggr_utilities.logger(None, "Saving to file the new master")
 	with open('maitre.json', 'w') as json_file:
 		json.dump(saveFile, json_file)
 
@@ -60,7 +60,7 @@ class Army(commands.Cog):
 		global timeReady
 		if ctx.author.name != saveFile['maitre']['user']:
 			if time.time() > timeReady:
-				print(ggr_utilities.pDT() + "User " + ctx.author.name + " summoned a megaarmy")
+				ggr_utilities.logger(None, "User " + ctx.author.name + " summoned a megaarmy")
 				timeReady = time.time() + 1200
 				armyLines = random.randint(5, 20)
 				for x in range(0, armyLines):
@@ -70,15 +70,13 @@ class Army(commands.Cog):
 					await ctx.send(army)
 				for emojinmb in ggr_utilities.numbersToEmojis(armyLines):
 					await ctx.message.add_reaction(emojinmb)
-				print(ggr_utilities.pDT() + "User " + ctx.author.name + " summoned " + str(armytotmembers))
+				ggr_utilities.logger(None, "User " + ctx.author.name + " summoned " + str(armytotmembers) + " saloperies")
 				await ctx.send("Votre armée compte **" + str(armytotmembers) + "** saloperies. Beau travail.")
 				
-				
 				if armytotmembers > saveFile['maitre']['best']:
-					print(ggr_utilities.pDT() + "User " + ctx.author.name + " is now the master")
-
+					ggr_utilities.logger(None, "User " + ctx.author.name + " is now the master of saloperies")
 					user = ctx.author
-
+					#TODO: Remove the old master
 					#oldmaitre = user.guild.members() #199222032787963904) #user = client.get_user()
 					#await user.remove_roles(discord.utils.get(user.guild.roles, name="Maître des Saloperies")) #remove the role
 
@@ -86,7 +84,6 @@ class Army(commands.Cog):
 					saveFile['maitre']['user'] = ctx.author.name
 					saveFile['maitre']['userid'] = ctx.author.id
 					saveFile['maitre']['date'] = datetime.datetime.timestamp(datetime.datetime.now())
-
 
 					saveToFile()
 					await ctx.send("Félicitations " + user.mention + " vous êtes le nouveau **Maître des Saloperies**")
