@@ -14,9 +14,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 TOKEN = os.getenv("DISCORD_TOKEN")
+prefix = os.getenv("DISCORD_COMMAND_PREFIX")
 startup_extensions = ["com", "test", "army", "ulian", "teub", "eco"]
 
-bot = Bot(command_prefix='~')
+bot = Bot(command_prefix=prefix)
 
 @bot.event
 async def on_ready():
