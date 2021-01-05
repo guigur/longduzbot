@@ -20,6 +20,9 @@ petou = "<:petou:>"
 
 Ulian = "<:Ulian:784169312976896040>"
 Moth = "<:Moth:784169313019101204>"
+Guogur = "<:Guogur:795742755082993685>"
+Saloperiedoree = "<:Saloperiedoree:788967092115603486>"
+WAD = "<:Lilian2:784148660010352670>"
 
 lilinkhisrightelbow = "<:lilinkhisrightelbow:784177962970513438>"
 lilinkhisface = "<:lilinkhisface:784177963008524288>"
@@ -66,7 +69,7 @@ faces = {'Tim': '<:Tim:784142816896352296>',
 'Lilian6': '<:Lilian6:>',
 'Lilian5': '<:Lilian5:>',
 'Lilian4': '<:Lilian4:>',
-'Lilian2': '<:Lilian2:>',
+'Lilian2': '<:Lilian2:784148660010352670>',
 'lilian': '<:lilian:>',
 'Guillaume': '<:Guillaume:>',
 'Franck': '<:Franck:>',

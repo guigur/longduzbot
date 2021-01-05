@@ -1,4 +1,3 @@
-# bot.py
 import os
 import time
 import math
@@ -15,7 +14,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 TOKEN = os.getenv("DISCORD_TOKEN")
-startup_extensions = ["test", "army", "ulian", "teub"]
+startup_extensions = ["com", "test", "army", "ulian", "teub", "eco"]
 
 bot = Bot(command_prefix='~')
 
@@ -25,7 +24,6 @@ async def on_ready():
 	timeReady = time.time()
 	ggr_utilities.logger(None, "Logged in as " + bot.user.name + " " + str(bot.user.id))
 
-timeReady = 0
 
 if __name__ == "__main__":
 	for extension in startup_extensions:
@@ -35,4 +33,6 @@ if __name__ == "__main__":
 		except Exception as e:
 			exc = '{}: {}'.format(type(e).__name__, e)
 			ggr_utilities.logger(None, "Failed to load extension " + extension + " \n" + exc)
-	bot.run(TOKEN)
+
+
+bot.run(TOKEN)
