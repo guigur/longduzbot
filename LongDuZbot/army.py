@@ -51,7 +51,7 @@ class Army(commands.Cog):
 		"""Affiche le maître des saloperies et son record."""
 		ggr_utilities.logger(ctx, ctx.message.content)
 		msg = "Le maître des saloperie est **" + self.saveFile['maitre']['user'] + "** avec un score de **" + str(self.saveFile['maitre']['best']) + "** saloperies invoqués"
-		await ctx.send(army)
+		await ctx.send(msg)
 
 	@commands.command()
 	async def army(self, ctx):
