@@ -29,7 +29,7 @@ class Eco(commands.Cog):
 		newUserJson = {"name": user.name , "id": user.id, "balance": 1 }
 
 		self.saveFile.append(newUserJson)
-		self.saveToFile()
+		self.saveToFile(self)
 		return newUserJson
 
 	@classmethod
