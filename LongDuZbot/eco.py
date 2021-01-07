@@ -18,18 +18,10 @@ class Eco(commands.Cog):
 		with open('economy.json', 'w') as json_file:
 			json.dump(self.saveFile, json_file)
 	
-	def changeBallance(self, user, diff):
-		Eco.checkUserExist(user)
-		Eco.loadFromFile()
-		for u in Eco.saveFile:
-			if u["name"] == user.name:
-				u["balance"] += diff
-		Eco.saveToFile()
-		
-
+	@classmethod
 	def checkUserExist(self, user):
 		ggr_utilities.logger(None, "Check if user exist.")
-		self.loadFromFile()
+		self.loadFromFile(self)
 		for u in self.saveFile:
 			if u["name"] == user.name:
 				return u
@@ -39,6 +31,16 @@ class Eco(commands.Cog):
 		self.saveFile.append(newUserJson)
 		self.saveToFile()
 		return newUserJson
+
+	@classmethod
+	def changeBallance(self, user, diff):
+		self.checkUserExist(user)
+		ggr_utilities.logger(None, "add " + str(diff) + " wads to " + user.name)
+		self.loadFromFile(self)
+		for u in self.saveFile:
+			if u["name"] == user.name:
+				u["balance"] += diff
+		self.saveToFile(self)
 
 	@commands.command()
 	async def wad(self, ctx):

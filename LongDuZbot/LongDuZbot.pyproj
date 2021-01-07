@@ -50,6 +50,7 @@
     <Content Include=".env" />
     <Content Include=".env.sample" />
     <Content Include=".gitignore" />
+    <Content Include="army_cool_down.json" />
     <Content Include="font\Times New Roman 400.ttf" />
     <Content Include="img\academie.png" />
     <Content Include="img\certif.png" />

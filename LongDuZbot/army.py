@@ -4,12 +4,13 @@ import random
 import time
 import datetime
 import requests
-
+import math
 import json
 
 import ggr_utilities
 import ggr_emotes
 import certif
+import eco
 
 class Army(commands.Cog):
 	def __init__(self, bot):
@@ -25,6 +26,15 @@ class Army(commands.Cog):
 		ggr_utilities.logger(None, "Saving to file the new master")
 		with open('maitre.json', 'w') as json_file:
 			json.dump(self.saveFile, json_file)
+			
+	def loadFromFileCoolDown(self):
+		with open('army_cool_down.json', encoding='utf-8') as json_file:
+			self.saveFileCoolDown = json.load(json_file)
+
+	def saveToFileCoolDown(self):
+		ggr_utilities.logger(None, "Saving to file army cool down")
+		with open('army_cool_down.json', 'w') as json_file:
+			json.dump(self.saveFileCoolDown, json_file)
 
 	def spawnArmy(self):
 		army = ""
@@ -46,6 +56,19 @@ class Army(commands.Cog):
 					army += ggr_emotes.Moth
 		return [army, armynbr, armyGold]
 
+	def checkUserCoolDownExist(self, user):
+		ggr_utilities.logger(None, "Check if user cool down exist.")
+		self.loadFromFileCoolDown()
+		for u in self.saveFileCoolDown:
+			if u["name"] == user.name:
+				return u
+		ggr_utilities.logger(None, "User " + user.name + " not found adding him/her to cool down file")
+		newUserJson = {"name": user.name , "id": user.id, "date": time.time() }
+
+		self.saveFileCoolDown.append(newUserJson)
+		self.saveToFileCoolDown()
+		return newUserJson
+
 	@commands.command()
 	async def maitre(self, ctx):
 		"""Affiche le maître des saloperies et son record."""
@@ -57,24 +80,35 @@ class Army(commands.Cog):
 	async def army(self, ctx):
 		"""Spawn une armée de minis Ulians et Moth de 10 à 50 membres dévoués et sanguinaires."""
 		ggr_utilities.logger(ctx, ctx.message.content)
-		retarmy = self.spawnArmy()
-		army = retarmy[0]
-		armytotmembers = retarmy[1]
-		armyGold = retarmy[2]
-		await ctx.send(army)
-		for emojinmb in ggr_utilities.numbersToEmojis(armytotmembers):
-			await ctx.message.add_reaction(emojinmb)
-		if armyGold > 0:
-			await ctx.send("Cette armée vous raporte **" + str(armyGold) + " WADs**")
-			await ctx.message.add_reaction(ggr_emotes.WAD)
-			#TODO tajouter le solde
+		if (time.time() >= self.checkUserCoolDownExist(ctx.author)["date"]):
+			for u in self.saveFileCoolDown:
+				if u["name"] == ctx.author.name:
+					u["date"] =  time.time() + 300 #5min
+
+			self.saveToFileCoolDown()
+
+			retarmy = self.spawnArmy()
+			army = retarmy[0]
+			armytotmembers = retarmy[1]
+			armyGold = retarmy[2]
+			await ctx.send(army)
+			for emojinmb in ggr_utilities.numbersToEmojis(armytotmembers):
+				await ctx.message.add_reaction(emojinmb)
+			if armyGold > 0:
+				await ctx.send("Cette armée vous raporte **" + str(armyGold) + " WADs**")
+				await ctx.message.add_reaction(ggr_emotes.WAD)
+				eco.Eco.changeBallance(ctx.author, armyGold)
+		else:
+			await ctx.send("Votre armée de saloperies n'est pas prête.\nRéessayez dans **" + str(math.trunc(self.checkUserCoolDownExist(ctx.author)["date"] - time.time())) + "** secondes.")
+			await ctx.message.add_reaction("❌")
+
 
 	@commands.command()
 	async def megaarmy(self, ctx):
 		"""Spawn une imposante armée de minis Ulians et Moth sur plusieurs lignes (5 à 20). Cette commande ne peut être utilisé qu'une fois toutes les 20 minutes."""
 		ggr_utilities.logger(ctx, ctx.message.content)
 		armytotmembers = 0
-
+		armyGold = 0
 		if ctx.author.name != self.saveFile['maitre']['user']:
 			if time.time() > self.timeReady:
 				ggr_utilities.logger(None, "User " + ctx.author.name + " summoned a megaarmy")
@@ -84,12 +118,17 @@ class Army(commands.Cog):
 					retarmy = self.spawnArmy()
 					army = retarmy[0]
 					armytotmembers += retarmy[1]
+					armyGold += retarmy[2]
+
 					await ctx.send(army)
 				for emojinmb in ggr_utilities.numbersToEmojis(armyLines):
 					await ctx.message.add_reaction(emojinmb)
 				ggr_utilities.logger(None, "User " + ctx.author.name + " summoned " + str(armytotmembers) + " saloperies")
 				await ctx.send("Votre armée compte **" + str(armytotmembers) + "** saloperies. Beau travail.")
-				
+				if armyGold > 0:
+					await ctx.send("Cette armée vous raporte **" + str(armyGold) + " WADs**")
+					await ctx.message.add_reaction(ggr_emotes.WAD)
+					eco.Eco.changeBallance(ctx.author, armyGold)
 				if armytotmembers > self.saveFile['maitre']['best']:
 					ggr_utilities.logger(None, "User " + ctx.author.name + " is now the master of saloperies")
 					user = ctx.author

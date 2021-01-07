@@ -15,7 +15,7 @@ load_dotenv()
 
 TOKEN = os.getenv("DISCORD_TOKEN")
 prefix = os.getenv("DISCORD_COMMAND_PREFIX")
-startup_extensions = ["com", "test", "army", "ulian", "teub", "eco"]
+startup_extensions = ["com",  "army", "ulian", "teub", "eco", "test"]
 
 bot = Bot(command_prefix=prefix)
 
