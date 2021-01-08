@@ -80,7 +80,8 @@ class Army(commands.Cog):
 	async def army(self, ctx):
 		"""Spawn une armée de minis Ulians et Moth de 10 à 50 membres dévoués et sanguinaires."""
 		ggr_utilities.logger(ctx, ctx.message.content)
-		if (time.time() >= self.checkUserCoolDownExist(ctx.author)["date"]):
+		timeUser = self.checkUserCoolDownExist(ctx.author)["date"]
+		if (time.time() >= timeUser):
 			for u in self.saveFileCoolDown:
 				if u["name"] == ctx.author.name:
 					u["date"] =  time.time() + 300 #5min
@@ -95,7 +96,7 @@ class Army(commands.Cog):
 			for emojinmb in ggr_utilities.numbersToEmojis(armytotmembers):
 				await ctx.message.add_reaction(emojinmb)
 			if armyGold > 0:
-				await ctx.send("Cette armée vous raporte **" + str(armyGold) + " WADs**")
+				await ctx.send("Cette armée vous rapporte **" + str(armyGold) + " WADs**")
 				await ctx.message.add_reaction(ggr_emotes.WAD)
 				eco.Eco.changeBallance(ctx.author, armyGold)
 		else:
@@ -126,7 +127,7 @@ class Army(commands.Cog):
 				ggr_utilities.logger(None, "User " + ctx.author.name + " summoned " + str(armytotmembers) + " saloperies")
 				await ctx.send("Votre armée compte **" + str(armytotmembers) + "** saloperies. Beau travail.")
 				if armyGold > 0:
-					await ctx.send("Cette armée vous raporte **" + str(armyGold) + " WADs**")
+					await ctx.send("Cette armée vous rapporte **" + str(armyGold) + " WADs**")
 					await ctx.message.add_reaction(ggr_emotes.WAD)
 					eco.Eco.changeBallance(ctx.author, armyGold)
 				if armytotmembers > self.saveFile['maitre']['best']:
