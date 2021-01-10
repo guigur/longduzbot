@@ -113,7 +113,8 @@ class Army(commands.Cog):
 		if ctx.author.name != self.saveFile['maitre']['user']:
 			if time.time() > self.timeReady:
 				ggr_utilities.logger(None, "User " + ctx.author.name + " summoned a megaarmy")
-				self.timeReady = time.time() + 1200
+				self.timeReady = time.time() + random.randint(900, 1500) #entre 15 et 25 min
+
 				armyLines = random.randint(5, 20)
 				for x in range(0, armyLines):
 					retarmy = self.spawnArmy()

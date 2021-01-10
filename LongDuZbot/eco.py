@@ -50,5 +50,15 @@ class Eco(commands.Cog):
 		user = self.checkUserExist(ctx.author)
 		await ctx.send("**" + user["name"] + "** possède **" + str(user['balance']) + "** WADs en banque.")
 
+	@commands.command()
+	async def buy(self, ctx):
+		"""La boutique !"""
+		ggr_utilities.logger(ctx, ctx.message.content)
+		user = self.checkUserExist(ctx.author)
+
+	@commands.command()
+	async def foo(self, ctx, *arg):
+		if arg[0]
+			await ctx.send('You passed {} and {}'.format(arg[0], arg[0]))
 def setup(bot):
 	bot.add_cog(Eco(bot))
