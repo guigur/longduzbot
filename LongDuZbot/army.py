@@ -16,16 +16,16 @@ class Army(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 		self.timeReady = 0
-		self.loadFromFile()
+		self.loadDataFromFile()
 
-	def loadFromFile(self):
-		with open('maitre.json', encoding='utf-8') as json_file:
-			self.saveFile = json.load(json_file)
+	def loadDataFromFile(self):
+		with open('data.json', encoding='utf-8') as json_file:
+			self.data = json.load(json_file)
 
-	def saveToFile(self):
-		ggr_utilities.logger(None, "Saving to file the new master")
-		with open('maitre.json', 'w') as json_file:
-			json.dump(self.saveFile, json_file)
+	def saveDataToFile(self):
+		ggr_utilities.logger(None, "Saving data")
+		with open('data.json', 'w') as json_file:
+			json.dump(self.data, json_file)
 			
 	def loadFromFileCoolDown(self):
 		with open('army_cool_down.json', encoding='utf-8') as json_file:
@@ -56,7 +56,7 @@ class Army(commands.Cog):
 					army += ggr_emotes.Moth
 		return [army, armynbr, armyGold]
 
-	def checkUserCoolDownExist(self, user):
+	def hasUserCoolDown(self, user):
 		ggr_utilities.logger(None, "Check if user cool down exist.")
 		self.loadFromFileCoolDown()
 		for u in self.saveFileCoolDown:
@@ -73,14 +73,23 @@ class Army(commands.Cog):
 	async def maitre(self, ctx):
 		"""Affiche le maître des saloperies et son record."""
 		ggr_utilities.logger(ctx, ctx.message.content)
-		msg = "Le maître des saloperie est **" + self.saveFile['maitre']['user'] + "** avec un score de **" + str(self.saveFile['maitre']['best']) + "** saloperies invoqués"
+		msg = "Le maître des saloperie est **" + self.data['maitre']['user'] + "** avec un score de **" + str(self.data['maitre']['best']) + "** saloperies invoqués"
 		await ctx.send(msg)
+
+    @commands.command()
+    async def pute(self, ctx):
+        """Affiche la pute des saloperies et son score."""
+        ggr_utilities.logger(ctx, ctx.message.content)
+        msg = "La pute des saloperie est **" + \
+            self.data['pute']['user'] + "** avec un score de merde de**" + \
+            str(self.data['pute']['best']) + "** saloperies invoqués"
+        await ctx.send(msg)
 
 	@commands.command()
 	async def army(self, ctx):
 		"""Spawn une armée de minis Ulians et Moth de 10 à 50 membres dévoués et sanguinaires."""
 		ggr_utilities.logger(ctx, ctx.message.content)
-		timeUser = self.checkUserCoolDownExist(ctx.author)["date"]
+		timeUser = self.hasUserCoolDown(ctx.author)["date"]
 		if (time.time() >= timeUser):
 			for u in self.saveFileCoolDown:
 				if u["name"] == ctx.author.name:
@@ -100,7 +109,7 @@ class Army(commands.Cog):
 				await ctx.message.add_reaction(ggr_emotes.WAD)
 				eco.Eco.changeBallance(ctx.author, armyGold)
 		else:
-			await ctx.send("Votre armée de saloperies n'est pas prête.\nRéessayez dans **" + str(math.trunc(self.checkUserCoolDownExist(ctx.author)["date"] - time.time())) + "** secondes.")
+			await ctx.send("Votre armée de saloperies n'est pas prête.\nRéessayez dans **" + str(math.trunc(self.hasUserCoolDown(ctx.author)["date"] - time.time())) + "** secondes.")
 			await ctx.message.add_reaction("❌")
 
 
@@ -110,7 +119,7 @@ class Army(commands.Cog):
 		ggr_utilities.logger(ctx, ctx.message.content)
 		armytotmembers = 0
 		armyGold = 0
-		if ctx.author.name != self.saveFile['maitre']['user']:
+		if ctx.author.name != self.data['maitre']['user']:
 			if time.time() > self.timeReady:
 				ggr_utilities.logger(None, "User " + ctx.author.name + " summoned a megaarmy")
 				self.timeReady = time.time() + random.randint(900, 1500) #entre 15 et 25 min
@@ -131,28 +140,47 @@ class Army(commands.Cog):
 					await ctx.send("Cette armée vous rapporte **" + str(armyGold) + " WADs**")
 					await ctx.message.add_reaction(ggr_emotes.WAD)
 					eco.Eco.changeBallance(ctx.author, armyGold)
-				if armytotmembers > self.saveFile['maitre']['best']:
+				if armytotmembers > self.data['maitre']['best']:
 					ggr_utilities.logger(None, "User " + ctx.author.name + " is now the master of saloperies")
 					user = ctx.author
 					#TODO: Remove the old master
 					#oldmaitre = user.guild.members() #199222032787963904) #user = client.get_user()
 					#await user.remove_roles(discord.utils.get(user.guild.roles, name="Maître des Saloperies")) #remove the role
 
-					self.saveFile['maitre']['best'] = armytotmembers;
-					self.saveFile['maitre']['user'] = ctx.author.name
-					self.saveFile['maitre']['userid'] = ctx.author.id
-					self.saveFile['maitre']['date'] = datetime.datetime.timestamp(datetime.datetime.now())
+					self.data['maitre']['best'] = armytotmembers
+					self.data['maitre']['user'] = ctx.author.name
+					self.data['maitre']['userid'] = ctx.author.id
+					self.data['maitre']['date'] = datetime.datetime.timestamp(datetime.datetime.now())
 
-					self.saveToFile()
+					self.saveDataToFile()
 					await ctx.send("Félicitations " + user.mention + " vous êtes le nouveau **Maître des Saloperies**")
 					url = ctx.author.avatar_url_as(format='png')
-					picture = certif.certifGen(requests.get(url, stream=True).raw, ctx.author.name, armytotmembers)
+					picture = certif.generateCertifMaster(requests.get(url, stream=True).raw, ctx.author.name, armytotmembers)
 					await ctx.send(file=discord.File('tmp/certif_filled.png'))
 					await ctx.send("Ce certificat prouve votre titre de **Maître des Saloperies**\nN'hésitez pas à mentionner ce titre prestigieux sur votre CV.")
 					try:
 						await user.add_roles(discord.utils.get(user.guild.roles, name="Maître des Saloperies"))
 					except discord.Forbidden:
 						pass
+                elif armytotmembers < self.data['pute']['best']:
+                    ggr_utilities.logger(None, "User " + ctx.author.name + " is now the pute of saloperies")
+                    user = ctx.author
+
+                    self.data['pute']['best'] = armytotmembers
+                    self.data['pute']['user'] = ctx.author.name
+                    self.data['pute']['userid'] = ctx.author.id
+                    self.data['pute']['date'] = datetime.datetime.timestamp(datetime.datetime.now())
+
+                    self.saveDataToFile()
+                    await ctx.send("Félicitations... " + user.mention + " vous êtes la nouvelle **Pute des Saloperies**")
+                    url = ctx.author.avatar_url_as(format='png')
+                    picture = certif.generateCertifBitch(requests.get(url, stream=True).raw, ctx.author.name, armytotmembers)
+                    await ctx.send(file=discord.File('tmp/certif_pute_filled.png'))
+                    await ctx.send("Ce certificat prouve votre titre de **Pute des Saloperies**\nVous êtes une énorme salope ! Encore plus grosse que votre daronne !")
+                    try:
+                        await user.add_roles(discord.utils.get(user.guild.roles, name="Maître des Saloperies"))
+                    except discord.Forbidden:
+                        pass
 
 				else:
 					await ctx.send("Bien mais il y a mieux")
@@ -160,7 +188,7 @@ class Army(commands.Cog):
 				await ctx.send("La méga armée de saloperies n'est pas prête.\nRéessayez dans quelques minutes.")
 				await ctx.message.add_reaction("❌")
 		else:
-			await ctx.send("Un maître n'a pas besoin de prouver sa valeur.\nLa votre est de **" + str(self.saveFile['maitre']['best']) + "** Saloperies.")
+			await ctx.send("Un maître n'a pas besoin de prouver sa valeur.\nLa votre est de **" + str(self.data['maitre']['best']) + "** Saloperies.")
 
 
 def setup(bot):

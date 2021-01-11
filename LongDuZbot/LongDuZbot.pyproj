@@ -56,7 +56,7 @@
     <Content Include="img\certif.png" />
     <Content Include="img\mask.png" />
     <Content Include="img\signature.png" />
-    <Content Include="maitre.json" />
+    <Content Include="data.json" />
     <Content Include="maitre_all_times.json" />
     <Content Include="megaarmnies.json" />
     <Content Include="Requirements.txt" />
