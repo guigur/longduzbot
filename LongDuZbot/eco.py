@@ -55,10 +55,10 @@ class Eco(commands.Cog):
 		"""La boutique !"""
 		ggr_utilities.logger(ctx, ctx.message.content)
 		user = self.checkUserExist(ctx.author)
-
+	
 	@commands.command()
-	async def foo(self, ctx, *arg):
-		if arg[0]
-			await ctx.send('You passed {} and {}'.format(arg[0], arg[0]))
+	async def foo(self, ctx, arg):
+		#todo trouver comment gerer pas d arguments
+		await ctx.send("You passed" + arg)
 def setup(bot):
 	bot.add_cog(Eco(bot))

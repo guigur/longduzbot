@@ -11,8 +11,9 @@ class Test(commands.Cog):
 	@commands.command()
 	async def test(self, ctx):
 		"""Test"""
-		await ctx.send("test")
-		await ctx.send(ctx.author.name)
+		print("test")
+		#await ctx.send("test")
+		#await ctx.send(ctx.author.name)
 	
 		#eco.Eco.changeBallance(ctx.author, 20)
 def setup(bot):

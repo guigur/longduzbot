@@ -76,14 +76,13 @@ class Army(commands.Cog):
 		msg = "Le maître des saloperie est **" + self.data['maitre']['user'] + "** avec un score de **" + str(self.data['maitre']['best']) + "** saloperies invoqués"
 		await ctx.send(msg)
 
-    @commands.command()
-    async def pute(self, ctx):
-        """Affiche la pute des saloperies et son score."""
-        ggr_utilities.logger(ctx, ctx.message.content)
-        msg = "La pute des saloperie est **" + \
-            self.data['pute']['user'] + "** avec un score de merde de**" + \
-            str(self.data['pute']['best']) + "** saloperies invoqués"
-        await ctx.send(msg)
+	#TODO: trouver un autre nom pour le pire
+	@commands.command()
+	async def pute(self, ctx):
+		"""Affiche la pute des saloperies et son score."""
+		ggr_utilities.logger(ctx, ctx.message.content)
+		msg = "La pute des saloperie est **" + self.data['pute']['user'] + "** avec un score de merde de**" + str(self.data['pute']['best']) + "** saloperies invoqués"
+		await ctx.send(msg)
 
 	@commands.command()
 	async def army(self, ctx):
@@ -162,27 +161,23 @@ class Army(commands.Cog):
 						await user.add_roles(discord.utils.get(user.guild.roles, name="Maître des Saloperies"))
 					except discord.Forbidden:
 						pass
-                elif armytotmembers < self.data['pute']['best']:
-                    ggr_utilities.logger(None, "User " + ctx.author.name + " is now the pute of saloperies")
-                    user = ctx.author
+				elif armytotmembers < self.data['pute']['best']:
+					ggr_utilities.logger(None, "User " + ctx.author.name + " is now the pute of saloperies")
+					user = ctx.author
 
-                    self.data['pute']['best'] = armytotmembers
-                    self.data['pute']['user'] = ctx.author.name
-                    self.data['pute']['userid'] = ctx.author.id
-                    self.data['pute']['date'] = datetime.datetime.timestamp(datetime.datetime.now())
+					self.data['pute']['best'] = armytotmembers
+					self.data['pute']['user'] = ctx.author.name
+					self.data['pute']['userid'] = ctx.author.id
+					self.data['pute']['date'] = datetime.datetime.timestamp(datetime.datetime.now())
 
-                    self.saveDataToFile()
-                    await ctx.send("Félicitations... " + user.mention + " vous êtes la nouvelle **Pute des Saloperies**")
-                    url = ctx.author.avatar_url_as(format='png')
-                    picture = certif.generateCertifBitch(requests.get(url, stream=True).raw, ctx.author.name, armytotmembers)
-                    await ctx.send(file=discord.File('tmp/certif_pute_filled.png'))
-                    await ctx.send("Ce certificat prouve votre titre de **Pute des Saloperies**\nVous êtes une énorme salope ! Encore plus grosse que votre daronne !")
-                    try:
-                        await user.add_roles(discord.utils.get(user.guild.roles, name="Maître des Saloperies"))
-                    except discord.Forbidden:
-                        pass
-
+					self.saveDataToFile()
+					await ctx.send("Félicitations... " + user.mention + " vous êtes la nouvelle **Pute des Saloperies**")
+					url = ctx.author.avatar_url_as(format='png')
+					picture = certif.generateCertifBitch(requests.get(url, stream=True).raw, ctx.author.name, armytotmembers)
+					await ctx.send(file=discord.File('tmp/certif_pute_filled.png'))
+					await ctx.send("Ce certificat prouve votre titre de **Pute des Saloperies**\nVous êtes une énorme salope ! Encore plus grosse que votre daronne !")
 				else:
+					#TODO: mettre differentes reactions en fonction du score
 					await ctx.send("Bien mais il y a mieux")
 			else:
 				await ctx.send("La méga armée de saloperies n'est pas prête.\nRéessayez dans quelques minutes.")
