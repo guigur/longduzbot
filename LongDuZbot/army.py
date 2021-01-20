@@ -85,6 +85,16 @@ class Army(commands.Cog):
 		await ctx.send(msg)
 
 	@commands.command()
+	async def armydory(self, ctx):
+		"""Affiche la pute des saloperies et son score."""
+		ggr_utilities.logger(ctx, ctx.message.content)
+		armynbr = random.randint(10, 60)
+		army = ""
+		for x in range(0, armynbr):
+			army += ggr_emotes.Saloperiedoree
+		await ctx.send(army)
+
+	@commands.command()
 	async def army(self, ctx):
 		"""Spawn une armée de minis Ulians et Moth de 10 à 50 membres dévoués et sanguinaires."""
 		ggr_utilities.logger(ctx, ctx.message.content)
