@@ -1,4 +1,6 @@
 import discord
+import os
+import certif
 from discord.ext import commands
 import json
 
@@ -48,7 +50,10 @@ class Eco(commands.Cog):
 		ggr_utilities.logger(ctx, ctx.message.content)
 		
 		user = self.checkUserExist(ctx.author)
-		await ctx.send("**" + user["name"] + "** possède **" + str(user['balance']) + "** WADs en banque.")
+		userImg, guildImg = ggr_utilities.userServerIcon(ctx) 
+		card = certif.generateMoneyCard(userImg, guildImg, user["name"], user["balance"])
+		await ctx.send(file=discord.File('tmp/card_filled.png'))
+		#await ctx.send("**" + user["name"] + "** possède **" + str(user['balance']) + "** WADs en banque.")
 
 	@commands.command()
 	async def buy(self, ctx):

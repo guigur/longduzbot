@@ -113,10 +113,10 @@ def generateCertifBitch(profilePictureLink, pseudo, score):
 def generateMoneyCard(profilePictureLink, serverPictureLink, pseudo, money):
 	ownSynonyms = ["Possède", "Cache au Fisc", "A", "Détient", "Dispose", "Garde", "Conserve"]
 	bankSynonyms = ["en banque.", "dans son porte-feuilles.", "dans son porte-monnaie."]
-	profile = Image.open(profilePictureLink)
+	profile = Image.open(profilePictureLink).convert("RGBA")
 	profile = profile.resize([128, 128])
 
-	server = Image.open(serverPictureLink)
+	server = Image.open(serverPictureLink).convert("RGBA")
 	server = server.resize([48, 48])
 
 	fontCardBig = ImageFont.truetype(r'font/Helvetica.ttf', 48) 

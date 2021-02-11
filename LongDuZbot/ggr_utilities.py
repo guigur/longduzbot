@@ -1,7 +1,34 @@
 #import discord
 import datetime
 import math
+import requests
 
+def pickDefImage(name):
+	folder = "img/default/"
+	if name[0] <= 'e':
+		return folder + "red.png"
+	elif name[0] >= 'f' and name[0] <= 'j':
+		return folder + "green.png"
+	elif name[0] >= 'k' and name[0] <= 'o':
+		return folder + "grey.png"
+	elif name[0] >= 'p' and name[0] <= 't':
+		return folder + "yellow.png"
+	return folder + "blue.png"
+
+def userServerIcon(ctx):
+	userUrl = ctx.author.avatar_url_as(format='png')
+	try:
+		userImg = requests.get(userUrl, stream=True).raw
+	except requests.exceptions.RequestException as e:
+		userImg = pickDefImage(ctx.author.name)
+
+	guildUrl = ctx.guild.icon_url_as(format='png')
+	try:
+		guildImg = requests.get(guildUrl, stream=True).raw
+	except requests.exceptions.RequestException as e:
+		guildImg = pickDefImage(ctx.guild.name)
+
+	return userImg, guildImg
 
 def digitToEmoji(digit):
 	if digit == 0:
