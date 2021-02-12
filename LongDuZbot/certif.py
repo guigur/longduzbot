@@ -108,18 +108,17 @@ def generateCertifBitch(profilePictureLink, pseudo, score):
 
 	return certif.save("tmp/certif_worst_filled.png")
 
-
-
-def generateMoneyCard(profilePictureLink, serverPictureLink, pseudo, money):
-	ownSynonyms = ["Possède", "Cache au Fisc", "A", "Détient", "Dispose", "Garde", "Conserve"]
-	bankSynonyms = ["en banque.", "dans son porte-feuilles.", "dans son porte-monnaie."]
+def generateMoneyCard(profilePictureLink, serverPictureLink, ctx, money):
+	ownSynonyms = ["possède", "cache au Fisc", "a", "détient", "dispose de", "garde", "conserve"]
+	bankSynonyms = ["en banque.", "dans son portefeuille.", "dans son porte-monnaie."]
 	profile = Image.open(profilePictureLink).convert("RGBA")
 	profile = profile.resize([128, 128])
 
 	server = Image.open(serverPictureLink).convert("RGBA")
 	server = server.resize([48, 48])
 
-	fontCardBig = ImageFont.truetype(r'font/Helvetica.ttf', 48) 
+	fontCardBig = ImageFont.truetype(r'font/Helvetica.ttf', 48)
+	fontCardIdentifier = ImageFont.truetype(r'font/Helvetica-Light.ttf', 20) 
 	fontCard = ImageFont.truetype(r'font/Helvetica.ttf', 24) 
 	fontCardAccent = ImageFont.truetype(r'font/Helvetica-Bold.ttf', 32) 
 
@@ -129,26 +128,33 @@ def generateMoneyCard(profilePictureLink, serverPictureLink, pseudo, money):
 	card.paste(profile, (20, 20, 20 + profile.size[0], 20 + profile.size[1]), profile)
 	genRoundImg(server)
 	card.paste(server, (100, 100, 100 + server.size[0], 100 + server.size[1]), server)
-	ligneOffset = [20, 85, 110]
+	ligneOffset = [20, 40, 85, 110]
 
 	draw = ImageDraw.Draw(card)
-	draw.text((188, ligneOffset[0]), text=pseudo, fill=(255,255,255,255), font=fontCardBig, anchor=None, spacing=0, align="left")
+
+	textName = ctx.author.name + " "
+	textNameW,textNameH = fontCardBig.getsize(textName)
+	draw.text((188, ligneOffset[0]), text=textName, fill=(255,255,255,255), font=fontCardBig, anchor=None, spacing=0, align="left")
+
+	textIdentifier = "#" + ctx.author.discriminator
+	textIdentifierW,textIdentifierH = fontCardIdentifier.getsize(textIdentifier)
+	draw.text((188 + textNameW, ligneOffset[1]), text=textIdentifier, fill=(255,255,255,127), font=fontCardIdentifier, anchor=None, spacing=0, align="left")
 
 	textOwn = secure_random.choice(ownSynonyms) + " "
 	textOwnW,textOwnH = fontCard.getsize(textOwn)
-	draw.text((188, ligneOffset[1]), text=textOwn, fill=(255,255,255,255), font=fontCard, anchor=None, spacing=0, align="left")
+	draw.text((188, ligneOffset[2]), text=textOwn, fill=(255,255,255,255), font=fontCard, anchor=None, spacing=0, align="left")
 
 	textNumber = str(money)
 	textNumberW,textNumberH = fontCardAccent.getsize(textNumber)
-	draw.text((188 + textOwnW, ligneOffset[1] - 5), text=textNumber, fill=(255,255,255,255), font=fontCardAccent, anchor=None, spacing=0, align="left")
+	draw.text((188 + textOwnW, ligneOffset[2] - 5), text=textNumber, fill=(255,255,255,255), font=fontCardAccent, anchor=None, spacing=0, align="left")
 
 	textMoneyName = " WADs"
 	textMoneyNameW,textMoneyNameH = fontCard.getsize(textMoneyName)
-	draw.text((188 + textOwnW + textNumberW, ligneOffset[1]), text=textMoneyName, fill=(255,255,255,255), font=fontCard, anchor=None, spacing=0, align="left")
+	draw.text((188 + textOwnW + textNumberW, ligneOffset[2]), text=textMoneyName, fill=(255,255,255,255), font=fontCard, anchor=None, spacing=0, align="left")
 
 	textInBank = secure_random.choice(bankSynonyms)
 	textInBankW,textInBankH = fontCard.getsize(textInBank)
-	draw.text((188, ligneOffset[2]), text=textInBank, fill=(255,255,255,255), font=fontCard, anchor=None, spacing=0, align="left")
+	draw.text((188, ligneOffset[3]), text=textInBank, fill=(255,255,255,255), font=fontCard, anchor=None, spacing=0, align="left")
 
 	#card.show()
 	return card.save("tmp/card_filled.png")

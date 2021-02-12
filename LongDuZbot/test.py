@@ -1,5 +1,7 @@
 import discord
 from discord.ext import commands
+import sys
+import os
 import ggr_utilities
 import ggr_emotes
 import eco
@@ -11,7 +13,10 @@ class Test(commands.Cog):
 	@commands.command()
 	async def test(self, ctx):
 		"""Test"""
-		print("test")
+		print("restart")
+		os.execl(sys.executable, os.path.abspath(__file__), *sys.argv) 
+		#print("exit")
+		#sys.exit(0)
 		#await ctx.send("test")
 		#await ctx.send(ctx.author.name)
 	

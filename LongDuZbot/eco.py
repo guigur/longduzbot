@@ -51,7 +51,7 @@ class Eco(commands.Cog):
 		
 		user = self.checkUserExist(ctx.author)
 		userImg, guildImg = ggr_utilities.userServerIcon(ctx) 
-		card = certif.generateMoneyCard(userImg, guildImg, user["name"], user["balance"])
+		card = certif.generateMoneyCard(userImg, guildImg, ctx, user["balance"])
 		await ctx.send(file=discord.File('tmp/card_filled.png'))
 		#await ctx.send("**" + user["name"] + "** possède **" + str(user['balance']) + "** WADs en banque.")
 
