@@ -30,6 +30,12 @@ def userServerIcon(ctx):
 
 	return userImg, guildImg
 
+def checkIfIdValid(id):
+	if ((type(id) is int) and int(id) > 9999999999999999):
+		return True
+	print("Invalid ID")
+	return False
+
 def digitToEmoji(digit):
 	if digit == 0:
 		return "0️⃣"
