@@ -35,14 +35,7 @@ class Eco(commands.Cog):
 		return newUserJson
 
 	@classmethod
-	def changeBallance(self, user, diff):
-		self.checkUserExist(user)
-		ggr_utilities.logger(None, "add " + str(diff) + " wads to " + user.name)
-		self.loadFromFile(self)
-		for u in self.saveFile:
-			if u["name"] == user.name:
-				u["balance"] += diff
-		self.saveToFile(self)
+
 
 	@commands.command()
 	async def wad(self, ctx):

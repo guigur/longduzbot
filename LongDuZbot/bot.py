@@ -31,13 +31,14 @@ async def on_ready():
 	global timeReady
 	timeReady = time.time()
 	ggr_utilities.logger(None, "Logged in as " + bot.user.name + " " + str(bot.user.id))
+	#await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='vous commandes')) TODO STATUS
 
 def bot_start():
+	load_extentions()
 	bot.run(TOKEN)
 
 def shell_start():
 	Com().cmdloop()
-y = threading.Thread(target=bot_start)
 
 ####################################################
 
@@ -109,16 +110,10 @@ class Com(cmd.Cmd):
 		else:
 			print("No working ID. Attach a Channel or User with \"selectChannel\" or \"selectUser\"")
 
+#def checkIfChanExist(self):
+#TODO
 
-def checkIfChanExist(self):
-	#TODO
-	print("S")
-
-def parse(arg):
-	'Convert a series of zero or more numbers to an argument tuple'
-	return tuple(map(int, arg.split()))
-
-if __name__ == "__main__":
+def load_extentions():
 	for extension in startup_extensions:
 		try:
 			bot.load_extension(extension)
@@ -126,11 +121,10 @@ if __name__ == "__main__":
 		except Exception as e:
 			exc = '{}: {}'.format(type(e).__name__, e)
 			ggr_utilities.logger(None, "Failed to load extension " + extension + " \n" + exc)
-	
 
-
-#x = threading.Thread(target=shell_start)
-
-#x.start()
-y.start()
-shell_start()
+if __name__ == "__main__":
+	y = threading.Thread(target=bot_start)
+	y.start()
+	shell_start()
+	#x = threading.Thread(target=shell_start)
+	#x.start

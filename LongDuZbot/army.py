@@ -103,7 +103,8 @@ class Army(commands.Cog):
 			for u in self.saveFileCoolDown:
 				if u["name"] == ctx.author.name:
 					u["date"] =  time.time() + 300 #5min
-
+			game = discord.Game("envoyer une armée")
+			await bot.change_presence(status=discord.Status.online, activity=game)
 			self.saveToFileCoolDown()
 
 			retarmy = self.spawnArmy()
@@ -130,6 +131,9 @@ class Army(commands.Cog):
 		armyGold = 0
 		if ctx.author.name != self.data['maitre']['user']:
 			if time.time() > self.timeReady:
+				game = discord.Game("envoyer une megaarmée")
+				await bot.change_presence(status=discord.Status.online, activity=game)
+
 				ggr_utilities.logger(None, "User " + ctx.author.name + " summoned a megaarmy")
 				self.timeReady = time.time() + random.randint(900, 1500) #entre 15 et 25 min
 
@@ -194,7 +198,7 @@ class Army(commands.Cog):
 				await ctx.message.add_reaction("❌")
 		else:
 			await ctx.send("Un maître n'a pas besoin de prouver sa valeur.\nLa votre est de **" + str(self.data['maitre']['best']) + "** Saloperies.")
-
+		await bot.change_presence(status=discord.Status.idle, activity=discord.Activity("!help"))
 
 def setup(bot):
 	bot.add_cog(Army(bot))
