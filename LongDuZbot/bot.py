@@ -4,6 +4,7 @@ import math
 import json
 import asyncio
 import threading
+import signal
 from termcolor import colored
 from enum import Enum
 
@@ -22,7 +23,7 @@ load_dotenv()
 
 TOKEN = os.getenv("DISCORD_TOKEN")
 prefix = os.getenv("DISCORD_COMMAND_PREFIX")
-startup_extensions = ["com",  "army", "ulian", "teub", "eco", "test"]
+startup_extensions = ["Com",  "army", "ulian", "teub", "eco", "test"]
 
 bot = Bot(command_prefix=prefix)
 
@@ -36,6 +37,9 @@ async def on_ready():
 def bot_start():
 	load_extentions()
 	bot.run(TOKEN)
+
+#def bot_stop():
+#	bot.logout()
 
 def shell_start():
 	Com().cmdloop()
@@ -73,12 +77,17 @@ class Com(cmd.Cmd):
 	def changePormpt(self, newPrompt):
 		self.prompt = newPrompt
 
-	def do_stop(self, arg):
-		'Stop the server'
+	@classmethod
+	def stop_server(self):
 		ggr_utilities.logger(None, "Stopping server")
 		#y.stop()
 		#TODO: kill all threads
+		asyncio.run_coroutine_threadsafe(bot.logout(), self.loop)
 		sys.exit(0)
+	
+	def do_stop(self, arg):
+		'Stop the server'
+		self.stop_server()
 
 	def do_restart(self, arg):
 		'Restart the server'
@@ -122,9 +131,14 @@ def load_extentions():
 			exc = '{}: {}'.format(type(e).__name__, e)
 			ggr_utilities.logger(None, "Failed to load extension " + extension + " \n" + exc)
 
+def signal_handler(sig, frame):
+    print("^C")
+    Com.stop_server()
+
 if __name__ == "__main__":
 	y = threading.Thread(target=bot_start)
 	y.start()
+	signal.signal(signal.SIGINT, signal_handler)
 	shell_start()
 	#x = threading.Thread(target=shell_start)
 	#x.start
