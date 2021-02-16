@@ -4,3 +4,4 @@ __pycache__/*
 army_cool_down.json
 megaarmnies.json
 economy.json
+tmp/*

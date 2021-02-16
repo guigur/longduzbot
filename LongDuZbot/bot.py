@@ -35,7 +35,6 @@ async def on_ready():
 	#await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='vous commandes')) TODO STATUS
 
 def bot_start():
-	load_extentions()
 	bot.run(TOKEN)
 
 #def bot_stop():
@@ -139,6 +138,7 @@ if __name__ == "__main__":
 	y = threading.Thread(target=bot_start)
 	y.start()
 	signal.signal(signal.SIGINT, signal_handler)
+	load_extentions()
 	shell_start()
 	#x = threading.Thread(target=shell_start)
 	#x.start

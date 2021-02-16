@@ -6,6 +6,7 @@ import datetime
 import requests
 import math
 import json
+import os
 
 import ggr_utilities
 import ggr_emotes
@@ -26,15 +27,30 @@ class Army(commands.Cog):
 		ggr_utilities.logger(None, "Saving data")
 		with open('data.json', 'w') as json_file:
 			json.dump(self.data, json_file)
-			
+
+	#TODO: make a function with this stuff
 	def loadFromFileCoolDown(self):
-		with open('army_cool_down.json', encoding='utf-8') as json_file:
-			self.saveFileCoolDown = json.load(json_file)
+		filename = "army_cool_down.json"
+		if os.path.exists(filename):
+			mode = "r"
+		else:
+			mode = "w+"
+			ggr_utilities.logger(None, filename + " is non existant. Creating")
+
+		with open(filename, mode, encoding='utf-8') as json_file:
+			filesize = os.path.getsize(filename)
+			print(str(filesize))
+			if filesize == 0:
+				ggr_utilities.logger(None, filename + " is empty. Initializing")
+				self.saveFileCoolDown = json.loads("[]")
+			else:
+				self.saveFileCoolDown = json.load(json_file)
 
 	def saveToFileCoolDown(self):
 		ggr_utilities.logger(None, "Saving to file army cool down")
 		with open('army_cool_down.json', 'w') as json_file:
 			json.dump(self.saveFileCoolDown, json_file)
+
 
 	def spawnArmy(self):
 		army = ""
@@ -103,8 +119,8 @@ class Army(commands.Cog):
 			for u in self.saveFileCoolDown:
 				if u["name"] == ctx.author.name:
 					u["date"] =  time.time() + 300 #5min
-			game = discord.Game("envoyer une armée")
-			await bot.change_presence(status=discord.Status.online, activity=game)
+			#game = discord.Game("envoyer une armée")
+			#await bot.change_presence(status=discord.Status.online, activity=game)
 			self.saveToFileCoolDown()
 
 			retarmy = self.spawnArmy()
@@ -131,8 +147,8 @@ class Army(commands.Cog):
 		armyGold = 0
 		if ctx.author.name != self.data['maitre']['user']:
 			if time.time() > self.timeReady:
-				game = discord.Game("envoyer une megaarmée")
-				await bot.change_presence(status=discord.Status.online, activity=game)
+				#game = discord.Game("envoyer une megaarmée")
+				#await bot.change_presence(status=discord.Status.online, activity=game)
 
 				ggr_utilities.logger(None, "User " + ctx.author.name + " summoned a megaarmy")
 				self.timeReady = time.time() + random.randint(900, 1500) #entre 15 et 25 min
@@ -198,7 +214,7 @@ class Army(commands.Cog):
 				await ctx.message.add_reaction("❌")
 		else:
 			await ctx.send("Un maître n'a pas besoin de prouver sa valeur.\nLa votre est de **" + str(self.data['maitre']['best']) + "** Saloperies.")
-		await bot.change_presence(status=discord.Status.idle, activity=discord.Activity("!help"))
+		#await bot.change_presence(status=discord.Status.idle, activity=discord.Activity("!help"))
 
 def setup(bot):
 	bot.add_cog(Army(bot))
