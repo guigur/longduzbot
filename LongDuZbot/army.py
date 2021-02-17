@@ -215,7 +215,7 @@ class Army(commands.Cog):
 				await ctx.send("La méga armée de saloperies n'est pas prête.\nRéessayez dans quelques minutes.")
 				await ctx.message.add_reaction("❌")
 		else:
-			await ctx.send("Un maître n'a pas besoin de prouver sa valeur.\nLa votre est de **" + str(self.data['maitre']['best']) + "** Saloperies.")
+			await ctx.send("Un maître n'a pas besoin de prouver sa valeur.\nLa votre est de **" + str(self.data['best']['score']) + "** Saloperies.")
 		#await bot.change_presence(status=discord.Status.idle, activity=discord.Activity("!help"))
 
 def setup(bot):
