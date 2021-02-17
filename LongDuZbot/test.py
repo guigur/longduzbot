@@ -13,8 +13,8 @@ class Test(commands.Cog):
 	@commands.command()
 	async def test(self, ctx):
 		"""Test"""
-		print("restart")
-		os.execl(sys.executable, os.path.abspath(__file__), *sys.argv) 
+		print("test")
+		#os.execl(sys.executable, os.path.abspath(__file__), *sys.argv) 
 		#print("exit")
 		#sys.exit(0)
 		#await ctx.send("test")

@@ -34,17 +34,15 @@ async def on_ready():
 	ggr_utilities.logger(None, "Logged in as " + bot.user.name + " " + str(bot.user.id))
 	#await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='vous commandes')) TODO STATUS
 
-def bot_start():
-	bot.run(TOKEN)
-
-#def bot_stop():
-#	bot.logout()
-
 def shell_start():
 	Com().cmdloop()
 
 ####################################################
+def signal_handler(sig, frame):
+    print("^C")
+    Com.stop_server()
 
+####################################################
 async def get_user(id: int):
 	user = await bot.fetch_user(id)
 	Com.changePormpt(colored(user, 'red') + " > ")
@@ -79,14 +77,16 @@ class Com(cmd.Cmd):
 	@classmethod
 	def stop_server(self):
 		ggr_utilities.logger(None, "Stopping server")
-		#y.stop()
-		#TODO: kill all threads
 		asyncio.run_coroutine_threadsafe(bot.logout(), self.loop)
-		sys.exit(0)
 	
 	def do_stop(self, arg):
 		'Stop the server'
 		self.stop_server()
+		return True
+        
+	def do_EOF(self, line):
+		self.stop_server()
+		return True
 
 	def do_restart(self, arg):
 		'Restart the server'
@@ -130,15 +130,9 @@ def load_extentions():
 			exc = '{}: {}'.format(type(e).__name__, e)
 			ggr_utilities.logger(None, "Failed to load extension " + extension + " \n" + exc)
 
-def signal_handler(sig, frame):
-    print("^C")
-    Com.stop_server()
-
 if __name__ == "__main__":
-	y = threading.Thread(target=bot_start)
-	y.start()
 	signal.signal(signal.SIGINT, signal_handler)
 	load_extentions()
-	shell_start()
-	#x = threading.Thread(target=shell_start)
-	#x.start
+	x = threading.Thread(target=shell_start)
+	x.start()
+	bot.run(TOKEN)

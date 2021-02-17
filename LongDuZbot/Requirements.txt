@@ -2,3 +2,5 @@ discord.py
 requests
 python-dotenv
 Pillow
+termcolor
+pyfiglet
