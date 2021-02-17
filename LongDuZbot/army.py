@@ -89,20 +89,19 @@ class Army(commands.Cog):
 	async def maitre(self, ctx):
 		"""Affiche le maître des saloperies et son record."""
 		ggr_utilities.logger(ctx, ctx.message.content)
-		msg = "Le maître des saloperie est **" + self.data['maitre']['user'] + "** avec un score de **" + str(self.data['maitre']['best']) + "** saloperies invoqués"
+		msg = "Le maître des saloperie est **" + self.data['best']['user'] + "** avec un score de **" + str(self.data['best']['score']) + "** saloperies invoqués"
 		await ctx.send(msg)
 
-	#TODO: trouver un autre nom pour le pire
 	@commands.command()
-	async def pute(self, ctx):
-		"""Affiche la pute des saloperies et son score."""
+	async def jeanfoutre(self, ctx):
+		"""Affiche le jean-foutre des saloperies et son score."""
 		ggr_utilities.logger(ctx, ctx.message.content)
-		msg = "La pute des saloperie est **" + self.data['pute']['user'] + "** avec un score de merde de**" + str(self.data['pute']['best']) + "** saloperies invoqués"
+		msg = "Le jean-foutre des saloperie est **" + self.data['worst']['user'] + "** avec un score de minabke de **" + str(self.data['worst']['score']) + "** saloperies invoqués"
 		await ctx.send(msg)
 
 	@commands.command()
 	async def armydory(self, ctx):
-		"""Affiche la pute des saloperies et son score."""
+		"""Affiche une belle armée de soldats dorés."""
 		ggr_utilities.logger(ctx, ctx.message.content)
 		armynbr = random.randint(10, 60)
 		army = ""
@@ -145,7 +144,7 @@ class Army(commands.Cog):
 		ggr_utilities.logger(ctx, ctx.message.content)
 		armytotmembers = 0
 		armyGold = 0
-		if ctx.author.name != self.data['maitre']['user']:
+		if ctx.author.name != self.data['best']['user']:
 			if time.time() > self.timeReady:
 				#game = discord.Game("envoyer une megaarmée")
 				#await bot.change_presence(status=discord.Status.online, activity=game)
@@ -169,43 +168,46 @@ class Army(commands.Cog):
 					await ctx.send("Cette armée vous rapporte **" + str(armyGold) + " WADs**")
 					await ctx.message.add_reaction(ggr_emotes.WAD)
 					eco.Eco.changeBallance(ctx.author, armyGold)
-				if armytotmembers > self.data['maitre']['best']:
+				if armytotmembers > self.data['best']['score']:
 					ggr_utilities.logger(None, "User " + ctx.author.name + " is now the master of saloperies")
 					user = ctx.author
 					#TODO: Remove the old master
 					#oldmaitre = user.guild.members() #199222032787963904) #user = client.get_user()
 					#await user.remove_roles(discord.utils.get(user.guild.roles, name="Maître des Saloperies")) #remove the role
 
-					self.data['maitre']['best'] = armytotmembers
-					self.data['maitre']['user'] = ctx.author.name
-					self.data['maitre']['userid'] = ctx.author.id
-					self.data['maitre']['date'] = datetime.datetime.timestamp(datetime.datetime.now())
+					self.data['best']['score'] = armytotmembers
+					self.data['best']['user'] = ctx.author.name
+					self.data['best']['userid'] = ctx.author.id
+					self.data['best']['date'] = datetime.datetime.timestamp(datetime.datetime.now())
+					
+					if armytotmembers < self.data['worst']['score']: #if the worst has not been choosen yetm we lower the minimum to the best score yet
+						self.data['worst']['score'] = armytotmembers
 
 					self.saveDataToFile()
 					await ctx.send("Félicitations " + user.mention + " vous êtes le nouveau **Maître des Saloperies**")
 					url = ctx.author.avatar_url_as(format='png')
 					picture = certif.generateCertifMaster(requests.get(url, stream=True).raw, ctx.author.name, armytotmembers)
-					await ctx.send(file=discord.File('tmp/certif_filled.png'))
+					await ctx.send(file=discord.File('tmp/certif_best_filled.png'))
 					await ctx.send("Ce certificat prouve votre titre de **Maître des Saloperies**\nN'hésitez pas à mentionner ce titre prestigieux sur votre CV.")
 					try:
 						await user.add_roles(discord.utils.get(user.guild.roles, name="Maître des Saloperies"))
 					except discord.Forbidden:
 						pass
-				elif armytotmembers < self.data['pute']['best']:
-					ggr_utilities.logger(None, "User " + ctx.author.name + " is now the pute of saloperies")
+				elif armytotmembers < self.data['worst']['score']:
+					ggr_utilities.logger(None, "User " + ctx.author.name + " is now the good-for-nothing of saloperies")
 					user = ctx.author
 
-					self.data['pute']['best'] = armytotmembers
-					self.data['pute']['user'] = ctx.author.name
-					self.data['pute']['userid'] = ctx.author.id
-					self.data['pute']['date'] = datetime.datetime.timestamp(datetime.datetime.now())
+					self.data['worst']['score'] = armytotmembers
+					self.data['worst']['user'] = ctx.author.name
+					self.data['worst']['userid'] = ctx.author.id
+					self.data['worst']['date'] = datetime.datetime.timestamp(datetime.datetime.now())
 
 					self.saveDataToFile()
-					await ctx.send("Félicitations... " + user.mention + " vous êtes la nouvelle **Pute des Saloperies**")
+					await ctx.send("Félicitations " + user.mention + " vous êtes le nouveau **Jean-foutre des Saloperies**")
 					url = ctx.author.avatar_url_as(format='png')
 					picture = certif.generateCertifBitch(requests.get(url, stream=True).raw, ctx.author.name, armytotmembers)
-					await ctx.send(file=discord.File('tmp/certif_pute_filled.png'))
-					await ctx.send("Ce certificat prouve votre titre de **Pute des Saloperies**\nVous êtes une énorme salope ! Encore plus grosse que votre daronne !")
+					await ctx.send(file=discord.File('tmp/certif_worst_filled.png'))
+					await ctx.send("Ce certificat prouve votre titre de **Jean-foutre des Saloperies**\nVous êtes un bon à rien, un cloporte, un ectoplasme à roulettes. Bref, pas ouf quoi.")
 				else:
 					#TODO: mettre differentes reactions en fonction du score
 					await ctx.send("Bien mais il y a mieux")

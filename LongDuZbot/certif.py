@@ -32,9 +32,6 @@ def generateCertifMaster(profilePictureLink, pseudo, score):
 	
 	genRoundImg(profile)
 
-	profile = ImageOps.fit(profile, mask.size, centering=(0.5, 0.5))
-	profile.putalpha(mask)
-
 	certif.paste(profile, (768, 364, 768 + profile_w, 364 + profile_h), profile)
 
 	draw = ImageDraw.Draw(certif)
@@ -53,7 +50,7 @@ def generateCertifMaster(profilePictureLink, pseudo, score):
 	w,h = font.getsize(text)
 	draw.text(((W-w)/2, 1100), text=text, fill=textColor, font=font, anchor=None, spacing=0, align="left")
 
-	text = "Maître des Saloperies avec un score de " + str(score) + " sur un maximum de 800 Saloperies"
+	text = "Maître des Saloperies avec un score de " + str(score) + " sur un maximum de 800 Saloperies."
 	w,h = font.getsize(text)
 	draw.text(((W-w)/2, 1150), text=text, fill=textColor, font=font, anchor=None, spacing=0, align="left")
 
@@ -89,19 +86,16 @@ def generateCertifBitch(profilePictureLink, pseudo, score):
 	W, H = certif.size
 	text = "Au vu de la Mega Army de merde que vous avez invoqué le " + date + " à " + time
 	w,h = font.getsize(text)
-	draw.text(((W-w)/2, 1000), text=text, fill=textColor, font=font, anchor=None, spacing=0, align="left")
-
-	text = "C'est avec déception que le bot LongDuZbot décerne à cette merde de " + pseudo + " le certificat de"
-	w,h = font.getsize(text)
 	draw.text(((W-w)/2, 1050), text=text, fill=textColor, font=font, anchor=None, spacing=0, align="left")
 
-	text = "la Pute des Saloperies avec un score de " + str(score) + " sur un maximum de 800 Saloperies"
+	text = "C'est avec déception que le bot LongDuZbot décerne à ce malchanceux " + pseudo + " le certificat de"
 	w,h = font.getsize(text)
 	draw.text(((W-w)/2, 1100), text=text, fill=textColor, font=font, anchor=None, spacing=0, align="left")
 
-	text = "Maintenant au travail la pute !"
+	text = "Jean-foutre des Saloperies avec un score de " + str(score) + " sur un maximum de 800 Saloperies."
 	w,h = font.getsize(text)
-	draw.text(((W-w)/2, 1150), text=text, fill=textColor, font=font, anchor=None, spacing=0, align="middle")
+	draw.text(((W-w)/2, 1150), text=text, fill=textColor, font=font, anchor=None, spacing=0, align="left")
+
 
 	certif.paste(tampon, (1700, 750, 1700 + tampon_w, 750 + tampon_h), tampon)
 	certif.paste(signature, (1400, 750, 1400 + signature_w, 750 + signature_h), signature)

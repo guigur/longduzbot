@@ -1,14 +1,1 @@
-{
-  "maitre": {
-    "user": "bidule",
-    "userid": 163080482043592704,
-    "date": 1610130334.136077,
-    "best": 800
-  },
-  "pute": {
-    "user": "bidule",
-    "userid": 163080482043592704,
-    "date": 1610387665.284253,
-    "best": 100
-  }
-}
+{"best": {"user": "nobody", "userid": 0, "date": 0, "score": 0}, "worst": {"user": "nobody", "userid": 0, "date": 0, "score": 800}}
