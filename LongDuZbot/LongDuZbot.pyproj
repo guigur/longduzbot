@@ -30,6 +30,7 @@
     <Compile Include="army.py" />
     <Compile Include="bot.py" />
     <Compile Include="certif.py" />
+    <Compile Include="Com.py" />
     <Compile Include="commands-draft.py" />
     <Compile Include="ggr_emotes.py" />
     <Compile Include="ggr_utilities.py" />
