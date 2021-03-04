@@ -32,12 +32,15 @@ async def on_ready():
 
 def load_extentions():
 	for extension in startup_extensions:
+		#bot.load_extension(extension)
+
 		try:
 			bot.load_extension(extension)
 			ggr_utilities.logger(None, "Loaded extension " + extension)
 		except Exception as e:
 			exc = '{}: {}'.format(type(e).__name__, e)
 			ggr_utilities.logger(None, "Failed to load extension " + extension + " \n" + exc)
+			
 
 if __name__ == "__main__":
 	load_extentions()
