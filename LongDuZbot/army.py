@@ -67,7 +67,7 @@ class Army(commands.Cog):
 				if armymbr <= 49:
 					army += ggr_emotes.Ulian
 				elif armymbr == 50:
-					army += ggr_emotes.Guogur
+					army += ggr_emotes.Guigor
 				elif armymbr >= 51:
 					army += ggr_emotes.Moth
 		return [army, armynbr, armyGold]

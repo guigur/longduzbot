@@ -1,29 +1,29 @@
-flingued = "<:flingued:784167892668252181>"
-flingueg = "<:flingueg:784167860930609172>"
+flingued = "<:flingued:806653166606221373>" #ok
+flingueg = "<:flingueg:806653171300302858>" #ok
 
-salty = "<a:salty:788971656726839306>"
+#salty = "<a:salty:788971656726839306>" 
 
-maing = "<:maing:>"
-maind = "<:maind:>"
+maing = "<:maing:806653170197594193>" #ok
+maind = "<:maind:806653175511777330>" #ok
 
-lilian3flip = "<:lilian3flip:>"
-Lilian3 = "<:Lilian3:>"
+#lilian3flip = "<:lilian3flip:>"
+#Lilian3 = "<:Lilian3:>"
 
-DrakeOK = "<:DrakeOK:>"
-DrakeNO = "<:DrakeNO:>"
+DrakeOK = "<:DrakeOK:806653157689524224>" #ok
+DrakeNO = "<:DrakeNO:806653109958082591>" #ok
 
-Knife = "<:Knife:>"
+#Knife = "<:Knife:>"
 
-teub = "<:teub:784174377205104671>"
+#teub = "<:teub:784174377205104671>"
 
-petou = "<:petou:>"
+#petou = "<:petou:>"
 
-Ulian = "<:Ulian:784169312976896040>"
-Moth = "<:Moth:784169313019101204>"
-Guogur = "<:Guogur:795742755082993685>"
-SaloperiedoreeOld = "<:Saloperiedoree:788967092115603486>"
-Saloperiedoree = "<a:SD:798923833259327528>"
-WAD = "<:Lilian2:784148660010352670>"
+Ulian = "<:Ulian:806653174642507826>"
+Moth = "<:Moth:806653171316686908>"
+Guigor = "<:Guigor:806653160482668574>"
+#SaloperiedoreeOld = "<:Saloperiedoree:788967092115603486>"
+Saloperiedoree = "<a:SD:798923833259327528>" #recup l'annim sur le pc fixe
+WAD = "<:Lilian1:806653173136883764"
 
 lilinkhisrightelbow = "<:lilinkhisrightelbow:784177962970513438>"
 lilinkhisface = "<:lilinkhisface:784177963008524288>"
