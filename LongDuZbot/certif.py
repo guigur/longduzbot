@@ -102,7 +102,7 @@ def generateCertifBitch(profilePictureLink, pseudo, score):
 
 	return certif.save("tmp/certif_worst_filled.png")
 
-def generateMoneyCard(profilePictureLink, serverPictureLink, ctx, money):
+def generateMoneyCard(profilePictureLink, serverPictureLink, user, money):
 	ownSynonyms = ["possède", "cache au Fisc", "a", "détient", "dispose de", "garde", "conserve"]
 	bankSynonyms = ["en banque.", "dans son portefeuille.", "dans son porte-monnaie."]
 	profile = Image.open(profilePictureLink).convert("RGBA")
@@ -126,11 +126,11 @@ def generateMoneyCard(profilePictureLink, serverPictureLink, ctx, money):
 
 	draw = ImageDraw.Draw(card)
 
-	textName = ctx.author.name + " "
+	textName = user.name + " "
 	textNameW,textNameH = fontCardBig.getsize(textName)
 	draw.text((188, ligneOffset[0]), text=textName, fill=(255,255,255,255), font=fontCardBig, anchor=None, spacing=0, align="left")
 
-	textIdentifier = "#" + ctx.author.discriminator
+	textIdentifier = "#" + user.discriminator
 	textIdentifierW,textIdentifierH = fontCardIdentifier.getsize(textIdentifier)
 	draw.text((188 + textNameW, ligneOffset[1]), text=textIdentifier, fill=(255,255,255,127), font=fontCardIdentifier, anchor=None, spacing=0, align="left")
 

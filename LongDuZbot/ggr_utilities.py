@@ -15,8 +15,12 @@ def pickDefImage(name):
 		return folder + "yellow.png"
 	return folder + "blue.png"
 
-def userServerIcon(ctx):
-	userUrl = ctx.author.avatar_url_as(format='png')
+def userServerIcon(ctx, user = None):
+	if user:
+		userUrl = user.avatar_url_as(format='png')
+	else:
+		userUrl = ctx.author.avatar_url_as(format='png')
+	
 	try:
 		userImg = requests.get(userUrl, stream=True).raw
 	except requests.exceptions.RequestException as e:
