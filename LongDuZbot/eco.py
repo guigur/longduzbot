@@ -45,15 +45,23 @@ class Eco(commands.Cog):
 		self.saveToFile(self)
 
 	@commands.command()
-	async def wad(self, ctx):
+	async def wad(self, ctx, arg = None):
 		"""Affiche le nombre de WADs que vous disposez dans la banque des WADs"""
 		ggr_utilities.logger(ctx, ctx.message.content)
-		
-		user = self.checkUserExist(ctx.author)
-		userImg, guildImg = ggr_utilities.userServerIcon(ctx) 
-		card = certif.generateMoneyCard(userImg, guildImg, ctx, user["balance"])
+		if arg:
+			try:
+				user = await commands.UserConverter().convert(ctx, str(arg))
+			except commands.BadArgument:
+				await ctx.send("Utilisateur non trouvé")
+				ggr_utilities.logger(ctx, "User not found")
+				return #on quitte la fonction
+		else:
+			user = ctx.author
+		userJson = self.checkUserExist(user)
+
+		userImg, guildImg = ggr_utilities.userServerIcon(ctx, user) 
+		card = certif.generateMoneyCard(userImg, guildImg, user, userJson["balance"])
 		await ctx.send(file=discord.File('tmp/card_filled.png'))
-		#await ctx.send("**" + user["name"] + "** possède **" + str(user['balance']) + "** WADs en banque.")
 
 	@commands.command()
 	async def buy(self, ctx):
@@ -62,8 +70,16 @@ class Eco(commands.Cog):
 		user = self.checkUserExist(ctx.author)
 	
 	@commands.command()
-	async def foo(self, ctx, arg):
-		#todo trouver comment gerer pas d arguments
-		await ctx.send("You passed" + arg)
+	async def foo(self, ctx, arg = None):
+		if arg:
+			try:
+				user = await commands.UserConverter().convert(ctx, str(arg))
+				await ctx.send("arg " + user.name)
+			except commands.BadArgument:
+				await ctx.send("Utilisateur non trouvé")
+
+		else:
+			await ctx.send("no arg " + ctx.author.name)
+
 def setup(bot):
 	bot.add_cog(Eco(bot))
