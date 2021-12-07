@@ -34,11 +34,32 @@ def userServerIcon(ctx, user = None):
 
 	return userImg, guildImg
 
+def serverIcon(ctx):
+	guildUrl = ctx.guild.icon_url_as(format='png')
+	try:
+		guildImg = requests.get(guildUrl, stream=True).raw
+	except requests.exceptions.RequestException as e:
+		guildImg = pickDefImage(ctx.guild.name)
+
+	return guildImg
+
+def userIcon(user):
+	userUrl = user.avatar_url_as(format='png')
+	try:
+		userImg = requests.get(userUrl, stream=True).raw
+	except requests.exceptions.RequestException as e:
+		userImg = pickDefImage(user.name)
+	return userImg
+
 def checkIfIdValid(id):
 	if ((type(id) is int) and int(id) > 9999999999999999):
 		return True
 	print("Invalid ID")
 	return False
+
+def treedotString(string, maxlen):
+	stringret = (string[:maxlen-1] + '...') if len(string) > maxlen else string
+	return stringret
 
 def digitToEmoji(digit):
 	if digit == 0:

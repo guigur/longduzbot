@@ -2,12 +2,17 @@ from PIL import Image, ImageOps, ImageDraw, ImageFont
 from datetime import datetime
 import locale
 import random
+import ggr_utilities
+from collections import namedtuple 
 
 secure_random = random.SystemRandom()
 
 locale.setlocale(locale.LC_ALL, 'fr_FR') #For the french date
 
 textColor = (0,0,0,255)
+
+userStruct = namedtuple("userStruct", ["name", "icon", "balance"])
+
 
 def genRoundImg(source):
 	bigsize = (source.size[0] * 3, source.size[1] * 3)
@@ -102,9 +107,97 @@ def generateCertifBitch(profilePictureLink, pseudo, score):
 
 	return certif.save("tmp/certif_worst_filled.png")
 
+def cardFontSetup():
+	return
+
+def generateMoneyPodium(user1, user2, user3, u1, u2, u3, serverPictureLink, serverName):
+	profile1 = Image.open(user1.icon).convert("RGBA")
+	profile1 = profile1.resize([128, 128])
+
+	profile2 = Image.open(user2.icon).convert("RGBA")
+	profile2 = profile2.resize([128, 128])
+
+	profile3 = Image.open(user3.icon).convert("RGBA")
+	profile3 = profile3.resize([128, 128])
+
+	server = Image.open(serverPictureLink).convert("RGBA")
+	server = server.resize([48, 48])
+
+	#setup des font, on va bouger tout ca apres
+	fontCardBig = ImageFont.truetype(r'font/Helvetica.ttf', 48)
+	fontCardIdentifier = ImageFont.truetype(r'font/Helvetica-Light.ttf', 20) 
+	fontCard = ImageFont.truetype(r'font/Helvetica.ttf', 24) 
+	fontCardAccent = ImageFont.truetype(r'font/Helvetica-Bold.ttf', 32) 
+
+	card = Image.open('img/template/top_wad_card_podium.png', 'r')
+
+	genRoundImg(profile1)
+	card.paste(profile1, (225, 21, 225 + profile1.size[0], 21 + profile1.size[1]), profile1)
+
+	genRoundImg(profile2)
+	card.paste(profile2, (21, 131, 21 + profile2.size[0], 131 + profile2.size[1]), profile2)
+
+	genRoundImg(profile3)
+	card.paste(profile3, (431, 151, 431 + profile3.size[0], 151 + profile3.size[1]), profile3)
+
+	genRoundImg(server)
+	card.paste(server, (21, 521, 21 + server.size[0], 521 + server.size[1]), server)
+
+	draw = ImageDraw.Draw(card)
+
+	serverNameText = serverName
+	serverNameTextW,serverNameTextH = fontCard.getsize(serverNameText)
+	draw.text((80, 535), text=serverNameText, fill=(255,255,255,127), font=fontCard, anchor=None, spacing=0, align="left")
+	#----------------------------------------------------------------
+	UserName1Text = ggr_utilities.treedotString(user1.name, 12)
+	UserName1TextW,UserName1TextH = fontCard.getsize(UserName1Text)
+	draw.text((290 - (UserName1TextW/2), 280), text=UserName1Text, fill=(255,255,255,127), font=fontCard, anchor=None, spacing=0, align="center")
+
+	UserName2Text = ggr_utilities.treedotString(user2.name, 12)
+	UserName2TextW,UserName2TextH = fontCard.getsize(UserName2Text)
+	draw.text((85 - (UserName2TextW/2), 370), text=UserName2Text, fill=(255,255,255,127), font=fontCard, anchor=None, spacing=0, align="center")
+
+	UserName3Text = ggr_utilities.treedotString(user3.name, 12)
+	UserName3TextW,UserName3TextH = fontCard.getsize(UserName3Text)
+	draw.text((495 - (UserName3TextW/2), 390), text=UserName3Text, fill=(255,255,255,127), font=fontCard, anchor=None, spacing=0, align="center")
+	#----------------------------------------------------------------
+	UserDiscriminator1Text = "#" + u1.discriminator
+	UserDiscriminator1TextW,UserDiscriminator1TextH = fontCardIdentifier.getsize(UserDiscriminator1Text)
+	draw.text((290 - (UserDiscriminator1TextW/2), 307), text=UserDiscriminator1Text, fill=(255,255,255,127), font=fontCardIdentifier, anchor=None, spacing=0, align="center")
+
+	UserDiscriminator2Text = "#" + u2.discriminator
+	UserDiscriminator2TextW,UserDiscriminator2TextH = fontCardIdentifier.getsize(UserDiscriminator2Text)
+	draw.text((85 - (UserDiscriminator2TextW/2), 397), text=UserDiscriminator2Text, fill=(255,255,255,127), font=fontCardIdentifier, anchor=None, spacing=0, align="center")
+
+	UserDiscriminator3Text = "#" + u3.discriminator
+	UserDiscriminator3TextW,UserDiscriminator1TextH = fontCardIdentifier.getsize(UserDiscriminator3Text)
+	draw.text((495 - (UserDiscriminator3TextW/2), 417), text=UserDiscriminator3Text, fill=(255,255,255,127), font=fontCardIdentifier, anchor=None, spacing=0, align="center")
+	#----------------------------------------------------------------
+
+	UserMoney1Text = str(user1.balance)
+	UserMoney1TextW, UserMoney1TextH = fontCardBig.getsize(UserMoney1Text)
+	draw.text((290 - (UserMoney1TextW/2), 450), text=UserMoney1Text, fill=(255,255,255,127), font=fontCardBig, anchor=None, spacing=0, align="center")
+
+	UserMoney2Text = str(user2.balance)
+	UserMoney2TextW, UserMoney2TextH = fontCardBig.getsize(UserMoney2Text)
+	draw.text((85 - (UserMoney2TextW/2), 450), text=UserMoney2Text, fill=(255,255,255,127), font=fontCardBig, anchor=None, spacing=0, align="center")
+
+	UserMoney3Text = str(user3.balance)
+	UserMoney3TextW, UserMoney3TextH = fontCardBig.getsize(UserMoney3Text)
+	draw.text((495 - (UserMoney3TextW/2), 450), text=UserMoney3Text, fill=(255,255,255,127), font=fontCardBig, anchor=None, spacing=0, align="center")
+
+	wadsText = "WADs"
+	wadsTextW, wadsTextH = fontCardIdentifier.getsize(wadsText)
+	draw.text((290 - (wadsTextW/2), 495), text=wadsText, fill=(255,255,255,127), font=fontCardIdentifier, anchor=None, spacing=0, align="center")
+	draw.text((85 - (wadsTextW/2), 495), text=wadsText, fill=(255,255,255,127), font=fontCardIdentifier, anchor=None, spacing=0, align="center")
+	draw.text((495 - (wadsTextW/2), 495), text=wadsText, fill=(255,255,255,127), font=fontCardIdentifier, anchor=None, spacing=0, align="center")
+
+	return card.save("tmp/card_podium_filled.png")
+
 def generateMoneyCard(profilePictureLink, serverPictureLink, user, money):
 	ownSynonyms = ["possède", "cache au Fisc", "a", "détient", "dispose de", "garde", "conserve"]
 	bankSynonyms = ["en banque.", "dans son portefeuille.", "dans son porte-monnaie."]
+	
 	profile = Image.open(profilePictureLink).convert("RGBA")
 	profile = profile.resize([128, 128])
 

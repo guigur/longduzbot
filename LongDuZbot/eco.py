@@ -3,9 +3,13 @@ import os
 import certif
 from discord.ext import commands
 import json
+from collections import namedtuple 
+
 
 import ggr_utilities
 import ggr_emotes
+
+userStruct = namedtuple("userStruct", ["name", "icon", "balance"])
 
 class Eco(commands.Cog):
 	def __init__(self, bot):
@@ -35,6 +39,22 @@ class Eco(commands.Cog):
 		return newUserJson
 
 	@classmethod
+	def findUserMaxBalance(self):
+		ggr_utilities.logger(None, "Find max balance.")
+		self.loadFromFile(self)
+
+		self.saveFile.sort(key = lambda user:user["balance"], reverse = True)
+		
+		u1, u2, u3 = {"name": "nobody" , "id": 0, "balance": 1 }
+		if (self.saveFile[0]):
+			u1 = self.saveFile[0]
+		if (self.saveFile[1]):
+			u2 = self.saveFile[1]
+		if (self.saveFile[2]):
+			u3 = self.saveFile[2]		
+		return u1, u2, u3
+	
+	@classmethod
 	def changeBallance(self, user, diff):
 		self.checkUserExist(user)
 		ggr_utilities.logger(None, "add " + str(diff) + " wads to " + user.name)
@@ -43,7 +63,7 @@ class Eco(commands.Cog):
 			if u["name"] == user.name:
 				u["balance"] += diff
 		self.saveToFile(self)
-
+		
 	@commands.command()
 	async def wad(self, ctx, arg = None):
 		"""Affiche le nombre de WADs que vous disposez dans la banque des WADs"""
@@ -61,7 +81,24 @@ class Eco(commands.Cog):
 
 		userImg, guildImg = ggr_utilities.userServerIcon(ctx, user) 
 		card = certif.generateMoneyCard(userImg, guildImg, user, userJson["balance"])
-		await ctx.send(file=discord.File('tmp/card_filled.png'))
+		await ctx.send(file = discord.File('tmp/card_filled.png'))
+
+	@commands.command()
+	async def topwad(self, ctx):
+		ggr_utilities.logger(ctx, ctx.message.content)
+		userJson1, userJson2, userJson3 = self.findUserMaxBalance()
+
+		u1 = await self.bot.fetch_user(userJson1["id"])
+		u2 = await self.bot.fetch_user(userJson2["id"])
+		u3 = await self.bot.fetch_user(userJson3["id"])
+
+		userStruct1 = userStruct(u1.name, ggr_utilities.userIcon(u1), userJson1["balance"])
+		userStruct2 = userStruct(u2.name, ggr_utilities.userIcon(u2), userJson2["balance"])
+		userStruct3 = userStruct(u3.name, ggr_utilities.userIcon(u3), userJson3["balance"])
+
+		card = certif.generateMoneyPodium(userStruct1, userStruct2, userStruct3, u1, u2, u3, ggr_utilities.serverIcon(ctx.author), ctx.guild.name)
+
+		await ctx.send(file = discord.File('tmp/card_podium_filled.png'))
 
 	@commands.command()
 	async def buy(self, ctx):
