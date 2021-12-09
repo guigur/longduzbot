@@ -12,6 +12,9 @@ import ggr_utilities
 import ggr_emotes
 import certif
 import eco
+from collections import namedtuple 
+
+userStruct = namedtuple("userStruct", ["name", "discriminator", "icon", "balance"])
 
 class Army(commands.Cog):
 	def __init__(self, bot):
@@ -89,8 +92,17 @@ class Army(commands.Cog):
 	async def maitre(self, ctx):
 		"""Affiche le maître des saloperies et son record."""
 		ggr_utilities.logger(ctx, ctx.message.content)
-		msg = "Le maître des saloperie est **" + self.data['best']['user'] + "** avec un score de **" + str(self.data['best']['score']) + "** saloperies invoqués"
-		await ctx.send(msg)
+		#msg = "Le maître des saloperie est **" + self.data['best']['user'] + "** avec un score de **" + str(self.data['best']['score']) + "** saloperies invoqués"
+		if ggr_utilities.checkIfIdValid(self.data['best']['userid']):
+			user = await self.bot.fetch_user(self.data['best']['userid'])
+		else:
+			await ctx.send("Personne n'est maitre pour l'instant")
+			return
+		ustruct = userStruct(user.name, user.discriminator, ggr_utilities.userIcon(user), self.data['best']['score'])
+		card = certif.cardSaloperieBestWorst(ustruct, ggr_utilities.userIcon(user), ggr_utilities.serverIcon(ctx.author)) #user n'a pas d'argument guild
+		
+		#await ctx.send(msg)
+		await ctx.send(file = discord.File('tmp/card_filled.png'))
 
 	@commands.command()
 	async def jeanfoutre(self, ctx):

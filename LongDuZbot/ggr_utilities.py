@@ -58,7 +58,7 @@ def checkIfIdValid(id):
 	return False
 
 def treedotString(string, maxlen):
-	stringret = (string[:maxlen-1] + '...') if len(string) > maxlen else string
+	stringret = (string[:maxlen-2] + '...') if len(string) > maxlen else string
 	return stringret
 
 def digitToEmoji(digit):

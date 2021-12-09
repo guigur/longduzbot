@@ -9,7 +9,7 @@ from collections import namedtuple
 import ggr_utilities
 import ggr_emotes
 
-userStruct = namedtuple("userStruct", ["name", "icon", "balance"])
+userStruct = namedtuple("userStruct", ["name", "discriminator", "icon", "balance"])
 
 class Eco(commands.Cog):
 	def __init__(self, bot):
@@ -45,12 +45,13 @@ class Eco(commands.Cog):
 
 		self.saveFile.sort(key = lambda user:user["balance"], reverse = True)
 		
-		u1, u2, u3 = {"name": "nobody" , "id": 0, "balance": 1 }
-		if (self.saveFile[0]):
+		u1, u2, u3 = {"name": "nobody" , "id": 1, "balance": 1 }
+		lenght = len(self.saveFile)
+		if (lenght > 0):
 			u1 = self.saveFile[0]
-		if (self.saveFile[1]):
+		if (lenght > 1):
 			u2 = self.saveFile[1]
-		if (self.saveFile[2]):
+		if (lenght > 2):
 			u3 = self.saveFile[2]		
 		return u1, u2, u3
 	
@@ -79,8 +80,8 @@ class Eco(commands.Cog):
 			user = ctx.author
 		userJson = self.checkUserExist(user)
 
-		userImg, guildImg = ggr_utilities.userServerIcon(ctx, user) 
-		card = certif.generateMoneyCard(userImg, guildImg, user, userJson["balance"])
+		userS = userStruct(user.name, user.discriminator, ggr_utilities.userIcon(user), userJson["balance"])
+		card = certif.generateMoneyCard(userS, ggr_utilities.serverIcon(ctx.author))
 		await ctx.send(file = discord.File('tmp/card_filled.png'))
 
 	@commands.command()
@@ -92,11 +93,11 @@ class Eco(commands.Cog):
 		u2 = await self.bot.fetch_user(userJson2["id"])
 		u3 = await self.bot.fetch_user(userJson3["id"])
 
-		userStruct1 = userStruct(u1.name, ggr_utilities.userIcon(u1), userJson1["balance"])
-		userStruct2 = userStruct(u2.name, ggr_utilities.userIcon(u2), userJson2["balance"])
-		userStruct3 = userStruct(u3.name, ggr_utilities.userIcon(u3), userJson3["balance"])
+		userStruct1 = userStruct(u1.name, u1.discriminator, ggr_utilities.userIcon(u1), userJson1["balance"])
+		userStruct2 = userStruct(u2.name, u2.discriminator, ggr_utilities.userIcon(u2), userJson2["balance"])
+		userStruct3 = userStruct(u3.name, u3.discriminator, ggr_utilities.userIcon(u3), userJson3["balance"])
 
-		card = certif.generateMoneyPodium(userStruct1, userStruct2, userStruct3, u1, u2, u3, ggr_utilities.serverIcon(ctx.author), ctx.guild.name)
+		card = certif.generateMoneyPodium(userStruct1, userStruct2, userStruct3, ggr_utilities.serverIcon(ctx.author), ctx.guild.name)
 
 		await ctx.send(file = discord.File('tmp/card_podium_filled.png'))
 

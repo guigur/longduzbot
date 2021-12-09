@@ -10,8 +10,9 @@ secure_random = random.SystemRandom()
 locale.setlocale(locale.LC_ALL, 'fr_FR') #For the french date
 
 textColor = (0,0,0,255)
+ligneOffset = [20, 40, 75, 105, 135, 153]
 
-userStruct = namedtuple("userStruct", ["name", "icon", "balance"])
+userStruct = namedtuple("userStruct", ["name", "discriminator", "icon", "balance"])
 
 
 def genRoundImg(source):
@@ -107,10 +108,59 @@ def generateCertifBitch(profilePictureLink, pseudo, score):
 
 	return certif.save("tmp/certif_worst_filled.png")
 
-def cardFontSetup():
-	return
+def cardSaloperieBestWorst(user, profilePictureLink, serverPictureLink):
 
-def generateMoneyPodium(user1, user2, user3, u1, u2, u3, serverPictureLink, serverName):
+	profile = Image.open(profilePictureLink).convert("RGBA")
+	profile = profile.resize([128, 128])
+
+	server = Image.open(serverPictureLink).convert("RGBA")
+	server = server.resize([48, 48])
+
+	fontCardBig = ImageFont.truetype(r'font/Helvetica.ttf', 48)
+	fontCardIdentifier = ImageFont.truetype(r'font/Helvetica-Light.ttf', 20) 
+	fontCard = ImageFont.truetype(r'font/Helvetica.ttf', 24) 
+	fontCardAccent = ImageFont.truetype(r'font/Helvetica-Bold.ttf', 32)
+
+	card = Image.open('img/template/card_master_saloperie_back.png', 'r')
+	cardTop = Image.open('img/template/card_master_saloperie_front.png', 'r')
+
+	genRoundImg(profile)
+	card.paste(profile, (53, 21, 53 + profile.size[0], 21 + profile.size[1]), profile)
+
+	genRoundImg(server)
+	card.paste(server, (133, 101, 133 + server.size[0], 101 + server.size[1]), server)
+	
+	card.paste(cardTop, (0, 0, 0 + cardTop.size[0], 0 + cardTop.size[1]), cardTop)
+
+	draw = ImageDraw.Draw(card)
+
+	textName = ggr_utilities.treedotString(user.name, 12)
+	textNameW,textNameH = fontCardBig.getsize(textName)
+	draw.text((240, ligneOffset[0]), text=textName, fill=(255,255,255,255), font=fontCardBig, anchor=None, spacing=0, align="left")
+
+	textIdentifier = " #" + user.discriminator
+	textIdentifierW,textIdentifierH = fontCardIdentifier.getsize(textIdentifier)
+	draw.text((240 + textNameW, ligneOffset[1]), text=textIdentifier, fill=(255,255,255,127), font=fontCardIdentifier, anchor=None, spacing=0, align="left")
+ 	
+	l2Text = "est le maître des saloperies"
+	l2TextW, l2TextH = fontCard.getsize(l2Text)
+	draw.text((240, ligneOffset[2]), text=l2Text, fill=(255,255,255,255), font=fontCard, anchor=None, spacing=0, align="left")
+
+	l3Text = "avec un score de"
+	l3TextW, l3TextH = fontCard.getsize(l3Text)
+	draw.text((240, ligneOffset[3]), text=l3Text, fill=(255,255,255,255), font=fontCard, anchor=None, spacing=0, align="left")
+
+	l4Nbr = str(user.balance) #nombre de salopries mais flem de refaire une struct
+	l4NbrW, l4NbrH = fontCardBig.getsize(l4Nbr)
+	draw.text((240, ligneOffset[4]), text=l4Nbr, fill=(255,255,255,255), font=fontCardBig, anchor=None, spacing=0, align="left")
+
+	l4Text = " saloperies invoquées !"
+	l4TextW, l4TextH = fontCard.getsize(l4Text)
+	draw.text((240 + l4NbrW, ligneOffset[5]), text=l4Text, fill=(255,255,255,255), font=fontCard, anchor=None, spacing=0, align="left")
+	
+	return card.save("tmp/card_filled.png")
+
+def generateMoneyPodium(user1, user2, user3, serverPictureLink, serverName):
 	profile1 = Image.open(user1.icon).convert("RGBA")
 	profile1 = profile1.resize([128, 128])
 
@@ -161,15 +211,15 @@ def generateMoneyPodium(user1, user2, user3, u1, u2, u3, serverPictureLink, serv
 	UserName3TextW,UserName3TextH = fontCard.getsize(UserName3Text)
 	draw.text((495 - (UserName3TextW/2), 390), text=UserName3Text, fill=(255,255,255,127), font=fontCard, anchor=None, spacing=0, align="center")
 	#----------------------------------------------------------------
-	UserDiscriminator1Text = "#" + u1.discriminator
+	UserDiscriminator1Text = "#" + user1.discriminator
 	UserDiscriminator1TextW,UserDiscriminator1TextH = fontCardIdentifier.getsize(UserDiscriminator1Text)
 	draw.text((290 - (UserDiscriminator1TextW/2), 307), text=UserDiscriminator1Text, fill=(255,255,255,127), font=fontCardIdentifier, anchor=None, spacing=0, align="center")
 
-	UserDiscriminator2Text = "#" + u2.discriminator
+	UserDiscriminator2Text = "#" + user2.discriminator
 	UserDiscriminator2TextW,UserDiscriminator2TextH = fontCardIdentifier.getsize(UserDiscriminator2Text)
 	draw.text((85 - (UserDiscriminator2TextW/2), 397), text=UserDiscriminator2Text, fill=(255,255,255,127), font=fontCardIdentifier, anchor=None, spacing=0, align="center")
 
-	UserDiscriminator3Text = "#" + u3.discriminator
+	UserDiscriminator3Text = "#" + user3.discriminator
 	UserDiscriminator3TextW,UserDiscriminator1TextH = fontCardIdentifier.getsize(UserDiscriminator3Text)
 	draw.text((495 - (UserDiscriminator3TextW/2), 417), text=UserDiscriminator3Text, fill=(255,255,255,127), font=fontCardIdentifier, anchor=None, spacing=0, align="center")
 	#----------------------------------------------------------------
@@ -194,11 +244,11 @@ def generateMoneyPodium(user1, user2, user3, u1, u2, u3, serverPictureLink, serv
 
 	return card.save("tmp/card_podium_filled.png")
 
-def generateMoneyCard(profilePictureLink, serverPictureLink, user, money):
+def generateMoneyCard(user, serverPictureLink):
 	ownSynonyms = ["possède", "cache au Fisc", "a", "détient", "dispose de", "garde", "conserve"]
 	bankSynonyms = ["en banque.", "dans son portefeuille.", "dans son porte-monnaie."]
 	
-	profile = Image.open(profilePictureLink).convert("RGBA")
+	profile = Image.open(user.icon).convert("RGBA")
 	profile = profile.resize([128, 128])
 
 	server = Image.open(serverPictureLink).convert("RGBA")
@@ -215,7 +265,6 @@ def generateMoneyCard(profilePictureLink, serverPictureLink, user, money):
 	card.paste(profile, (20, 20, 20 + profile.size[0], 20 + profile.size[1]), profile)
 	genRoundImg(server)
 	card.paste(server, (100, 100, 100 + server.size[0], 100 + server.size[1]), server)
-	ligneOffset = [20, 40, 85, 110]
 
 	draw = ImageDraw.Draw(card)
 
@@ -231,7 +280,7 @@ def generateMoneyCard(profilePictureLink, serverPictureLink, user, money):
 	textOwnW,textOwnH = fontCard.getsize(textOwn)
 	draw.text((188, ligneOffset[2]), text=textOwn, fill=(255,255,255,255), font=fontCard, anchor=None, spacing=0, align="left")
 
-	textNumber = str(money)
+	textNumber = str(user.balance)
 	textNumberW,textNumberH = fontCardAccent.getsize(textNumber)
 	draw.text((188 + textOwnW, ligneOffset[2] - 5), text=textNumber, fill=(255,255,255,255), font=fontCardAccent, anchor=None, spacing=0, align="left")
 
