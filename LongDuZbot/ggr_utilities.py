@@ -15,8 +15,12 @@ def pickDefImage(name):
 		return folder + "yellow.png"
 	return folder + "blue.png"
 
-def userServerIcon(ctx):
-	userUrl = ctx.author.avatar_url_as(format='png')
+def userServerIcon(ctx, user = None):
+	if user:
+		userUrl = user.avatar_url_as(format='png')
+	else:
+		userUrl = ctx.author.avatar_url_as(format='png')
+	
 	try:
 		userImg = requests.get(userUrl, stream=True).raw
 	except requests.exceptions.RequestException as e:
@@ -30,11 +34,32 @@ def userServerIcon(ctx):
 
 	return userImg, guildImg
 
+def serverIcon(ctx):
+	guildUrl = ctx.guild.icon_url_as(format='png')
+	try:
+		guildImg = requests.get(guildUrl, stream=True).raw
+	except requests.exceptions.RequestException as e:
+		guildImg = pickDefImage(ctx.guild.name)
+
+	return guildImg
+
+def userIcon(user):
+	userUrl = user.avatar_url_as(format='png')
+	try:
+		userImg = requests.get(userUrl, stream=True).raw
+	except requests.exceptions.RequestException as e:
+		userImg = pickDefImage(user.name)
+	return userImg
+
 def checkIfIdValid(id):
 	if ((type(id) is int) and int(id) > 9999999999999999):
 		return True
 	print("Invalid ID")
 	return False
+
+def treedotString(string, maxlen):
+	stringret = (string[:maxlen-2] + '...') if len(string) > maxlen else string
+	return stringret
 
 def digitToEmoji(digit):
 	if digit == 0:

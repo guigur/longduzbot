@@ -3,9 +3,13 @@ import os
 import certif
 from discord.ext import commands
 import json
+from collections import namedtuple 
+
 
 import ggr_utilities
 import ggr_emotes
+
+userStruct = namedtuple("userStruct", ["name", "discriminator", "icon", "balance"])
 
 class Eco(commands.Cog):
 	def __init__(self, bot):
@@ -35,6 +39,23 @@ class Eco(commands.Cog):
 		return newUserJson
 
 	@classmethod
+	def findUserMaxBalance(self):
+		ggr_utilities.logger(None, "Find max balance.")
+		self.loadFromFile(self)
+
+		self.saveFile.sort(key = lambda user:user["balance"], reverse = True)
+		
+		u1, u2, u3 = {"name": "nobody" , "id": 1, "balance": 1 }
+		lenght = len(self.saveFile)
+		if (lenght > 0):
+			u1 = self.saveFile[0]
+		if (lenght > 1):
+			u2 = self.saveFile[1]
+		if (lenght > 2):
+			u3 = self.saveFile[2]		
+		return u1, u2, u3
+	
+	@classmethod
 	def changeBallance(self, user, diff):
 		self.checkUserExist(user)
 		ggr_utilities.logger(None, "add " + str(diff) + " wads to " + user.name)
@@ -43,17 +64,42 @@ class Eco(commands.Cog):
 			if u["name"] == user.name:
 				u["balance"] += diff
 		self.saveToFile(self)
-
+		
 	@commands.command()
-	async def wad(self, ctx):
+	async def wad(self, ctx, arg = None):
 		"""Affiche le nombre de WADs que vous disposez dans la banque des WADs"""
 		ggr_utilities.logger(ctx, ctx.message.content)
-		
-		user = self.checkUserExist(ctx.author)
-		userImg, guildImg = ggr_utilities.userServerIcon(ctx) 
-		card = certif.generateMoneyCard(userImg, guildImg, ctx, user["balance"])
-		await ctx.send(file=discord.File('tmp/card_filled.png'))
-		#await ctx.send("**" + user["name"] + "** possède **" + str(user['balance']) + "** WADs en banque.")
+		if arg:
+			try:
+				user = await commands.UserConverter().convert(ctx, str(arg))
+			except commands.BadArgument:
+				await ctx.send("Utilisateur non trouvé")
+				ggr_utilities.logger(ctx, "User not found")
+				return #on quitte la fonction
+		else:
+			user = ctx.author
+		userJson = self.checkUserExist(user)
+
+		userS = userStruct(user.name, user.discriminator, ggr_utilities.userIcon(user), userJson["balance"])
+		card = certif.generateMoneyCard(userS, ggr_utilities.serverIcon(ctx.author))
+		await ctx.send(file = discord.File('tmp/card_filled.png'))
+
+	@commands.command()
+	async def topwad(self, ctx):
+		ggr_utilities.logger(ctx, ctx.message.content)
+		userJson1, userJson2, userJson3 = self.findUserMaxBalance()
+
+		u1 = await self.bot.fetch_user(userJson1["id"])
+		u2 = await self.bot.fetch_user(userJson2["id"])
+		u3 = await self.bot.fetch_user(userJson3["id"])
+
+		userStruct1 = userStruct(u1.name, u1.discriminator, ggr_utilities.userIcon(u1), userJson1["balance"])
+		userStruct2 = userStruct(u2.name, u2.discriminator, ggr_utilities.userIcon(u2), userJson2["balance"])
+		userStruct3 = userStruct(u3.name, u3.discriminator, ggr_utilities.userIcon(u3), userJson3["balance"])
+
+		card = certif.generateMoneyPodium(userStruct1, userStruct2, userStruct3, ggr_utilities.serverIcon(ctx.author), ctx.guild.name)
+
+		await ctx.send(file = discord.File('tmp/card_podium_filled.png'))
 
 	@commands.command()
 	async def buy(self, ctx):
@@ -62,8 +108,16 @@ class Eco(commands.Cog):
 		user = self.checkUserExist(ctx.author)
 	
 	@commands.command()
-	async def foo(self, ctx, arg):
-		#todo trouver comment gerer pas d arguments
-		await ctx.send("You passed" + arg)
+	async def foo(self, ctx, arg = None):
+		if arg:
+			try:
+				user = await commands.UserConverter().convert(ctx, str(arg))
+				await ctx.send("arg " + user.name)
+			except commands.BadArgument:
+				await ctx.send("Utilisateur non trouvé")
+
+		else:
+			await ctx.send("no arg " + ctx.author.name)
+
 def setup(bot):
 	bot.add_cog(Eco(bot))

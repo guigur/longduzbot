@@ -7,11 +7,13 @@ import requests
 import math
 import json
 import os
-
 import ggr_utilities
 import ggr_emotes
 import certif
 import eco
+from collections import namedtuple 
+
+userStruct = namedtuple("userStruct", ["name", "discriminator", "icon", "balance"])
 
 class Army(commands.Cog):
 	def __init__(self, bot):
@@ -67,7 +69,7 @@ class Army(commands.Cog):
 				if armymbr <= 49:
 					army += ggr_emotes.Ulian
 				elif armymbr == 50:
-					army += ggr_emotes.Guogur
+					army += ggr_emotes.Guigor
 				elif armymbr >= 51:
 					army += ggr_emotes.Moth
 		return [army, armynbr, armyGold]
@@ -89,15 +91,31 @@ class Army(commands.Cog):
 	async def maitre(self, ctx):
 		"""Affiche le maître des saloperies et son record."""
 		ggr_utilities.logger(ctx, ctx.message.content)
-		msg = "Le maître des saloperie est **" + self.data['best']['user'] + "** avec un score de **" + str(self.data['best']['score']) + "** saloperies invoqués"
-		await ctx.send(msg)
+		#msg = "Le maître des saloperie est **" + self.data['best']['user'] + "** avec un score de **" + str(self.data['best']['score']) + "** saloperies invoqués"
+		if ggr_utilities.checkIfIdValid(self.data['best']['userid']):
+			user = await self.bot.fetch_user(self.data['best']['userid'])
+		else:
+			await ctx.send("Personne n'est maitre pour l'instant")
+			return
+		ustruct = userStruct(user.name, user.discriminator, ggr_utilities.userIcon(user), self.data['best']['score'])
+		card = certif.cardSaloperieBestWorst(ustruct, ggr_utilities.userIcon(user), ggr_utilities.serverIcon(ctx.author), certif.BestWorst.best) #user n'a pas d'argument guild
+		
+		await ctx.send(file = discord.File('tmp/card_filled.png'))
 
 	@commands.command()
 	async def jeanfoutre(self, ctx):
 		"""Affiche le jean-foutre des saloperies et son score."""
 		ggr_utilities.logger(ctx, ctx.message.content)
-		msg = "Le jean-foutre des saloperie est **" + self.data['worst']['user'] + "** avec un score de minabke de **" + str(self.data['worst']['score']) + "** saloperies invoqués"
-		await ctx.send(msg)
+		#msg = "Le jean-foutre des saloperie est **" + self.data['worst']['user'] + "** avec un score de minabke de **" + str(self.data['worst']['score']) + "** saloperies invoqués"
+		if ggr_utilities.checkIfIdValid(self.data['worst']['userid']):
+			user = await self.bot.fetch_user(self.data['worst']['userid'])
+		else:
+			await ctx.send("Personne n'est le jean-foutre pour l'instant")
+			return
+		ustruct = userStruct(user.name, user.discriminator, ggr_utilities.userIcon(user), self.data['worst']['score'])
+		card = certif.cardSaloperieBestWorst(ustruct, ggr_utilities.userIcon(user), ggr_utilities.serverIcon(ctx.author), certif.BestWorst.worst) #user n'a pas d'argument guild
+		
+		await ctx.send(file = discord.File('tmp/card_filled.png'))
 
 	@commands.command()
 	async def armydory(self, ctx):
