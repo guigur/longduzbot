@@ -2,6 +2,7 @@ from PIL import Image, ImageOps, ImageDraw, ImageFont
 from datetime import datetime
 import locale
 import random
+import enum
 import ggr_utilities
 from collections import namedtuple 
 
@@ -14,6 +15,9 @@ ligneOffset = [20, 40, 75, 105, 135, 153]
 
 userStruct = namedtuple("userStruct", ["name", "discriminator", "icon", "balance"])
 
+class BestWorst(enum.Enum):
+    best = 1
+    worst = 2
 
 def genRoundImg(source):
 	bigsize = (source.size[0] * 3, source.size[1] * 3)
@@ -108,7 +112,7 @@ def generateCertifBitch(profilePictureLink, pseudo, score):
 
 	return certif.save("tmp/certif_worst_filled.png")
 
-def cardSaloperieBestWorst(user, profilePictureLink, serverPictureLink):
+def cardSaloperieBestWorst(user, profilePictureLink, serverPictureLink, type):
 
 	profile = Image.open(profilePictureLink).convert("RGBA")
 	profile = profile.resize([128, 128])
@@ -130,7 +134,8 @@ def cardSaloperieBestWorst(user, profilePictureLink, serverPictureLink):
 	genRoundImg(server)
 	card.paste(server, (133, 101, 133 + server.size[0], 101 + server.size[1]), server)
 	
-	card.paste(cardTop, (0, 0, 0 + cardTop.size[0], 0 + cardTop.size[1]), cardTop)
+	if (type == BestWorst.best):
+		card.paste(cardTop, (0, 0, 0 + cardTop.size[0], 0 + cardTop.size[1]), cardTop)
 
 	draw = ImageDraw.Draw(card)
 
@@ -141,12 +146,22 @@ def cardSaloperieBestWorst(user, profilePictureLink, serverPictureLink):
 	textIdentifier = " #" + user.discriminator
 	textIdentifierW,textIdentifierH = fontCardIdentifier.getsize(textIdentifier)
 	draw.text((240 + textNameW, ligneOffset[1]), text=textIdentifier, fill=(255,255,255,127), font=fontCardIdentifier, anchor=None, spacing=0, align="left")
- 	
-	l2Text = "est le maître des saloperies"
+
+	if (type == BestWorst.best):
+		l2Text = "est le maître des saloperies"
+		l3Text = "avec un score de"
+		l4Text = " saloperies invoquées !"
+
+
+	elif (type == BestWorst.worst):
+		l2Text = "est le jean-foutre"
+		l3Text = "avec un score minable de"
+		l4Text = " saloperies invoquées ..."
+
+
 	l2TextW, l2TextH = fontCard.getsize(l2Text)
 	draw.text((240, ligneOffset[2]), text=l2Text, fill=(255,255,255,255), font=fontCard, anchor=None, spacing=0, align="left")
 
-	l3Text = "avec un score de"
 	l3TextW, l3TextH = fontCard.getsize(l3Text)
 	draw.text((240, ligneOffset[3]), text=l3Text, fill=(255,255,255,255), font=fontCard, anchor=None, spacing=0, align="left")
 
@@ -154,7 +169,6 @@ def cardSaloperieBestWorst(user, profilePictureLink, serverPictureLink):
 	l4NbrW, l4NbrH = fontCardBig.getsize(l4Nbr)
 	draw.text((240, ligneOffset[4]), text=l4Nbr, fill=(255,255,255,255), font=fontCardBig, anchor=None, spacing=0, align="left")
 
-	l4Text = " saloperies invoquées !"
 	l4TextW, l4TextH = fontCard.getsize(l4Text)
 	draw.text((240 + l4NbrW, ligneOffset[5]), text=l4Text, fill=(255,255,255,255), font=fontCard, anchor=None, spacing=0, align="left")
 	
