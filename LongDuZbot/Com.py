@@ -2,6 +2,7 @@ import os
 import time
 import math
 import json
+import git
 import asyncio
 import threading
 import signal
@@ -58,6 +59,11 @@ class Shell(cmd.Cmd):
 		user = await self.bot.fetch_user(id)
 		await user.send(str)
 
+	def do_version(self, arg):
+		'Return the verion hash number'
+		repo = git.Repo(search_parent_directories=True)
+		sha = repo.head.object.hexsha
+		ggr_utilities.logger(None, "Git version: " + colored(sha, 'blue'))
 
 	def do_stop(self, arg):
 		'Stop the server'

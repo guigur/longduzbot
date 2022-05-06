@@ -1,14 +1,1 @@
-{
-  "best": {
-    "user": "nobody",
-    "userid": 0,
-    "date": 0,
-    "score": 0
-  },
-  "worst": {
-    "user": "nobody",
-    "userid": 0,
-    "date": 0,
-    "score": 800
-  }
-}
+{"best": {"user": "guigur", "userid": 199222032787963904, "date": 1651875214.432957, "score": 365}, "worst": {"user": "nobody", "userid": 0, "date": 0, "score": 365}}

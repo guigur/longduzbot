@@ -4,3 +4,4 @@ python-dotenv
 Pillow
 termcolor
 pyfiglet
+gitpython
