@@ -84,10 +84,10 @@ class Shell(cmd.Cmd):
 		self.stop_server()
 		return True
 
-# 	def do_restart(self, arg):
-# 		'Restart the server'
-# 		ggr_utilities.logger(None, "Restarting server")
-# 		os.execl(sys.executable, os.path.abspath(__file__), *sys.argv) 
+	def do_restart(self, arg):
+		'Restart the server'
+		ggr_utilities.logger(None, "Restarting server")
+		os.execl(sys.executable, os.path.abspath(__file__), *sys.argv) 
 
 # 	def do_selectUser(self, arg):
 # 		'select working user'
