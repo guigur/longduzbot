@@ -28,7 +28,7 @@ async def on_ready():
 	timeReady = time.time()
 	ggr_utilities.logger(None, "Logged in as " + bot.user.name + " " + str(bot.user.id))
 	#await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='vous commandes')) TODO STATUS
-
+	
 def load_extentions():
 	for extension in startup_extensions:
 		try:
