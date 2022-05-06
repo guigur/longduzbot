@@ -3,7 +3,6 @@ import time
 import math
 import json
 import threading
-from termcolor import colored
 
 
 import discord
