@@ -19,7 +19,10 @@ TOKEN = os.getenv("DISCORD_TOKEN")
 prefix = os.getenv("DISCORD_COMMAND_PREFIX")
 startup_extensions = ["Com", "Utils", "eco", "army", "test"] #"status",
 
-bot = Bot(command_prefix=prefix)
+intents = discord.Intents.default()
+intents.members = True
+
+bot = Bot(command_prefix=prefix, intents=intents)
 
 @bot.event
 async def on_ready():

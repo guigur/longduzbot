@@ -97,6 +97,6 @@ def logger(ctx, string):
 		usr = ctx.message.author.name
 	else:
 		usr = "server"
-	string = pDT() + " " + usr + "]"+ string
+	string = pDT() + " " + usr + "] "+ string
 	print(string)
 	#todo: add to file
