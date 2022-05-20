@@ -8,7 +8,7 @@ from collections import namedtuple
 
 secure_random = random.SystemRandom()
 
-locale.setlocale(locale.LC_ALL, 'fr_FR') #For the french date
+locale.setlocale(locale.LC_ALL, 'fr_FR') #For the french date format
 
 textColor = (0,0,0,255)
 ligneOffset = [20, 40, 75, 105, 135, 153]
@@ -16,8 +16,8 @@ ligneOffset = [20, 40, 75, 105, 135, 153]
 userStruct = namedtuple("userStruct", ["name", "discriminator", "icon", "balance"])
 
 class BestWorst(enum.Enum):
-    best = 1
-    worst = 2
+	best = 1
+	worst = 2
 
 def genRoundImg(source):
 	bigsize = (source.size[0] * 3, source.size[1] * 3)

@@ -34,7 +34,6 @@ class Shell(cmd.Cmd):
 	intro = f.renderText("LongDuZbot") + "\nType help or ? to list commands.\n"
 	prompt = '> '
 	file = None
-	#channel = None
 	loop = asyncio.get_event_loop()
 	workingId = 0
 	workingType = ObjectComType.NONE

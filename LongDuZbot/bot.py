@@ -4,7 +4,6 @@ import math
 import json
 import threading
 
-
 import discord
 from discord.ext.commands import Bot
 
@@ -18,7 +17,7 @@ load_dotenv()
 
 TOKEN = os.getenv("DISCORD_TOKEN")
 prefix = os.getenv("DISCORD_COMMAND_PREFIX")
-startup_extensions = ["Com",  "army", "ulian", "teub", "eco", "test"]
+startup_extensions = ["Com", "Utils", "eco", "army", "test"] #"status",
 
 bot = Bot(command_prefix=prefix)
 
@@ -27,7 +26,7 @@ async def on_ready():
 	global timeReady
 	timeReady = time.time()
 	ggr_utilities.logger(None, "Logged in as " + bot.user.name + " " + str(bot.user.id))
-	#await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='vous commandes')) TODO STATUS
+	await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name='les !megaarmy'))
 	
 def load_extentions():
 	for extension in startup_extensions:
