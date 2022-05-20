@@ -3,6 +3,9 @@ import datetime
 import math
 import requests
 
+roleName = "Maître des Saloperies"
+roleColor = 0xffde00
+
 def pickDefImage(name):
 	folder = "img/default/"
 	if name[0] <= 'e':
@@ -100,3 +103,46 @@ def logger(ctx, string):
 	string = pDT() + " " + usr + "] "+ string
 	print(string)
 	#todo: add to file
+
+async def getRole(guild):
+	guildRoles = await guild.fetch_roles()
+	role = None
+	for r in guildRoles:
+		if (r.name == roleName):
+			doRoleExist = True
+			role = r
+	if (role == None):
+		role = await guild.create_role(name=roleName, color=roleColor, hoist=True, mentionable=True)
+	return role
+
+async def initr(ctx):
+	"""init rank"""
+	guild = ctx.message.guild
+	role = await getRole(guild)
+
+async def promote(ctx):
+	"""promote rank"""
+	member = ctx.message.author
+	guild = ctx.message.guild
+	role = await getRole(guild)
+	await member.add_roles(role)
+
+async def demote(ctx):
+	"""demote rank"""
+	member = ctx.message.author
+	guild = ctx.message.guild
+	role = await getRole(guild)
+	await member.remove_roles(role)
+
+async def supromote(ctx):
+	"""super promote rank"""
+	member = ctx.message.author
+	guild = ctx.message.guild
+	role = await getRole(guild)
+
+	for m in role.members:
+		logger(ctx, "Removing the role " + role.name + " to " + m.name)
+		await m.remove_roles(role)
+	
+	logger(ctx, "Adding the role " + role.name + " to " + member.name)
+	await member.add_roles(role)

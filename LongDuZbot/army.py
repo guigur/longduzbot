@@ -189,9 +189,16 @@ class Army(commands.Cog):
 				if armytotmembers > self.data['best']['score']:
 					ggr_utilities.logger(None, "User " + ctx.author.name + " is now the master of saloperies")
 					user = ctx.author
-					#TODO: Remove the old master
-					#oldmaitre = user.guild.members() #199222032787963904) #user = client.get_user()
-					#await user.remove_roles(discord.utils.get(user.guild.roles, name="Maître des Saloperies")) #remove the role
+					guild = ctx.message.guild
+					role = await ggr_utilities.getRole(guild)
+					await ggr_utilities.supromote(ctx)
+					firstMaitre = False
+
+					oldMaitreID = self.data['best']['userid']
+					try:
+						oldMaitre = await self.bot.fetch_user(oldMaitreID)
+					except:
+						firstMaitre = True
 
 					self.data['best']['score'] = armytotmembers
 					self.data['best']['user'] = ctx.author.name
@@ -202,15 +209,15 @@ class Army(commands.Cog):
 						self.data['worst']['score'] = armytotmembers
 
 					self.saveDataToFile()
-					await ctx.send("Félicitations " + user.mention + " vous êtes le nouveau **Maître des Saloperies**")
+					await ctx.send("Félicitations " + user.mention + " vous êtes le nouveau " + role.mention)
+					if (not firstMaitre):
+						await ctx.send("Désolé " + oldMaitre.mention + ", il va falloir faire mieux !")
+
 					url = ctx.author.avatar_url_as(format='png')
 					picture = certif.generateCertifMaster(requests.get(url, stream=True).raw, ctx.author.name, armytotmembers)
 					await ctx.send(file=discord.File('tmp/certif_best_filled.png'))
-					await ctx.send("Ce certificat prouve votre titre de **Maître des Saloperies**\nN'hésitez pas à mentionner ce titre prestigieux sur votre CV.")
-					try:
-						await user.add_roles(discord.utils.get(user.guild.roles, name="Maître des Saloperies"))
-					except discord.Forbidden:
-						pass
+					await ctx.send("Ce certificat prouve votre presigieux titre de " + role.mention + "\nN'hésitez pas à mentionner ce titre prestigieux sur votre CV.")
+
 				elif armytotmembers < self.data['worst']['score']:
 					ggr_utilities.logger(None, "User " + ctx.author.name + " is now the good-for-nothing of saloperies")
 					user = ctx.author
