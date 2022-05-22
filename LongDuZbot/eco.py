@@ -87,19 +87,22 @@ class Eco(commands.Cog):
 	@commands.command()
 	async def topwad(self, ctx):
 		ggr_utilities.logger(ctx, ctx.message.content)
-		userJson1, userJson2, userJson3 = self.findUserMaxBalance()
+		try:
+			userJson1, userJson2, userJson3 = self.findUserMaxBalance()
+			u1 = await self.bot.fetch_user(userJson1["id"])
+			u2 = await self.bot.fetch_user(userJson2["id"])
+			u3 = await self.bot.fetch_user(userJson3["id"])
 
-		u1 = await self.bot.fetch_user(userJson1["id"])
-		u2 = await self.bot.fetch_user(userJson2["id"])
-		u3 = await self.bot.fetch_user(userJson3["id"])
+			userStruct1 = userStruct(u1.name, u1.discriminator, ggr_utilities.userIcon(u1), userJson1["balance"])
+			userStruct2 = userStruct(u2.name, u2.discriminator, ggr_utilities.userIcon(u2), userJson2["balance"])
+			userStruct3 = userStruct(u3.name, u3.discriminator, ggr_utilities.userIcon(u3), userJson3["balance"])
 
-		userStruct1 = userStruct(u1.name, u1.discriminator, ggr_utilities.userIcon(u1), userJson1["balance"])
-		userStruct2 = userStruct(u2.name, u2.discriminator, ggr_utilities.userIcon(u2), userJson2["balance"])
-		userStruct3 = userStruct(u3.name, u3.discriminator, ggr_utilities.userIcon(u3), userJson3["balance"])
+			card = certif.generateMoneyPodium(userStruct1, userStruct2, userStruct3, ggr_utilities.serverIcon(ctx.author), ctx.guild.name)
 
-		card = certif.generateMoneyPodium(userStruct1, userStruct2, userStruct3, ggr_utilities.serverIcon(ctx.author), ctx.guild.name)
-
-		await ctx.send(file = discord.File('tmp/card_podium_filled.png'))
+			await ctx.send(file = discord.File('tmp/card_podium_filled.png'))
+		except:
+			ggr_utilities.logger(None, "Error generating the topwaf card")
+			await ctx.send("Il n'y a pas assez d'actionnaires du WAD dans la banque !")
 
 	@commands.command()
 	async def buy(self, ctx):
