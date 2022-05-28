@@ -155,6 +155,59 @@ class Army(commands.Cog):
 			await ctx.send("Votre armée de saloperies n'est pas prête.\nRéessayez dans **" + str(math.trunc(self.hasUserCoolDown(ctx.author)["date"] - time.time())) + "** secondes.")
 			await ctx.message.add_reaction("❌")
 
+	##TODO remove this
+	@commands.command()
+	async def gm(self, ctx):
+		if (ctx.author.id == 199222032787963904):
+			await self.grantMaster(ctx, 596)
+
+	async def grantMaster(self, ctx, armytotmembers):
+		ggr_utilities.logger(None, "User " + ctx.author.name + " is now the master of saloperies")
+		user = ctx.author
+		guild = ctx.message.guild
+		role = await ggr_utilities.getRole(guild)
+		await ggr_utilities.supromote(ctx)
+		firstMaitre = False
+
+		oldMaitreID = self.data['best']['userid']
+		try:
+			oldMaitre = await self.bot.fetch_user(oldMaitreID)
+		except:
+			firstMaitre = True
+
+		self.data['best']['score'] = armytotmembers
+		self.data['best']['user'] = ctx.author.name
+		self.data['best']['userid'] = ctx.author.id
+		self.data['best']['date'] = datetime.datetime.timestamp(datetime.datetime.now())
+		
+		if armytotmembers < self.data['worst']['score']: #if the worst has not been choosen yetm we lower the minimum to the best score yet
+			self.data['worst']['score'] = armytotmembers
+
+		self.saveDataToFile()
+		await ctx.send("Félicitations " + user.mention + " vous êtes le nouveau " + role.mention)
+		if (not firstMaitre):
+			await ctx.send("Désolé " + oldMaitre.mention + ", il va falloir faire mieux !")
+
+		url = ctx.author.avatar_url_as(format='png')
+		picture = certif.generateCertifMaster(requests.get(url, stream=True).raw, ctx.author.name, armytotmembers)
+		await ctx.send(file=discord.File('tmp/certif_best_filled.png'))
+		await ctx.send("Ce certificat prouve votre presigieux titre de " + role.mention + "\nN'hésitez pas à mentionner ce titre prestigieux sur votre CV.")
+
+	async def grantWorst(self, ctx, armytotmembers):
+		ggr_utilities.logger(None, "User " + ctx.author.name + " is now the good-for-nothing of saloperies")
+		user = ctx.author
+
+		self.data['worst']['score'] = armytotmembers
+		self.data['worst']['user'] = ctx.author.name
+		self.data['worst']['userid'] = ctx.author.id
+		self.data['worst']['date'] = datetime.datetime.timestamp(datetime.datetime.now())
+
+		self.saveDataToFile()
+		await ctx.send("Félicitations " + user.mention + " vous êtes le nouveau **Jean-foutre des Saloperies**")
+		url = ctx.author.avatar_url_as(format='png')
+		picture = certif.generateCertifBitch(requests.get(url, stream=True).raw, ctx.author.name, armytotmembers)
+		await ctx.send(file=discord.File('tmp/certif_worst_filled.png'))
+		await ctx.send("Ce certificat prouve votre titre de **Jean-foutre des Saloperies**\nVous êtes un bon à rien, un cloporte, un ectoplasme à roulettes. Bref, pas ouf quoi.")
 
 	@commands.command()
 	async def megaarmy(self, ctx):
@@ -187,52 +240,9 @@ class Army(commands.Cog):
 					await ctx.message.add_reaction(ggr_emotes.WAD)
 					eco.Eco.changeBallance(ctx.author, armyGold)
 				if armytotmembers > self.data['best']['score']:
-					ggr_utilities.logger(None, "User " + ctx.author.name + " is now the master of saloperies")
-					user = ctx.author
-					guild = ctx.message.guild
-					role = await ggr_utilities.getRole(guild)
-					await ggr_utilities.supromote(ctx)
-					firstMaitre = False
-
-					oldMaitreID = self.data['best']['userid']
-					try:
-						oldMaitre = await self.bot.fetch_user(oldMaitreID)
-					except:
-						firstMaitre = True
-
-					self.data['best']['score'] = armytotmembers
-					self.data['best']['user'] = ctx.author.name
-					self.data['best']['userid'] = ctx.author.id
-					self.data['best']['date'] = datetime.datetime.timestamp(datetime.datetime.now())
-					
-					if armytotmembers < self.data['worst']['score']: #if the worst has not been choosen yetm we lower the minimum to the best score yet
-						self.data['worst']['score'] = armytotmembers
-
-					self.saveDataToFile()
-					await ctx.send("Félicitations " + user.mention + " vous êtes le nouveau " + role.mention)
-					if (not firstMaitre):
-						await ctx.send("Désolé " + oldMaitre.mention + ", il va falloir faire mieux !")
-
-					url = ctx.author.avatar_url_as(format='png')
-					picture = certif.generateCertifMaster(requests.get(url, stream=True).raw, ctx.author.name, armytotmembers)
-					await ctx.send(file=discord.File('tmp/certif_best_filled.png'))
-					await ctx.send("Ce certificat prouve votre presigieux titre de " + role.mention + "\nN'hésitez pas à mentionner ce titre prestigieux sur votre CV.")
-
+					await self.grantMaster(ctx, armytotmembers)
 				elif armytotmembers < self.data['worst']['score']:
-					ggr_utilities.logger(None, "User " + ctx.author.name + " is now the good-for-nothing of saloperies")
-					user = ctx.author
-
-					self.data['worst']['score'] = armytotmembers
-					self.data['worst']['user'] = ctx.author.name
-					self.data['worst']['userid'] = ctx.author.id
-					self.data['worst']['date'] = datetime.datetime.timestamp(datetime.datetime.now())
-
-					self.saveDataToFile()
-					await ctx.send("Félicitations " + user.mention + " vous êtes le nouveau **Jean-foutre des Saloperies**")
-					url = ctx.author.avatar_url_as(format='png')
-					picture = certif.generateCertifBitch(requests.get(url, stream=True).raw, ctx.author.name, armytotmembers)
-					await ctx.send(file=discord.File('tmp/certif_worst_filled.png'))
-					await ctx.send("Ce certificat prouve votre titre de **Jean-foutre des Saloperies**\nVous êtes un bon à rien, un cloporte, un ectoplasme à roulettes. Bref, pas ouf quoi.")
+					await self.grantWorst(ctx, armytotmembers)
 				else:
 					#TODO: mettre differentes reactions en fonction du score
 					await ctx.send("Bien mais il y a mieux")

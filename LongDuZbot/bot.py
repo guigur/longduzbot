@@ -15,9 +15,10 @@ import cmd, sys
 from dotenv import load_dotenv
 load_dotenv()
 
-TOKEN = os.getenv("DISCORD_TOKEN")
+token = os.getenv("DISCORD_TOKEN")
 prefix = os.getenv("DISCORD_COMMAND_PREFIX")
-startup_extensions = ["Com", "Utils", "eco", "army", "test"] #"status",
+
+startup_extensions = ["Com", "Utils", "eco", "army", "test", "Admin"] #"status",
 
 intents = discord.Intents.default()
 intents.members = True
@@ -42,4 +43,4 @@ def load_extentions():
 
 if __name__ == "__main__":
 	load_extentions()
-	bot.run(TOKEN)
+	bot.run(token)
