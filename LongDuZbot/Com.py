@@ -19,11 +19,24 @@ import ggr_utilities
 import ggr_emotes
 
 import cmd, sys
+from functools import wraps # This convenience func preserves name and docstring
+
 
 class ObjectComType(Enum):
 	NONE = 0
 	CHANNEL = 1
 	USER = 2
+
+
+def add_method(cls):
+    def decorator(func):
+        @wraps(func) 
+        def wrapper(self, *args, **kwargs): 
+            return func(*args, **kwargs)
+        setattr(cls, func.__name__, wrapper)
+        # Note we are not binding func, but wrapper which accepts self but does exactly the same as func
+        return func # returning func means func can still be used normally
+    return decorator
 
 class Shell(cmd.Cmd):
 	def __init__(self, bot):
@@ -57,12 +70,6 @@ class Shell(cmd.Cmd):
 	async def user_say(self, id: int, str: str) :
 		user = await self.bot.fetch_user(id)
 		await user.send(str)
-
-	def do_version(self, arg):
-		'Return the verion hash number'
-		repo = git.Repo(search_parent_directories=True)
-		sha = repo.head.object.hexsha
-		ggr_utilities.logger(None, "Git version: " + colored(sha, 'blue'))
 
 	def do_stop(self, arg):
 		'Stop the server'
@@ -105,6 +112,7 @@ class Shell(cmd.Cmd):
 	
 	def do_maitre(self, arg):
 		'grant a new master the server'
+		print(type(arg))
 		ggr_utilities.logger(None, "Grant master")
 		
 	

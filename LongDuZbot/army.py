@@ -187,7 +187,7 @@ class Army(commands.Cog):
 		await ctx.send("Félicitations " + user.mention + " vous êtes le nouveau " + role.mention)
 		if (not firstMaitre):
 			await ctx.send("Désolé " + oldMaitre.mention + ", il va falloir faire mieux !")
-
+ 
 		url = ctx.author.avatar_url_as(format='png')
 		picture = certif.generateCertifMaster(requests.get(url, stream=True).raw, ctx.author.name, armytotmembers)
 		await ctx.send(file=discord.File('tmp/certif_best_filled.png'))

@@ -5,6 +5,8 @@ import os
 import ggr_utilities
 import ggr_emotes
 import eco
+import Com
+	
 
 class Test(commands.Cog):
 	def __init__(self, bot):
@@ -13,6 +15,8 @@ class Test(commands.Cog):
 def setup(bot):
 	bot.add_cog(Test(bot))
 
+def teardown(bot):
+	print('I am being unloaded!')
 
 		#os.execl(sys.executable, os.path.abspath(__file__), *sys.argv) 
 		#print("exit")

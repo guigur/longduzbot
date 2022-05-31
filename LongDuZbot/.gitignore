@@ -5,3 +5,6 @@ army_cool_down.json
 data.json
 economy.json
 tmp/*
+sandbox
+sandbox/*
+*.db
