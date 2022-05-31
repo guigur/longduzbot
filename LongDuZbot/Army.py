@@ -86,7 +86,7 @@ class Army(commands.Cog):
 			if armyGold > 0:
 				await ctx.send("Cette armée vous rapporte **" + str(armyGold) + " WADs**")
 				await ctx.message.add_reaction(ggr_emotes.WAD)
-				eco.Eco.changeBallance(ctx.author, armyGold)
+				Eco.Eco.changeBallance(ctx.author, armyGold)
 		else:
 			await ctx.send("Votre armée de saloperies n'est pas prête.\nRéessayez dans **" + str(math.trunc(self.hasUserCoolDownRoutine(ctx.author)["date"] - time.time())) + "** secondes.")
 			await ctx.message.add_reaction("❌")
@@ -126,7 +126,7 @@ class Army(commands.Cog):
 				if armyGold > 0:
 					await ctx.send("Cette armée vous rapporte **" + str(armyGold) + " WADs**")
 					await ctx.message.add_reaction(ggr_emotes.WAD)
-					eco.Eco.changeBallance(ctx.author, armyGold)
+					Eco.Eco.changeBallance(ctx.author, armyGold)
 				if armytotmembers > self.data['best']['score']:
 					await self.grantMasterRoutine(ctx, armytotmembers)
 				elif armytotmembers < self.data['worst']['score']:
