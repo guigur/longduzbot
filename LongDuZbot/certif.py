@@ -5,6 +5,7 @@ import random
 import enum
 import ggr_utilities
 from collections import namedtuple 
+import os
 
 secure_random = random.SystemRandom()
 
@@ -18,6 +19,11 @@ userStruct = namedtuple("userStruct", ["name", "discriminator", "icon", "balance
 class BestWorst(enum.Enum):
 	best = 1
 	worst = 2
+
+def folderMaker():
+	if not os.path.exists("tmp"):
+		ggr_utilities.logger(None, "Creating the folder tmp")
+		os.makedirs("tmp")
 
 def genRoundImg(source):
 	bigsize = (source.size[0] * 3, source.size[1] * 3)
@@ -67,6 +73,7 @@ def generateCertifMaster(profilePictureLink, pseudo, score):
 	certif.paste(tampon, (1700, 750, 1700 + tampon_w, 750 + tampon_h), tampon)
 	certif.paste(signature, (1400, 750, 1400 + signature_w, 750 + signature_h), signature)
 
+	folderMaker()
 	return certif.save("tmp/certif_best_filled.png")
 
 def generateCertifBitch(profilePictureLink, pseudo, score):
@@ -110,6 +117,7 @@ def generateCertifBitch(profilePictureLink, pseudo, score):
 	certif.paste(tampon, (1700, 750, 1700 + tampon_w, 750 + tampon_h), tampon)
 	certif.paste(signature, (1400, 750, 1400 + signature_w, 750 + signature_h), signature)
 
+	folderMaker()
 	return certif.save("tmp/certif_worst_filled.png")
 
 def cardSaloperieBestWorst(user, profilePictureLink, serverPictureLink, type):
@@ -172,6 +180,7 @@ def cardSaloperieBestWorst(user, profilePictureLink, serverPictureLink, type):
 	l4TextW, l4TextH = fontCard.getsize(l4Text)
 	draw.text((240 + l4NbrW, ligneOffset[5]), text=l4Text, fill=(255,255,255,255), font=fontCard, anchor=None, spacing=0, align="left")
 	
+	folderMaker()
 	return card.save("tmp/card_filled.png")
 
 def generateMoneyPodium(user1, user2, user3, serverPictureLink, serverName):
@@ -256,6 +265,7 @@ def generateMoneyPodium(user1, user2, user3, serverPictureLink, serverName):
 	draw.text((85 - (wadsTextW/2), 495), text=wadsText, fill=(255,255,255,127), font=fontCardIdentifier, anchor=None, spacing=0, align="center")
 	draw.text((495 - (wadsTextW/2), 495), text=wadsText, fill=(255,255,255,127), font=fontCardIdentifier, anchor=None, spacing=0, align="center")
 
+	folderMaker()
 	return card.save("tmp/card_podium_filled.png")
 
 def generateMoneyCard(user, serverPictureLink):
@@ -307,6 +317,7 @@ def generateMoneyCard(user, serverPictureLink):
 	draw.text((188, ligneOffset[3]), text=textInBank, fill=(255,255,255,255), font=fontCard, anchor=None, spacing=0, align="left")
 
 	#card.show()
+	folderMaker()
 	return card.save("tmp/card_filled.png")
 
 #generateMoneyCard("img/debug/avatar.png", "img/debug/server.png", "guigur", 200)
