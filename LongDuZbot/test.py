@@ -9,9 +9,17 @@ import Eco, Com
 class Test(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
+	
+
 
 	######################## DISCORD COMMANDS ########################
 	
+	# @commands.command()
+	# async def testeEmbed(self, ctx):
+	# 	embed=discord.Embed(color=0xFF5733)
+	# 	embed.add_field(name="undefined", value="undefined", inline=False)
+	# 	await ctx.send(embed=embed)
+
 	# @commands.command()
 	# async def foo(self, ctx, arg = None):
 	# 	if arg:

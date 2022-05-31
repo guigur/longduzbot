@@ -2,9 +2,8 @@ import discord
 from discord.ext import commands
 import sys
 import os
-import ggr_utilities
-import ggr_emotes
-import eco
+import ggr_utilities, ggr_emotes
+import Eco
 
 class Status(commands.Cog):
 	def __init__(self, bot):

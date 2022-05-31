@@ -7,8 +7,7 @@ import requests
 import math
 import json
 import os
-import ggr_utilities
-import ggr_emotes
+import ggr_utilities, ggr_emotes
 import certif
 import Eco
 from collections import namedtuple 

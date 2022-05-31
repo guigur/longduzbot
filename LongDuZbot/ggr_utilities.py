@@ -55,8 +55,11 @@ def userIcon(user):
 	return userImg
 
 def checkIfIdValid(id):
-	if ((type(id) is int) and int(id) > 9999999999999999):
-		return True
+	if (isinstance(id, int)):
+		if (int(id) > 9999999999999999):
+			return True
+		else:
+			pass
 	print("Invalid ID")
 	return False
 

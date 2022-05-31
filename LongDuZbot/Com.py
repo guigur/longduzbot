@@ -27,7 +27,6 @@ class ObjectComType(Enum):
 	CHANNEL = 1
 	USER = 2
 
-
 def add_method(cls):
     def decorator(func):
         @wraps(func) 
@@ -37,6 +36,9 @@ def add_method(cls):
         # Note we are not binding func, but wrapper which accepts self but does exactly the same as func
         return func # returning func means func can still be used normally
     return decorator
+
+workingId = 0
+workingType = ObjectComType.NONE
 
 class Shell(cmd.Cmd):
 	def __init__(self, bot):
@@ -48,9 +50,7 @@ class Shell(cmd.Cmd):
 	prompt = '> '
 	file = None
 	loop = asyncio.get_event_loop()
-	workingId = 0
-	workingType = ObjectComType.NONE
-	
+
 	@classmethod
 	def changePormpt(self, newPrompt):
 		self.prompt = newPrompt
@@ -87,25 +87,25 @@ class Shell(cmd.Cmd):
 
 	def do_selectUser(self, arg):
 		'select working user'
-		if (ggr_utilities.checkIfIdValid(int(arg))):
+		if (ggr_utilities.checkIfIdValid(arg)):
 			user = asyncio.run_coroutine_threadsafe(self.get_user(int(arg)), self.loop) #check this
-			self.workingId = int(arg)
-			self.workingType = ObjectComType.USER
+			workingId = int(arg)
+			workingType = ObjectComType.USER
 
 	def do_selectChannel(self, arg):
 		'select working chanel'
-		if (ggr_utilities.checkIfIdValid(int(arg))):
+		if (ggr_utilities.checkIfIdValid(arg)):
 			channel = asyncio.run_coroutine_threadsafe(self.get_channel(int(arg)), self.loop) #check this
-			self.workingId = int(arg)
-			self.workingType = ObjectComType.CHANNEL
+			workingId = int(arg)
+			workingType = ObjectComType.CHANNEL
 
 	def do_say(self, arg):
 		'say something to the server or chat with an user'
-		if (self.workingType != ObjectComType.NONE):
-			if (self.workingType == ObjectComType.USER):
-				asyncio.run_coroutine_threadsafe(self.user_say(self.workingId, arg), self.loop)
-			elif (self.workingType == ObjectComType.CHANNEL):
-				workingObject = self.bot.get_channel(self.workingId)
+		if (workingType != ObjectComType.NONE):
+			if (workingType == ObjectComType.USER):
+				asyncio.run_coroutine_threadsafe(self.user_say(workingId, arg), self.loop)
+			elif (workingType == ObjectComType.CHANNEL):
+				workingObject = self.bot.get_channel(workingId)
 				asyncio.run_coroutine_threadsafe(workingObject.send(arg), self.loop)
 		else:
 			print("No working ID. Attach a Channel or User with \"selectChannel\" or \"selectUser\"")

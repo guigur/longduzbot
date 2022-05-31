@@ -1,3 +1,4 @@
+from distutils.command.sdist import sdist
 import discord
 import os
 import certif
@@ -6,6 +7,7 @@ import json
 from collections import namedtuple 
 
 import ggr_utilities, ggr_emotes
+import Com
 
 userStruct = namedtuple("userStruct", ["name", "discriminator", "icon", "balance"])
 
@@ -62,6 +64,18 @@ class Eco(commands.Cog):
 
 	######################### SHELL COMMANDS #########################
 
+	@Com.add_method(Com.Shell)
+	def do_changeBalance(arg):
+		'Return the verion hash number'
+		#TODO: parcer les argument et verifier d'avoir selectUser
+		print(Com.workingId)
+		if (Com.workingType == Com.ObjectComType.USER):
+			print("user selected")
+		else :
+			print("user NOT selected")
+
+		#Eco.changeBallanceRoutine()	
+	
 	############################ ROUTINES ############################
 
 	def loadFromFileRoutine(self):

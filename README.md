@@ -1,3 +1,8 @@
 # longduzbot
 
-python3 -m pip install -r Requirements.txt
+## How to deploy
+
+Fist of all you need to install the requirements
+```
+python3 -m pip install -r requirements.txt
+```
