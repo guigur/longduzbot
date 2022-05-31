@@ -109,13 +109,7 @@ class Shell(cmd.Cmd):
 				asyncio.run_coroutine_threadsafe(workingObject.send(arg), self.loop)
 		else:
 			print("No working ID. Attach a Channel or User with \"selectChannel\" or \"selectUser\"")
-	
-	def do_maitre(self, arg):
-		'grant a new master the server'
-		print(type(arg))
-		ggr_utilities.logger(None, "Grant master")
-		
-	
+
 class Com(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot

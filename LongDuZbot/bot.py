@@ -18,7 +18,7 @@ load_dotenv()
 token = os.getenv("DISCORD_TOKEN")
 prefix = os.getenv("DISCORD_COMMAND_PREFIX")
 
-startup_extensions = ["Com", "Utils", "eco", "army", "test", "Admin"] #"status",
+startup_extensions = ["Com", "Utils", "Eco", "Army", "Test", "Admin"] #"status",
 
 intents = discord.Intents.default()
 intents.members = True

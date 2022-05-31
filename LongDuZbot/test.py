@@ -2,15 +2,31 @@ import discord
 from discord.ext import commands
 import sys
 import os
-import ggr_utilities
-import ggr_emotes
-import eco
-import Com
-	
+
+import ggr_utilities, ggr_emotes
+import Eco, Com
 
 class Test(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
+
+	######################## DISCORD COMMANDS ########################
+	
+	# @commands.command()
+	# async def foo(self, ctx, arg = None):
+	# 	if arg:
+	# 		try:
+	# 			user = await commands.UserConverter().convert(ctx, str(arg))
+	# 			await ctx.send("arg " + user.name)
+	# 		except commands.BadArgument:
+	# 			await ctx.send("Utilisateur non trouvé")
+
+	# 	else:
+	# 		await ctx.send("no arg " + ctx.author.name)
+
+	######################### SHELL COMMANDS #########################
+
+	############################ ROUTINES ############################
 
 def setup(bot):
 	bot.add_cog(Test(bot))
