@@ -137,6 +137,15 @@ async def demote(ctx):
 	role = await getRole(guild)
 	await member.remove_roles(role)
 
+async def sudemote(ctx):
+	"""super promote rank"""
+	guild = ctx.message.guild
+	role = await getRole(guild)
+
+	for m in role.members:
+		logger(ctx, "Removing the role " + role.name + " to " + m.name)
+		await m.remove_roles(role)
+
 async def supromote(ctx):
 	"""super promote rank"""
 	member = ctx.message.author

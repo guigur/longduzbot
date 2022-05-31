@@ -7,9 +7,10 @@ import requests
 import math
 import json
 import os
+from LongDuZbot.ggr_utilities import sudemote
 import ggr_utilities, ggr_emotes
 import certif
-import Eco
+import Eco, Com
 from collections import namedtuple 
 
 userStruct = namedtuple("userStruct", ["name", "discriminator", "icon", "balance"])
@@ -138,8 +139,17 @@ class Army(commands.Cog):
 				await ctx.message.add_reaction("❌")
 		else:
 			await ctx.send("Un maître n'a pas besoin de prouver sa valeur.\nLa votre est de **" + str(self.data['best']['score']) + "** Saloperies.")
+	
+	######################### SHELL COMMANDS #########################
 
-############################ ROUTINES ############################
+	@Com.add_method(Com.Shell)
+	def do_resetMaster(arg):
+		'Reset the master of the saloperies'
+		#ggr_utilities.sudemote()
+
+		#Eco.changeBallanceRoutine()	
+	
+	############################ ROUTINES ############################
 
 	def loadDataFromFileRoutine(self):
 		with open('data.json', encoding='utf-8') as json_file:
