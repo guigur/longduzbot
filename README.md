@@ -2,7 +2,7 @@
 
 ## How to deploy
 
-Fist of all you need to install the requirements
+First of all you need to install the requirements using this command:
 ```
 python3 -m pip install -r requirements.txt
 ```
