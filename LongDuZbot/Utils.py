@@ -35,9 +35,9 @@ class Utils(commands.Cog):
 		ggr_utilities.logger(ctx, ctx.message.content)
 		diff = self.gitDiffRoutine()
 		if (not diff):
-			embed=discord.Embed(title="Aucun changements locaux")
+			embed=discord.Embed(title="👍 Aucun changements locaux", color=ggr_utilities.ggr_green)
 		else:
-			embed=discord.Embed(title="Changements des fichiers locaux")
+			embed=discord.Embed(title="⚠️ Changements des fichiers locaux ⚠️", color=ggr_utilities.ggr_orange)
 			for d in diff:
 				embed.add_field(name=typeDiff[d.change_type]["emoji"] + " " + typeDiff[d.change_type]["text"], value=d.a_blob.path, inline=False)
 		await ctx.send(embed=embed)
