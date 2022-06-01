@@ -34,9 +34,12 @@ class Utils(commands.Cog):
 		"""Affiche les fichiers modifies en local du bot."""
 		ggr_utilities.logger(ctx, ctx.message.content)
 		diff = self.gitDiffRoutine()
-		embed=discord.Embed(title="Changements des fichiers locaux")
-		for d in diff:
-			embed.add_field(name=typeDiff[d.change_type]["emoji"] + " " + typeDiff[d.change_type]["text"], value=d.a_blob.path, inline=False)
+		if (not diff):
+			embed=discord.Embed(title="Aucun changements locaux")
+		else:
+			embed=discord.Embed(title="Changements des fichiers locaux")
+			for d in diff:
+				embed.add_field(name=typeDiff[d.change_type]["emoji"] + " " + typeDiff[d.change_type]["text"], value=d.a_blob.path, inline=False)
 		await ctx.send(embed=embed)
 
 	######################### SHELL COMMANDS #########################
@@ -51,11 +54,10 @@ class Utils(commands.Cog):
 	def do_diff(arg):
 		'Return the change in the local file system'
 		diff = Utils.gitDiffRoutine()
-		pprint(dir(diff))
 		if (not diff):
 			print(colored("Aucun changements locaux", 'green', attrs=['bold']))
 		else:
-			print(colored("Changements des fichiers locaux :", 'orange', attrs=['bold']))
+			print(colored("Changements des fichiers locaux :", 'yellow', attrs=['bold']))
 			for d in diff:
 				print(colored(d.change_type, typeDiff[d.change_type]["color"], attrs=['bold']) + " : " + typeDiff[d.change_type]["text"] + " " + d.a_blob.path)
 
