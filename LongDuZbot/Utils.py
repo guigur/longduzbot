@@ -51,7 +51,8 @@ class Utils(commands.Cog):
 	def do_diff(arg):
 		'Return the change in the local file system'
 		diff = Utils.gitDiffRoutine()
-		if (diff.size == 0):
+		pprint(dir(diff))
+		if (not diff):
 			print(colored("Aucun changements locaux", 'green', attrs=['bold']))
 		else:
 			print(colored("Changements des fichiers locaux :", 'orange', attrs=['bold']))
