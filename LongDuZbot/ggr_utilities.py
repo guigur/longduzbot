@@ -3,8 +3,32 @@ import datetime
 import math
 import requests
 
+#colors https://www.materialpalette.com/colors
+ggr_red = 0xf44336
+ggr_pink = 0xe91e63
+ggr_purple = 0x9c27b0
+ggr_deeppurple = 0x673ab7
+ggr_indigo = 0x3f51b5
+ggr_blue = 0x2196f3
+ggr_lightblue = 0x03a9f4
+ggr_cyan = 0x00bcd4
+ggr_teal = 0x009688
+ggr_green = 0x4caf50
+ggr_lightgreen = 0x8bc34a
+ggr_lime = 0xcddc39
+ggr_yellow = 0xffeb3b
+ggr_amber = 0xffc107
+ggr_orange = 0xff9800
+ggr_deeporange = 0xff5722
+ggr_brown = 0x795548
+ggr_grey = 0x9e9e9e
+ggr_bluegrey = 0x607d8b
+
+
 roleName = "Maître des Saloperies"
-roleColor = 0xffde00
+githubBaseUrl = "https://github.com/guigur/longduzbot/"
+roleColor = ggr_yellow
+embedUtilitiesColor = ggr_deeppurple
 
 def pickDefImage(name):
 	folder = "img/default/"
