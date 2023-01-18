@@ -242,7 +242,7 @@ class Army(commands.Cog):
 		if (not firstMaitre):
 			await ctx.send("Désolé " + oldMaitre.mention + ", il va falloir faire mieux !")
 
-		url = ctx.author.avatar_url_as(format='png')
+		url = ctx.author.avatar.replace(format='png')
 		picture = certif.generateCertifMaster(requests.get(url, stream=True).raw, ctx.author.name, armytotmembers)
 		await ctx.send(file=discord.File('tmp/certif_best_filled.png'))
 		await ctx.send("Ce certificat prouve votre presigieux titre de " + role.mention + "\nN'hésitez pas à mentionner ce titre prestigieux sur votre CV.")
@@ -258,10 +258,10 @@ class Army(commands.Cog):
 
 		self.saveDataToFileRoutine()
 		await ctx.send("Félicitations " + user.mention + " vous êtes le nouveau **Jean-foutre des Saloperies**")
-		url = ctx.author.avatar_url_as(format='png')
+		url = ctx.author.avatar.replace(format='png')
 		picture = certif.generateCertifBitch(requests.get(url, stream=True).raw, ctx.author.name, armytotmembers)
 		await ctx.send(file=discord.File('tmp/certif_worst_filled.png'))
 		await ctx.send("Ce certificat prouve votre titre de **Jean-foutre des Saloperies**\nVous êtes un bon à rien, un cloporte, un ectoplasme à roulettes. Bref, pas ouf quoi.")
 
-def setup(bot):
-	bot.add_cog(Army(bot))
+async def setup(bot):
+	await bot.add_cog(Army(bot))

@@ -128,5 +128,5 @@ class Eco(commands.Cog):
 			u3 = self.saveFile[2]		
 		return u1, u2, u3
 
-def setup(bot):
-	bot.add_cog(Eco(bot))
+async def setup(bot):
+	await bot.add_cog(Eco(bot))

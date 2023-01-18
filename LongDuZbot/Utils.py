@@ -75,5 +75,5 @@ class Utils(commands.Cog):
 		diff = repo.index.diff(None)
 		return(diff)
 
-def setup(bot):
-	bot.add_cog(Utils(bot))
+async def setup(bot):
+	await bot.add_cog(Utils(bot))

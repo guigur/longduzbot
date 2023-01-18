@@ -71,7 +71,7 @@ class Shell(cmd.Cmd):
 		user = await self.bot.fetch_user(id)
 		await user.send(str)
 
-	def do_stop(self, arg):
+	def do_stop(self, arg): #TODO: FIX ME
 		'Stop the server'
 		self.stop_server()
 		return True
@@ -80,19 +80,19 @@ class Shell(cmd.Cmd):
 		self.stop_server()
 		return True
 
-	def do_restart(self, arg):
+	def do_restart(self, arg): #Working
 		'Restart the server'
 		ggr_utilities.logger(None, "Restarting server")
 		os.execl(sys.executable, os.path.abspath(__file__), *sys.argv) 
 
-	def do_selectUser(self, arg):
+	def do_selectUser(self, arg): #TODO: FIX ME
 		'select working user'
 		if (ggr_utilities.checkIfIdValid(arg)):
 			user = asyncio.run_coroutine_threadsafe(self.get_user(int(arg)), self.loop) #check this
 			workingId = int(arg)
 			workingType = ObjectComType.USER
 
-	def do_selectChannel(self, arg):
+	def do_selectChannel(self, arg): #TODO: FIX ME
 		'select working chanel'
 		if (ggr_utilities.checkIfIdValid(arg)):
 			channel = asyncio.run_coroutine_threadsafe(self.get_channel(int(arg)), self.loop) #check this
@@ -120,5 +120,5 @@ class Com(commands.Cog):
 		self.s = Shell(self.bot)
 		self.s.cmdloop()
 
-def setup(bot):
-	bot.add_cog(Com(bot))
+async def setup(bot):
+	await bot.add_cog(Com(bot))

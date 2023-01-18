@@ -44,16 +44,16 @@ def pickDefImage(name):
 
 def userServerIcon(ctx, user = None):
 	if user:
-		userUrl = user.avatar_url_as(format='png')
+		userUrl = user.avatar.replace(format='png')
 	else:
-		userUrl = ctx.author.avatar_url_as(format='png')
+		userUrl = ctx.author.avatar.replace(format='png')
 	
 	try:
 		userImg = requests.get(userUrl, stream=True).raw
 	except requests.exceptions.RequestException as e:
 		userImg = pickDefImage(ctx.author.name)
 
-	guildUrl = ctx.guild.icon_url_as(format='png')
+	guildUrl = ctx.guild.icon.replace(format='png')
 	try:
 		guildImg = requests.get(guildUrl, stream=True).raw
 	except requests.exceptions.RequestException as e:
@@ -62,7 +62,7 @@ def userServerIcon(ctx, user = None):
 	return userImg, guildImg
 
 def serverIcon(ctx):
-	guildUrl = ctx.guild.icon_url_as(format='png')
+	guildUrl = ctx.guild.icon.replace(format='png')
 	try:
 		guildImg = requests.get(guildUrl, stream=True).raw
 	except requests.exceptions.RequestException as e:
@@ -71,7 +71,7 @@ def serverIcon(ctx):
 	return guildImg
 
 def userIcon(user):
-	userUrl = user.avatar_url_as(format='png')
+	userUrl = user.avatar.replace(format='png')
 	try:
 		userImg = requests.get(userUrl, stream=True).raw
 	except requests.exceptions.RequestException as e:
@@ -79,12 +79,20 @@ def userIcon(user):
 	return userImg
 
 def checkIfIdValid(id):
-	if (isinstance(id, int)):
-		if (int(id) > 9999999999999999):
-			return True
+	idnbr = 0
+
+	if (type(id) is not int):
+		if (id.isnumeric()):
+			idnbr = int(id)
 		else:
-			pass
-	print("Invalid ID")
+			print("Not numeric ID")
+
+	if (idnbr > 9999999999999999):
+		return True
+	else:
+		pass
+
+	print("Invalid ID " + id)
 	return False
 
 def treedotString(string, maxlen):

@@ -15,5 +15,5 @@ class Status(commands.Cog):
 
 ############################ ROUTINES ############################
 
-def setup(bot):
-	bot.add_cog(Status(bot))
+async def setup(bot):
+	await bot.add_cog(Status(bot))
