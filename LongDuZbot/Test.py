@@ -2,6 +2,8 @@ import discord
 from discord.ext import commands
 import sys
 import os
+import sqlite3
+import time
 
 import ggr_utilities, ggr_emotes
 import Eco, Com
@@ -9,7 +11,11 @@ import Eco, Com
 class Test(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
-	
+		self.connection = sqlite3.connect("test.db")
+		cursor = self.connection.cursor()
+		cursor.execute("CREATE TABLE IF NOT EXISTS commands (id INTEGER PRIMARY KEY, command TEXT, timestamp INTEGER)")
+		cursor.execute("INSERT INTO commands(command, timestamp) VALUES(?,?)", ('test', str(int(time.time()))))
+
 
 
 	######################## DISCORD COMMANDS ########################

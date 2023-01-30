@@ -5,6 +5,7 @@ import git
 from termcolor import colored
 import Com
 from pprint import pprint
+import sqlite3
 
 typeDiff = { "A": {"emoji": "🆕", "text": "fichier ajouté", "color": "yellow"}, ##
 			 "D": {"emoji": "❌", "text": "fichier supprimé", "color": "red"}, #
