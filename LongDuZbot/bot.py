@@ -21,7 +21,7 @@ prefix = os.getenv("DISCORD_COMMAND_PREFIX")
 #Com need to loaded first. Otherwise, the additional commands in other modules wont be utilized
 startup_extensions = ["Com", "Utils", "Eco", "Army", "Test", "Admin"] #"status",
 
-intents = discord.Intents.default()
+intents = discord.Intents.all()
 intents.members = True
 
 bot = Bot(command_prefix=prefix, intents=intents)

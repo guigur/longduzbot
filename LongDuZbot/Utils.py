@@ -1,5 +1,7 @@
 import discord
 from discord.ext import commands
+import requests
+import cmd
 import ggr_utilities
 import git
 from termcolor import colored
@@ -25,9 +27,13 @@ class Utils(commands.Cog):
 		ggr_utilities.logger(ctx, ctx.message.content)
 		sha = self.gitVerisonRoutine()
 		url = ggr_utilities.githubBaseUrl + "commit/" + sha
-		embed=discord.Embed(title="commit " + sha, url=url, color=ggr_utilities.embedUtilitiesColor)
+		
+		embed=discord.Embed(title=discord.__name__ + " module version: " + discord.__version__, color=ggr_utilities.ggr_green)
 		await ctx.send(embed=embed)
-
+		embed=discord.Embed(title=requests.__name__ + " module version: " + requests.__version__, color=ggr_utilities.ggr_green)
+		await ctx.send(embed=embed)
+		embed=discord.Embed(title="commit: " + sha, url=url, color=ggr_utilities.embedUtilitiesColor)
+		await ctx.send(embed=embed)
 
 	@commands.command()
 	async def diff(self, ctx):
