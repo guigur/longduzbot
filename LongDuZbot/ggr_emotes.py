@@ -22,7 +22,7 @@ Ulian = "<:Ulian:806653174642507826>"
 Moth = "<:Moth:806653171316686908>"
 Guigor = "<:Guigor:806653160482668574>"
 #SaloperiedoreeOld = "<:Saloperiedoree:788967092115603486>"
-Saloperiedoree = "<a:SD:798923833259327528>" #recup l'annim sur le pc fixe
+Saloperiedoree = "<:SD:806652869150244884>"#"<a:SD:806652869150244884>" #recup l'annim sur le pc fixe
 WAD = "<:Lilian1:806653173136883764"
 
 lilinkhisrightelbow = "<:lilinkhisrightelbow:784177962970513438>"
