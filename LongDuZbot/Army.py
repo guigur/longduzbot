@@ -19,7 +19,6 @@ class Army(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 		self.timeReady = 0
-		self.loadDataFromFileRoutine()
 		self.database = self.bot.get_cog('Database')
 		if self.database is None:
 			ggr_utilities.logger("Missing Database cog", self,)
@@ -30,7 +29,6 @@ class Army(commands.Cog):
 	async def maitre(self, ctx):
 		"""Affiche le maître des saloperies et son record."""
 		ggr_utilities.logger(ctx.message.content, self, ctx)
-		#msg = "Le maître des saloperie est **" + self.data['best']['user'] + "** avec un score de **" + str(self.data['best']['score']) + "** saloperies invoqués"
 		DBMaitre = self.database.getDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.MAITRE)
 		if (DBMaitre and ggr_utilities.checkIfIdValid(DBMaitre[1])):
 			user = await self.bot.fetch_user(DBMaitre[1])
@@ -46,13 +44,13 @@ class Army(commands.Cog):
 	async def jeanfoutre(self, ctx):
 		"""Affiche le jean-foutre des saloperies et son score."""
 		ggr_utilities.logger(ctx.message.content, self, ctx)
-		#msg = "Le jean-foutre des saloperie est **" + self.data['worst']['user'] + "** avec un score de minabke de **" + str(self.data['worst']['score']) + "** saloperies invoqués"
-		if ggr_utilities.checkIfIdValid(self.data['worst']['userid']): ############
-			user = await self.bot.fetch_user(self.data['worst']['userid']) ############
+		DBJeanfoutre= self.database.getDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.JEANFOUTRE)
+		if (DBJeanfoutre and ggr_utilities.checkIfIdValid(DBJeanfoutre[1])):
+			user = await self.bot.fetch_user(DBJeanfoutre[1])
 		else:
 			await ctx.send("Personne n'est le jean-foutre pour l'instant")
 			return
-		ustruct = userStruct(user.name, user.discriminator, ggr_utilities.userIcon(user), self.data['worst']['score']) ############
+		ustruct = userStruct(user.name, user.discriminator, ggr_utilities.userIcon(user), DBJeanfoutre[6])
 		card = certif.cardSaloperieBestWorst(ustruct, ggr_utilities.userIcon(user), ggr_utilities.serverIcon(ctx.author), certif.BestWorst.worst) #user n'a pas d'argument guild
 		
 		await ctx.send(file = discord.File('tmp/card_filled.png'))
@@ -106,6 +104,8 @@ class Army(commands.Cog):
 		armyGold = 0
 		
 		DBMaitre = self.database.getDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.MAITRE)
+		DBJeanfoutre = self.database.getDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.JEANFOUTRE)
+
 		if (DBMaitre is None or ctx.author.id != DBMaitre[1]):
 			if (time.time() > self.timeReady):
 				#game = discord.Game("envoyer une megaarmée")
@@ -134,11 +134,8 @@ class Army(commands.Cog):
 					await ctx.message.add_reaction(ggr_emotes.WAD)
 					Eco.Eco.changeBallanceRoutine(ctx.author, armyGold)
 				if (DBMaitre is None or armytotmembers > DBMaitre[6]):
-
-					#self.database.setDBMaitre(ctx.author.id, ctx.author.name, ctx.message.guild.id, ctx.message.guild.name, time.time(), armytotmembers, megaarmyID)
-
 					await self.grantMasterRoutine(ctx, armytotmembers)
-				elif armytotmembers < self.data['worst']['score']: ############
+				elif (DBJeanfoutre is None or armytotmembers < DBJeanfoutre[6]):
 					await self.grantWorstRoutine(ctx, armytotmembers)
 				else:
 					#TODO: mettre differentes reactions en fonction du score
@@ -168,15 +165,6 @@ class Army(commands.Cog):
 		#Eco.changeBallanceRoutine()	
 	
 	############################ ROUTINES ############################
-
-	def loadDataFromFileRoutine(self):
-		with open('data.json', encoding='utf-8') as json_file:
-			self.data = json.load(json_file)
-
-	def saveDataToFileRoutine(self):
-		ggr_utilities.logger("Saving data", self)
-		with open('data.json', 'w') as json_file:
-			json.dump(self.data, json_file) ############
 
 	#TODO: make a function with this stuff
 	def loadFromFileCoolDownRoutine(self):
@@ -242,6 +230,8 @@ class Army(commands.Cog):
 		await ggr_utilities.supromote(ctx)
 
 		DBMaitre = self.database.getDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.MAITRE)
+		DBJeanfoutre = self.database.getDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.JEANFOUTRE)
+
 		if (DBMaitre is None):
 			firstMaitre = True
 		else:
@@ -252,13 +242,12 @@ class Army(commands.Cog):
 			except:
 				firstMaitre = True
 			
-
 		self.database.setDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.MAITRE, ctx.author.id, ctx.author.name, ctx.message.guild.id, ctx.message.guild.name, time.time(), armytotmembers, 1) #TODO: change armyid
 		
-		if armytotmembers < self.data['worst']['score']: #if the worst has not been choosen yetm we lower the minimum to the best score yet
-			self.data['worst']['score'] = armytotmembers ############
+		if (DBJeanfoutre is None or armytotmembers < DBJeanfoutre[6]): #if the worst has not been choosen yetm we lower the minimum to the best score yet
+			self.database.setDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.JEANFOUTRE, 0, "", ctx.message.guild.id, ctx.message.guild.name, time.time(), armytotmembers, 1) #TODO: change armyid
 
-		self.saveDataToFileRoutine()
+		#self.saveDataToFileRoutine() ############
 		await ctx.send("Félicitations " + user.mention + " vous êtes le nouveau " + role.mention)
 		if (not firstMaitre):
 			await ctx.send("Désolé " + oldMaitre.mention + ", il va falloir faire mieux !")
@@ -272,12 +261,8 @@ class Army(commands.Cog):
 		ggr_utilities.logger("User " + ctx.author.name + " is now the good-for-nothing of saloperies", self)
 		user = ctx.author
 
-		self.data['worst']['score'] = armytotmembers
-		self.data['worst']['user'] = ctx.author.name
-		self.data['worst']['userid'] = ctx.author.id
-		self.data['worst']['date'] = datetime.datetime.timestamp(datetime.datetime.now())
+		self.database.setDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.JEANFOUTRE, ctx.author.id, ctx.author.name, ctx.message.guild.id, ctx.message.guild.name, time.time(), armytotmembers, 1) #TODO: change armyid
 
-		self.saveDataToFileRoutine()
 		await ctx.send("Félicitations " + user.mention + " vous êtes le nouveau **Jean-foutre des Saloperies**")
 		url = ctx.author.avatar_url_as(format='png')
 		picture = certif.generateCertifBitch(requests.get(url, stream=True).raw, ctx.author.name, armytotmembers)
