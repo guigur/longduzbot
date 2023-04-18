@@ -46,14 +46,14 @@ class Database(commands.Cog):
 
 	def addDBArmy(self, userID, user, guildID, guild, timestamp, command, saloperies, wad):
 		request = "INSERT INTO army VALUES(" + str(int(userID)) + ", " + self.escape(user) + ", " + \
-		str(int(guildID)) + ", " + self.escape(guild) + ", " + str(int(timestamp)) + ", " + \
+		str(int(guildID)) + ", " + self.escape(guild) + ", " + str(float(timestamp)) + ", " + \
 		self.escape(command) + ", " + str(int(saloperies)) + ", " + str(int(wad)) + ")"
 		ggr_utilities.logger("Request:  " + request, self)
 		self.requestDB(request)
 
 	def addDBMegaArmy(self, userID, user, guildID, guild, timestamp, command, lines, saloperies, wad):
 		request = "INSERT INTO megaarmy VALUES(" + str(int(userID)) + ", " + self.escape(user) + ", " + \
-		str(int(guildID)) + ", " + self.escape(guild) + ", " + str(int(timestamp)) + ", " + \
+		str(int(guildID)) + ", " + self.escape(guild) + ", " + str(float(timestamp)) + ", " + \
 		self.escape(command) + ", " + str(int(lines)) + ", " + str(int(saloperies)) + ", " + str(int(wad)) + ")"
 		ggr_utilities.logger("Request:  " + request, self)
 		self.requestDB(request)

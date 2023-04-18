@@ -20,6 +20,9 @@ class Army(commands.Cog):
 		self.bot = bot
 		self.timeReady = 0
 		self.loadDataFromFileRoutine()
+		self.database = self.bot.get_cog('Database')
+		if self.database is None:
+			ggr_utilities.logger("Missing Database cog", self,)
 
 ######################## DISCORD COMMANDS ########################
 
@@ -82,9 +85,7 @@ class Army(commands.Cog):
 			armyGold = retarmy[2]
 			await ctx.send(army)
 
-			database = self.bot.get_cog('Database')
-			if database is not None:
-				database.addDBArmy(ctx.author.id, ctx.author.name, ctx.message.guild.id, ctx.message.guild.name, time.time(), ctx.message.content, armytotmembers, armyGold)
+			self.database.addDBArmy(ctx.author.id, ctx.author.name, ctx.message.guild.id, ctx.message.guild.name, time.time(), ctx.message.content, armytotmembers, armyGold)
 
 			for emojinmb in ggr_utilities.numbersToEmojis(armytotmembers):
 				await ctx.message.add_reaction(emojinmb)
@@ -128,9 +129,7 @@ class Army(commands.Cog):
 					await ctx.message.add_reaction(emojinmb)
 				ggr_utilities.logger("User " + ctx.author.name + " summoned " + str(armytotmembers) + " saloperies", self)
 
-				database = self.bot.get_cog('Database')
-				if database is not None:
-					database.addDBMegaArmy(ctx.author.id, ctx.author.name, ctx.message.guild.id, ctx.message.guild.name, time.time(), ctx.message.content, armyLines, armytotmembers, armyGold)
+				self.database.addDBMegaArmy(ctx.author.id, ctx.author.name, ctx.message.guild.id, ctx.message.guild.name, time.time(), ctx.message.content, armyLines, armytotmembers, armyGold)
 
 				await ctx.send("Votre armée compte **" + str(armytotmembers) + "** saloperies. Beau travail.")
 				if armyGold > 0:
