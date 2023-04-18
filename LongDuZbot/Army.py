@@ -31,7 +31,7 @@ class Army(commands.Cog):
 		"""Affiche le maître des saloperies et son record."""
 		ggr_utilities.logger(ctx.message.content, self, ctx)
 		#msg = "Le maître des saloperie est **" + self.data['best']['user'] + "** avec un score de **" + str(self.data['best']['score']) + "** saloperies invoqués"
-		DBMaitre = self.database.getDBMaitre()
+		DBMaitre = self.database.getDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.MAITRE)
 		if (DBMaitre and ggr_utilities.checkIfIdValid(DBMaitre[1])):
 			user = await self.bot.fetch_user(DBMaitre[1])
 		else:
@@ -105,7 +105,7 @@ class Army(commands.Cog):
 		armytotmembers = 0
 		armyGold = 0
 		
-		DBMaitre = self.database.getDBMaitre()
+		DBMaitre = self.database.getDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.MAITRE)
 		if (DBMaitre is None or ctx.author.id != DBMaitre[1]):
 			if (time.time() > self.timeReady):
 				#game = discord.Game("envoyer une megaarmée")
@@ -241,7 +241,7 @@ class Army(commands.Cog):
 		role = await ggr_utilities.getRole(guild)
 		await ggr_utilities.supromote(ctx)
 
-		DBMaitre = self.database.getDBMaitre()
+		DBMaitre = self.database.getDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.MAITRE)
 		if (DBMaitre is None):
 			firstMaitre = True
 		else:
@@ -253,8 +253,7 @@ class Army(commands.Cog):
 				firstMaitre = True
 			
 
-
-		self.database.setDBMaitre(ctx.author.id, ctx.author.name, ctx.message.guild.id, ctx.message.guild.name, time.time(), armytotmembers, 1) #TODO: change armyid
+		self.database.setDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.MAITRE, ctx.author.id, ctx.author.name, ctx.message.guild.id, ctx.message.guild.name, time.time(), armytotmembers, 1) #TODO: change armyid
 		
 		if armytotmembers < self.data['worst']['score']: #if the worst has not been choosen yetm we lower the minimum to the best score yet
 			self.data['worst']['score'] = armytotmembers ############

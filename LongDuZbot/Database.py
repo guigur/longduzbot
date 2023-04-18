@@ -5,9 +5,21 @@ import os
 import sqlite3
 import json
 import time
+from enum import Enum
 
 import ggr_utilities, ggr_emotes
 import Eco, Com
+
+class MaitreJeanfoutreType(Enum):
+	MAITRE = 0
+	JEANFOUTRE = 1
+
+	def data(self):
+		if (self.value == 0):
+			return ({ "table":"maitre", "idkey":"maitreID"})
+		elif (self.value == 1):
+			return ({ "table":"jeanfoutre", "idkey":"jeanfoutreID"})
+
 
 class Database(commands.Cog):
 	def __init__(self, bot):
@@ -18,7 +30,7 @@ class Database(commands.Cog):
 		self.requestDB("CREATE TABLE army (armyID INTEGER PRIMARY KEY AUTOINCREMENT, userID, user, guildID, guild, timestamp, command, saloperies, wad)")
 		self.requestDB("CREATE TABLE megaarmy (megaarmyID INTEGER PRIMARY KEY AUTOINCREMENT, userID, user, guildID, guild, timestamp, command, lines, saloperies, wad)")
 		self.requestDB("CREATE TABLE maitre (maitreID INTEGER PRIMARY KEY AUTOINCREMENT, userID, user, guildID, guild, timestamp, saloperies, megaarmyID INTEGER NOT NULL, isArchive INTEGER NOT NULL, FOREIGN KEY(megaarmyID) REFERENCES megaarmy(megaarmyID))")
-		self.requestDB("CREATE TABLE jeanfoutre (jeanfoutreID INTEGER PRIMARY KEY AUTOINCREMENT, userID, user, guildID, guild, timestamp, saloperies)")
+		self.requestDB("CREATE TABLE jeanfoutre (jeanfoutreID INTEGER PRIMARY KEY AUTOINCREMENT, userID, user, guildID, guild, timestamp, saloperies, megaarmyID INTEGER NOT NULL, isArchive INTEGER NOT NULL, FOREIGN KEY(megaarmyID) REFERENCES megaarmy(megaarmyID))")
 		self.escape = lambda a: json.dumps(a.replace("\"", ""))
 
 	######################## DISCORD COMMANDS ########################
@@ -52,38 +64,39 @@ class Database(commands.Cog):
 		"""Hard reset the Maitre and Jeanfoutre"""
 		ggr_utilities.logger(ctx.message.content, self, ctx)
 		await ggr_utilities.sudemote(ctx)
-		self.setDBArchiveMaire()
+		self.setDBArchiveMaitreJeanfoutre(MaitreJeanfoutreType.MAITRE)
 
 	############################ ROUTINES ############################
 
-	def setDBMaitre(self, userID, user, guildID, guild, timestamp, saloperies, megaarmyID):
-		maitreID = "NULL"
-		request = "SELECT maitreID, isArchive FROM maitre ORDER BY maitreID DESC LIMIT 1"
+	def setDBMaitreJeanfoutre(self, type, userID, user, guildID, guild, timestamp, saloperies, megaarmyID):
+		tableID = "NULL"
+		request = "SELECT " + type.data()['idkey'] + ", isArchive FROM " + type.data()['table'] + " ORDER BY " + type.data()['idkey'] + " DESC LIMIT 1"
 		self.requestDB(request)
 		row = self.cur.fetchone()
 		if (row is None or row[1] != 0):
-			ggr_utilities.logger("No pass maitre, using a new line", self)
+			ggr_utilities.logger("No pass " + type.data()['table'] + " using a new line", self)
 		else:
-			ggr_utilities.logger("Old maitre is out, using his old line " + str(row[0]), self)
-			maitreID = str(row[0])
+			ggr_utilities.logger("Old " + type.data()['table'] + " is out, using his old line " + str(row[0]), self)
+			tableID = str(row[0])
 		
-		request = "REPLACE INTO maitre VALUES(" + maitreID + ", " + str(int(userID)) + ", " + self.escape(user) + ", " + \
+		request = "REPLACE INTO " + type.data()['table'] + " VALUES(" + tableID + ", " + str(int(userID)) + ", " + self.escape(user) + ", " + \
 		str(int(guildID)) + ", " + self.escape(guild) + ", " + str(float(timestamp)) + ", " + \
 		str(int(saloperies)) + ", " + str(int(megaarmyID)) + ", " + str(0) + ")"
 		ggr_utilities.logger("Request:  " + request, self)
 		self.requestDB(request)
 		return(self.cur.lastrowid)
 	
-	def getDBMaitre(self):
-		request = "SELECT * FROM maitre WHERE isArchive=0 ORDER BY maitreID DESC LIMIT 1"
+	def getDBMaitreJeanfoutre(self, type):
+		request = "SELECT * FROM " + type.data()['table'] + " WHERE isArchive=0 ORDER BY " + type.data()['idkey'] + " DESC LIMIT 1"
 		self.requestDB(request)
 		row = self.cur.fetchone()
 		return (row)
 
-	def setDBArchiveMaire(self):
-		request = "UPDATE maitre SET isArchive = 1 WHERE isArchive = 0"
+	def setDBArchiveMaitreJeanfoutre(self, type):
+		request = "UPDATE " + type.data()['table'] + " SET isArchive = 1 WHERE isArchive = 0"
 		self.requestDB(request)
 
+	####
 	def addDBArmy(self, userID, user, guildID, guild, timestamp, command, saloperies, wad):
 		request = "INSERT INTO army VALUES(NULL, " + str(int(userID)) + ", " + self.escape(user) + ", " + \
 		str(int(guildID)) + ", " + self.escape(guild) + ", " + str(float(timestamp)) + ", " + \
