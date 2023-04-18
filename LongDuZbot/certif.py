@@ -34,7 +34,7 @@ def genRoundImg(source):
 	source.putalpha(mask)
 
 def generateCertifMaster(profilePictureLink, pseudo, score):
-	profile = Image.open(profilePictureLink) #profileg profile
+	profile = Image.open(profilePictureLink).convert("RGBA") #profileg profile
 	profile = profile.resize([512, 512]) #just to be sure
 
 	certif = Image.open('img/template/certif_best.png', 'r')
