@@ -48,13 +48,11 @@ class Database(commands.Cog):
 		self.setDBMaitre(1, "test", 1, "guild", time.time(), 10, 1)
 
 	@commands.command()
-	async def bar(self, ctx, arg = None):
-		self.setDBArchiveMaire(2)
-
-	@commands.command()
-	async def baz(self, ctx, arg = None):
-		self.getDBMaitre()
-		await ctx.send("maitre")
+	async def hardreset(self, ctx, arg = None):
+		"""Hard reset the Maitre and Jeanfoutre"""
+		ggr_utilities.logger(ctx.message.content, self, ctx)
+		await ggr_utilities.sudemote(ctx)
+		self.setDBArchiveMaire()
 
 	############################ ROUTINES ############################
 
@@ -82,8 +80,8 @@ class Database(commands.Cog):
 		row = self.cur.fetchone()
 		return (row)
 
-	def setDBArchiveMaire(self, maitreID):
-		request = "UPDATE maitre SET isArchive = 1 WHERE maitreID = " + str(maitreID)
+	def setDBArchiveMaire(self):
+		request = "UPDATE maitre SET isArchive = 1 WHERE isArchive = 0"
 		self.requestDB(request)
 
 	def addDBArmy(self, userID, user, guildID, guild, timestamp, command, saloperies, wad):

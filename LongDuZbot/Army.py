@@ -31,12 +31,13 @@ class Army(commands.Cog):
 		"""Affiche le maître des saloperies et son record."""
 		ggr_utilities.logger(ctx.message.content, self, ctx)
 		#msg = "Le maître des saloperie est **" + self.data['best']['user'] + "** avec un score de **" + str(self.data['best']['score']) + "** saloperies invoqués"
-		if ggr_utilities.checkIfIdValid(self.data['best']['userid']):
-			user = await self.bot.fetch_user(self.data['best']['userid'])
+		DBMaitre = self.database.getDBMaitre()
+		if (DBMaitre and ggr_utilities.checkIfIdValid(DBMaitre[1])):
+			user = await self.bot.fetch_user(DBMaitre[1])
 		else:
 			await ctx.send("Personne n'est maitre pour l'instant")
 			return
-		ustruct = userStruct(user.name, user.discriminator, ggr_utilities.userIcon(user), self.data['best']['score'])
+		ustruct = userStruct(user.name, user.discriminator, ggr_utilities.userIcon(user), DBMaitre[6])
 		card = certif.cardSaloperieBestWorst(ustruct, ggr_utilities.userIcon(user), ggr_utilities.serverIcon(ctx.author), certif.BestWorst.best) #user n'a pas d'argument guild
 		
 		await ctx.send(file = discord.File('tmp/card_filled.png'))
@@ -46,12 +47,12 @@ class Army(commands.Cog):
 		"""Affiche le jean-foutre des saloperies et son score."""
 		ggr_utilities.logger(ctx.message.content, self, ctx)
 		#msg = "Le jean-foutre des saloperie est **" + self.data['worst']['user'] + "** avec un score de minabke de **" + str(self.data['worst']['score']) + "** saloperies invoqués"
-		if ggr_utilities.checkIfIdValid(self.data['worst']['userid']):
-			user = await self.bot.fetch_user(self.data['worst']['userid'])
+		if ggr_utilities.checkIfIdValid(self.data['worst']['userid']): ############
+			user = await self.bot.fetch_user(self.data['worst']['userid']) ############
 		else:
 			await ctx.send("Personne n'est le jean-foutre pour l'instant")
 			return
-		ustruct = userStruct(user.name, user.discriminator, ggr_utilities.userIcon(user), self.data['worst']['score'])
+		ustruct = userStruct(user.name, user.discriminator, ggr_utilities.userIcon(user), self.data['worst']['score']) ############
 		card = certif.cardSaloperieBestWorst(ustruct, ggr_utilities.userIcon(user), ggr_utilities.serverIcon(ctx.author), certif.BestWorst.worst) #user n'a pas d'argument guild
 		
 		await ctx.send(file = discord.File('tmp/card_filled.png'))
@@ -92,16 +93,10 @@ class Army(commands.Cog):
 			if armyGold > 0:
 				await ctx.send("Cette armée vous rapporte **" + str(armyGold) + " WADs**")
 				await ctx.message.add_reaction(ggr_emotes.WAD)
-				Eco.Eco.changeBallanceRoutine(ctx.author, armyGold)
+				Eco.Eco.changeBallanceRoutine(ctx.author, armyGold) ##TODO: change call to eco
 		else:
 			await ctx.send("Votre armée de saloperies n'est pas prête.\nRéessayez dans **" + str(math.trunc(self.hasUserCoolDownRoutine(ctx.author)["date"] - time.time())) + "** secondes.")
 			await ctx.message.add_reaction("❌")
-
-	##TODO remove this
-	@commands.command()
-	async def gm(self, ctx):
-		if (ctx.author.id == 199222032787963904):
-			await self.grantMasterRoutine(ctx, 596)
 
 	@commands.command()
 	async def megaarmy(self, ctx):
@@ -109,8 +104,10 @@ class Army(commands.Cog):
 		ggr_utilities.logger(ctx.message.content, self, ctx)
 		armytotmembers = 0
 		armyGold = 0
-		if ctx.author.name != self.data['best']['user']:
-			if time.time() > self.timeReady:
+		
+		DBMaitre = self.database.getDBMaitre()
+		if (DBMaitre is None or ctx.author.id != DBMaitre[1]):
+			if (time.time() > self.timeReady):
 				#game = discord.Game("envoyer une megaarmée")
 				#await bot.change_presence(status=discord.Status.online, activity=game)
 
@@ -136,12 +133,12 @@ class Army(commands.Cog):
 					await ctx.send("Cette armée vous rapporte **" + str(armyGold) + " WADs**")
 					await ctx.message.add_reaction(ggr_emotes.WAD)
 					Eco.Eco.changeBallanceRoutine(ctx.author, armyGold)
-				if armytotmembers > self.data['best']['score']:
+				if (DBMaitre is None or armytotmembers > DBMaitre[6]):
 
-					self.database.setDBMaitre(ctx.author.id, ctx.author.name, ctx.message.guild.id, ctx.message.guild.name, time.time(), armytotmembers, megaarmyID)
+					#self.database.setDBMaitre(ctx.author.id, ctx.author.name, ctx.message.guild.id, ctx.message.guild.name, time.time(), armytotmembers, megaarmyID)
 
 					await self.grantMasterRoutine(ctx, armytotmembers)
-				elif armytotmembers < self.data['worst']['score']:
+				elif armytotmembers < self.data['worst']['score']: ############
 					await self.grantWorstRoutine(ctx, armytotmembers)
 				else:
 					#TODO: mettre differentes reactions en fonction du score
@@ -150,7 +147,7 @@ class Army(commands.Cog):
 				await ctx.send("La méga armée de saloperies n'est pas prête.\nRéessayez dans quelques minutes.")
 				await ctx.message.add_reaction("❌")
 		else:
-			await ctx.send("Un maître n'a pas besoin de prouver sa valeur.\nLa votre est de **" + str(self.data['best']['score']) + "** Saloperies.")
+			await ctx.send("Un maître n'a pas besoin de prouver sa valeur.\nLa votre est de **" + str(DBMaitre[6]) + "** Saloperies.")
 	
 	######################### SHELL COMMANDS #########################
 
@@ -179,7 +176,7 @@ class Army(commands.Cog):
 	def saveDataToFileRoutine(self):
 		ggr_utilities.logger("Saving data", self)
 		with open('data.json', 'w') as json_file:
-			json.dump(self.data, json_file)
+			json.dump(self.data, json_file) ############
 
 	#TODO: make a function with this stuff
 	def loadFromFileCoolDownRoutine(self):
@@ -243,21 +240,24 @@ class Army(commands.Cog):
 		guild = ctx.message.guild
 		role = await ggr_utilities.getRole(guild)
 		await ggr_utilities.supromote(ctx)
-		firstMaitre = False
 
-		oldMaitreID = self.data['best']['userid']
-		try:
-			oldMaitre = await self.bot.fetch_user(oldMaitreID)
-		except:
+		DBMaitre = self.database.getDBMaitre()
+		if (DBMaitre is None):
 			firstMaitre = True
+		else:
+			oldMaitreID = DBMaitre[1] 
+			try:
+				oldMaitre = await self.bot.fetch_user(oldMaitreID)
+				firstMaitre = False
+			except:
+				firstMaitre = True
+			
 
-		self.data['best']['score'] = armytotmembers
-		self.data['best']['user'] = ctx.author.name
-		self.data['best']['userid'] = ctx.author.id
-		self.data['best']['date'] = datetime.datetime.timestamp(datetime.datetime.now())
+
+		self.database.setDBMaitre(ctx.author.id, ctx.author.name, ctx.message.guild.id, ctx.message.guild.name, time.time(), armytotmembers, 1) #TODO: change armyid
 		
 		if armytotmembers < self.data['worst']['score']: #if the worst has not been choosen yetm we lower the minimum to the best score yet
-			self.data['worst']['score'] = armytotmembers
+			self.data['worst']['score'] = armytotmembers ############
 
 		self.saveDataToFileRoutine()
 		await ctx.send("Félicitations " + user.mention + " vous êtes le nouveau " + role.mention)

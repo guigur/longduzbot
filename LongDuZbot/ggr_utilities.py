@@ -81,16 +81,15 @@ def userIcon(user):
 	return userImg
 
 def checkIfIdValid(id):
-	# if (isinstance(int(id), int) == True):
-	# 	if (int(id) > 9999999999999999):
-	# 		return True
-	# 	else:
-	# 		pass
-	# else:
-	# 	print("not instance")
-	# print("Invalid ID")
-	# return False
-	return True
+	if (isinstance(int(id), int) == True):
+		if (int(id) > 9999999999999999):
+			return True
+		else:
+			pass
+	else:
+		print("not instance")
+	print("Invalid ID")
+	return False
 
 def treedotString(string, maxlen):
 	stringret = (string[:maxlen-2] + '...') if len(string) > maxlen else string
