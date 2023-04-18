@@ -3,6 +3,7 @@ from datetime import datetime
 import locale
 import random
 import enum
+import Eco
 import ggr_utilities
 from collections import namedtuple 
 import os
@@ -259,7 +260,7 @@ def generateMoneyPodium(user1, user2, user3, serverPictureLink, serverName):
 	UserMoney3TextW, UserMoney3TextH = fontCardBig.getsize(UserMoney3Text)
 	draw.text((495 - (UserMoney3TextW/2), 450), text=UserMoney3Text, fill=(255,255,255,127), font=fontCardBig, anchor=None, spacing=0, align="center")
 
-	wadsText = "WADs"
+	wadsText = " " + Eco.money(user1.balance)
 	wadsTextW, wadsTextH = fontCardIdentifier.getsize(wadsText)
 	draw.text((290 - (wadsTextW/2), 495), text=wadsText, fill=(255,255,255,127), font=fontCardIdentifier, anchor=None, spacing=0, align="center")
 	draw.text((85 - (wadsTextW/2), 495), text=wadsText, fill=(255,255,255,127), font=fontCardIdentifier, anchor=None, spacing=0, align="center")
@@ -308,7 +309,7 @@ def generateMoneyCard(user, serverPictureLink):
 	textNumberW,textNumberH = fontCardAccent.getsize(textNumber)
 	draw.text((188 + textOwnW, ligneOffset[2] - 5), text=textNumber, fill=(255,255,255,255), font=fontCardAccent, anchor=None, spacing=0, align="left")
 
-	textMoneyName = " WADs"
+	textMoneyName = " " + Eco.money(user.balance)
 	textMoneyNameW,textMoneyNameH = fontCard.getsize(textMoneyName)
 	draw.text((188 + textOwnW + textNumberW, ligneOffset[2]), text=textMoneyName, fill=(255,255,255,255), font=fontCard, anchor=None, spacing=0, align="left")
 

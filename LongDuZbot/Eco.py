@@ -11,6 +11,9 @@ import Com
 
 userStruct = namedtuple("userStruct", ["name", "discriminator", "icon", "balance"])
 
+money = lambda a: "WAD" if (a <= 1) else "WADs"
+
+
 class Eco(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
@@ -102,7 +105,7 @@ class Eco(commands.Cog):
 
 	def changeBallanceRoutine(self, user, diff):
 		self.checkUserExistRoutine(user)
-		ggr_utilities.logger("add " + str(diff) + " wads to " + user.name, self)
+		ggr_utilities.logger("add " + str(diff) + " " + money(diff) + " to " + user.name, self)
 		self.loadFromFileRoutine()
 		for u in self.saveFile:
 			if u["name"] == user.name:

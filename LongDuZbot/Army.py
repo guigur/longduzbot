@@ -93,7 +93,7 @@ class Army(commands.Cog):
 			for emojinmb in ggr_utilities.numbersToEmojis(armytotmembers):
 				await ctx.message.add_reaction(emojinmb)
 			if armyGold > 0:
-				await ctx.send("Cette armée vous rapporte **" + str(armyGold) + " WADs**")
+				await ctx.send("Cette armée vous rapporte **" + str(armyGold) + " " + Eco.money(armyGold) + "**")
 				await ctx.message.add_reaction(ggr_emotes.WAD)
 				#Eco.Eco.changeBallanceRoutine(ctx.author, armyGold) ##TODO: change call to eco ##########==
 				self.eco.changeBallanceRoutine(ctx.author, armyGold) ##TODO: change call to eco ##########==
@@ -135,7 +135,7 @@ class Army(commands.Cog):
 
 				await ctx.send("Votre armée compte **" + str(armytotmembers) + "** saloperies. Beau travail.")
 				if armyGold > 0:
-					await ctx.send("Cette armée vous rapporte **" + str(armyGold) + " WADs**")
+					await ctx.send("Cette armée vous rapporte **" + str(armyGold) + " " + Eco.money(armyGold) + "**")
 					await ctx.message.add_reaction(ggr_emotes.WAD)
 					self.eco.changeBallanceRoutine(ctx.author, armyGold) ##TODO: change call to eco ##########==
 
