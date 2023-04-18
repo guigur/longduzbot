@@ -81,10 +81,10 @@ class Army(commands.Cog):
 			armytotmembers = retarmy[1]
 			armyGold = retarmy[2]
 			await ctx.send(army)
-			#Database.Database.addDBxArmy(0, ctx.author.name, "test", 0, "testcmd", 1, 0, 0, 0) ###############
-			database = self.bot.get_cog('Database')
-			database.addDBxArmy(ctx.author.id, ctx.author.name, ctx.message.guild.id, ctx.message.guild.name, time.time(), ctx.message.content, 1, armytotmembers, armyGold)
 
+			database = self.bot.get_cog('Database')
+			if database is not None:
+				database.addDBArmy(ctx.author.id, ctx.author.name, ctx.message.guild.id, ctx.message.guild.name, time.time(), ctx.message.content, armytotmembers, armyGold)
 
 			for emojinmb in ggr_utilities.numbersToEmojis(armytotmembers):
 				await ctx.message.add_reaction(emojinmb)
@@ -127,6 +127,11 @@ class Army(commands.Cog):
 				for emojinmb in ggr_utilities.numbersToEmojis(armyLines):
 					await ctx.message.add_reaction(emojinmb)
 				ggr_utilities.logger("User " + ctx.author.name + " summoned " + str(armytotmembers) + " saloperies", self)
+
+				database = self.bot.get_cog('Database')
+				if database is not None:
+					database.addDBMegaArmy(ctx.author.id, ctx.author.name, ctx.message.guild.id, ctx.message.guild.name, time.time(), ctx.message.content, armyLines, armytotmembers, armyGold)
+
 				await ctx.send("Votre armée compte **" + str(armytotmembers) + "** saloperies. Beau travail.")
 				if armyGold > 0:
 					await ctx.send("Cette armée vous rapporte **" + str(armyGold) + " WADs**")

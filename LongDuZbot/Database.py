@@ -14,7 +14,8 @@ class Database(commands.Cog):
 		self.db = "test.db"
 		self.con = sqlite3.connect(self.db)
 		self.cur = self.con.cursor()
-		self.requestDB("CREATE TABLE army (userID, user, guildID, guild, timestamp, command, lines, saloperies, wad)")
+		self.requestDB("CREATE TABLE army (userID, user, guildID, guild, timestamp, command, saloperies, wad)")
+		self.requestDB("CREATE TABLE megaarmy (userID, user, guildID, guild, timestamp, command, lines, saloperies, wad)")
 		self.requestDB("CREATE TABLE maitre (userID, user, guildID, guild, timestamp, saloperies)")
 		self.requestDB("CREATE TABLE jeanfoutre (userID, user, guildID, guild, timestamp, saloperies)")
 		self.escape = lambda a: json.dumps(a.replace("\"", ""))
@@ -43,12 +44,17 @@ class Database(commands.Cog):
 
 	############################ ROUTINES ############################
 
-	def addDBxArmy(self, userID, user, guildID, guild, timestamp, command, lines, saloperies, wad):
+	def addDBArmy(self, userID, user, guildID, guild, timestamp, command, saloperies, wad):
 		request = "INSERT INTO army VALUES(" + str(int(userID)) + ", " + self.escape(user) + ", " + \
 		str(int(guildID)) + ", " + self.escape(guild) + ", " + str(int(timestamp)) + ", " + \
-		self.escape(command) + ", " + str(int(lines)) + ", " + \
-		str(int(saloperies)) + ", " + str(int(wad)) + ")"
-		print()
+		self.escape(command) + ", " + str(int(saloperies)) + ", " + str(int(wad)) + ")"
+		ggr_utilities.logger("Request:  " + request, self)
+		self.requestDB(request)
+
+	def addDBMegaArmy(self, userID, user, guildID, guild, timestamp, command, lines, saloperies, wad):
+		request = "INSERT INTO megaarmy VALUES(" + str(int(userID)) + ", " + self.escape(user) + ", " + \
+		str(int(guildID)) + ", " + self.escape(guild) + ", " + str(int(timestamp)) + ", " + \
+		self.escape(command) + ", " + str(int(lines)) + ", " + str(int(saloperies)) + ", " + str(int(wad)) + ")"
 		ggr_utilities.logger("Request:  " + request, self)
 		self.requestDB(request)
 
