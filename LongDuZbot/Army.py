@@ -19,10 +19,14 @@ class Army(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 		self.timeReady = 0
+
 		self.database = self.bot.get_cog('Database')
 		if self.database is None:
 			ggr_utilities.logger("Missing Database cog", self,)
 
+		self.eco = self.bot.get_cog('Eco')
+		if self.eco is None:
+			ggr_utilities.logger("Missing Eco cog", self,)
 ######################## DISCORD COMMANDS ########################
 
 	@commands.command()
@@ -91,7 +95,8 @@ class Army(commands.Cog):
 			if armyGold > 0:
 				await ctx.send("Cette armée vous rapporte **" + str(armyGold) + " WADs**")
 				await ctx.message.add_reaction(ggr_emotes.WAD)
-				Eco.Eco.changeBallanceRoutine(ctx.author, armyGold) ##TODO: change call to eco
+				#Eco.Eco.changeBallanceRoutine(ctx.author, armyGold) ##TODO: change call to eco ##########==
+				self.eco.changeBallanceRoutine(ctx.author, armyGold) ##TODO: change call to eco ##########==
 		else:
 			await ctx.send("Votre armée de saloperies n'est pas prête.\nRéessayez dans **" + str(math.trunc(self.hasUserCoolDownRoutine(ctx.author)["date"] - time.time())) + "** secondes.")
 			await ctx.message.add_reaction("❌")
@@ -132,7 +137,8 @@ class Army(commands.Cog):
 				if armyGold > 0:
 					await ctx.send("Cette armée vous rapporte **" + str(armyGold) + " WADs**")
 					await ctx.message.add_reaction(ggr_emotes.WAD)
-					Eco.Eco.changeBallanceRoutine(ctx.author, armyGold)
+					self.eco.changeBallanceRoutine(ctx.author, armyGold) ##TODO: change call to eco ##########==
+
 				if (DBMaitre is None or armytotmembers > DBMaitre[6]):
 					await self.grantMasterRoutine(ctx, armytotmembers)
 				elif (DBJeanfoutre is None or armytotmembers < DBJeanfoutre[6]):

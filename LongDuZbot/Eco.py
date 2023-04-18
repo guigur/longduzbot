@@ -30,9 +30,9 @@ class Eco(commands.Cog):
 				return #on quitte la fonction
 		else:
 			user = ctx.author
-		userJson = self.checkUserExistRoutine(user)
+		userJson = self.checkUserExistRoutine(user) ##########==
 
-		userS = userStruct(user.name, user.discriminator, ggr_utilities.userIcon(user), userJson["balance"])
+		userS = userStruct(user.name, user.discriminator, ggr_utilities.userIcon(user), userJson["balance"]) ##########==
 		card = certif.generateMoneyCard(userS, ggr_utilities.serverIcon(ctx.author))
 		await ctx.send(file = discord.File('tmp/card_filled.png'))
 
@@ -40,14 +40,14 @@ class Eco(commands.Cog):
 	async def topwad(self, ctx):
 		ggr_utilities.logger(ctx.message.content, self, ctx)
 		try:
-			userJson1, userJson2, userJson3 = self.findUserMaxBalanceRoutine()
-			u1 = await self.bot.fetch_user(userJson1["id"])
-			u2 = await self.bot.fetch_user(userJson2["id"])
-			u3 = await self.bot.fetch_user(userJson3["id"])
+			userJson1, userJson2, userJson3 = self.findUserMaxBalanceRoutine() ##########==
+			u1 = await self.bot.fetch_user(userJson1["id"]) ##########==
+			u2 = await self.bot.fetch_user(userJson2["id"]) ##########==
+			u3 = await self.bot.fetch_user(userJson3["id"]) ##########==
 
-			userStruct1 = userStruct(u1.name, u1.discriminator, ggr_utilities.userIcon(u1), userJson1["balance"])
-			userStruct2 = userStruct(u2.name, u2.discriminator, ggr_utilities.userIcon(u2), userJson2["balance"])
-			userStruct3 = userStruct(u3.name, u3.discriminator, ggr_utilities.userIcon(u3), userJson3["balance"])
+			userStruct1 = userStruct(u1.name, u1.discriminator, ggr_utilities.userIcon(u1), userJson1["balance"]) ##########==
+			userStruct2 = userStruct(u2.name, u2.discriminator, ggr_utilities.userIcon(u2), userJson2["balance"]) ##########==
+			userStruct3 = userStruct(u3.name, u3.discriminator, ggr_utilities.userIcon(u3), userJson3["balance"]) ##########==
 
 			card = certif.generateMoneyPodium(userStruct1, userStruct2, userStruct3, ggr_utilities.serverIcon(ctx.author), ctx.guild.name)
 
@@ -87,34 +87,31 @@ class Eco(commands.Cog):
 		with open('economy.json', 'w') as json_file:
 			json.dump(self.saveFile, json_file)
 	
-	@classmethod
 	def checkUserExistRoutine(self, user):
 		ggr_utilities.logger("Check if user exist.", self)
-		self.loadFromFileRoutine(self)
+		self.loadFromFileRoutine()
 		for u in self.saveFile:
 			if u["name"] == user.name:
 				return u
 		ggr_utilities.logger("User " + user.name + " not found adding him/her to the economy file", self)
-		newUserJson = {"name": user.name , "id": user.id, "balance": 1 }
+		newUserJson = {"name": user.name , "id": user.id, "balance": 1 } ##########==
 
-		self.saveFile.append(newUserJson)
-		self.saveToFileRoutine(self)
+		self.saveFile.append(newUserJson) ##########==
+		self.saveToFileRoutine() ##########==
 		return newUserJson
 
-	@classmethod
 	def changeBallanceRoutine(self, user, diff):
 		self.checkUserExistRoutine(user)
 		ggr_utilities.logger("add " + str(diff) + " wads to " + user.name, self)
-		self.loadFromFileRoutine(self)
+		self.loadFromFileRoutine()
 		for u in self.saveFile:
 			if u["name"] == user.name:
 				u["balance"] += diff
-		self.saveToFileRoutine(self)
+		self.saveToFileRoutine()
 
-	@classmethod
 	def findUserMaxBalanceRoutine(self):
 		ggr_utilities.logger("Find max balance.", self)
-		self.loadFromFileRoutine(self)
+		self.loadFromFileRoutine()
 
 		self.saveFile.sort(key = lambda user:user["balance"], reverse = True)
 		
