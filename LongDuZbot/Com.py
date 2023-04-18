@@ -44,28 +44,26 @@ class Shell(cmd.Cmd):
 	def __init__(self, bot):
 		cmd.Cmd.__init__(self)
 		self.bot = bot
+		self.prompt = colored("> ", "light_magenta")
+		self.defaultprompt = self.prompt
+		self.workingType = ObjectComType.NONE
 
 	f = Figlet(font='slant')
 	intro = f.renderText("LongDuZbot") + "\nType help or ? to list commands.\n"
-	prompt = '> '
 	file = None
 	loop = asyncio.get_event_loop()
-
-	@classmethod
-	def changePormpt(self, newPrompt):
-		self.prompt = newPrompt
-
+	
 	def stop_server(self):
-		ggr_utilities.logger("Stopping server", self)
+		ggr_utilities.logger("Stopping server", self, None, ggr_utilities.LogType.INFO)
 		asyncio.run_coroutine_threadsafe(self.bot.close(), self.loop)
 	
 	async def get_user(self, id: int):
-		user = await self.bot.fetch_user(id)
-		self.changePormpt(colored(user, 'red') + " > ")
+		self.user = await self.bot.fetch_user(id)
+		self.prompt = colored(self.user, "red") + "> "
 
 	async def get_channel(self, id: int):
-		channel = await self.bot.fetch_channel(id)
-		self.changePormpt(colored(channel.guild.name, 'blue') + " > " + colored(channel.name, 'green') + " > ")
+		self.channel = await self.bot.fetch_channel(id)
+		self.prompt  = colored(self.channel.guild.name, "blue") + ">" + colored(self.channel.name, "green") + "> "
 
 	async def user_say(self, id: int, str: str) :
 		user = await self.bot.fetch_user(id)
@@ -88,27 +86,35 @@ class Shell(cmd.Cmd):
 	def do_selectUser(self, arg):
 		'select working user'
 		if (ggr_utilities.checkIfIdValid(arg)):
-			user = asyncio.run_coroutine_threadsafe(self.get_user(int(arg)), self.loop) #check this
-			workingId = int(arg)
-			workingType = ObjectComType.USER
+			self.user = asyncio.run_coroutine_threadsafe(self.get_user(int(arg)), self.loop) #check this
+			self.workingId = int(arg)
+			self.workingType = ObjectComType.USER
 
 	def do_selectChannel(self, arg):
 		'select working chanel'
 		if (ggr_utilities.checkIfIdValid(arg)):
-			channel = asyncio.run_coroutine_threadsafe(self.get_channel(int(arg)), self.loop) #check this
-			workingId = int(arg)
-			workingType = ObjectComType.CHANNEL
+			self.channel = asyncio.run_coroutine_threadsafe(self.get_channel(int(arg)), self.loop) #check this
+			self.workingId = int(arg)
+			self.workingType = ObjectComType.CHANNEL
+
+	def do_unselect(self, arg):
+		'unseelect user or channel'
+		self.user = 0
+		self.prompt = self.defaultprompt
+		self.channel = 0
+		self.workingId = 0
+		self.workingType = ObjectComType.NONE
 
 	def do_say(self, arg):
 		'say something to the server or chat with an user'
-		if (workingType != ObjectComType.NONE):
-			if (workingType == ObjectComType.USER):
-				asyncio.run_coroutine_threadsafe(self.user_say(workingId, arg), self.loop)
-			elif (workingType == ObjectComType.CHANNEL):
-				workingObject = self.bot.get_channel(workingId)
+		if (self.workingType != ObjectComType.NONE):
+			if (self.workingType == ObjectComType.USER):
+				asyncio.run_coroutine_threadsafe(self.user_say(self.workingId, arg), self.loop)
+			elif (self.workingType == ObjectComType.CHANNEL):
+				workingObject = self.bot.get_channel(self.workingId)
 				asyncio.run_coroutine_threadsafe(workingObject.send(arg), self.loop)
 		else:
-			print("No working ID. Attach a Channel or User with \"selectChannel\" or \"selectUser\"")
+			ggr_utilities.logger("No working ID. Attach a Channel or User with \"selectChannel\" or \"selectUser\"", self, None, ggr_utilities.LogType.ERROR)
 
 class Com(commands.Cog):
 	def __init__(self, bot):

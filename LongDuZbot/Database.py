@@ -4,6 +4,7 @@ import sys
 import os
 import sqlite3
 import json
+import time
 
 import ggr_utilities, ggr_emotes
 import Eco, Com
@@ -16,7 +17,7 @@ class Database(commands.Cog):
 		self.cur = self.con.cursor()
 		self.requestDB("CREATE TABLE army (armyID INTEGER PRIMARY KEY AUTOINCREMENT, userID, user, guildID, guild, timestamp, command, saloperies, wad)")
 		self.requestDB("CREATE TABLE megaarmy (megaarmyID INTEGER PRIMARY KEY AUTOINCREMENT, userID, user, guildID, guild, timestamp, command, lines, saloperies, wad)")
-		self.requestDB("CREATE TABLE maitre (maitreID INTEGER PRIMARY KEY AUTOINCREMENT, userID, user, guildID, guild, timestamp, saloperies, megaarmyID INTEGER NOT NULL, FOREIGN KEY(megaarmyID) REFERENCES megaarmy(megaarmyID))")
+		self.requestDB("CREATE TABLE maitre (maitreID INTEGER PRIMARY KEY AUTOINCREMENT, userID, user, guildID, guild, timestamp, saloperies, megaarmyID INTEGER NOT NULL, isArchive INTEGER NOT NULL, FOREIGN KEY(megaarmyID) REFERENCES megaarmy(megaarmyID))")
 		self.requestDB("CREATE TABLE jeanfoutre (jeanfoutreID INTEGER PRIMARY KEY AUTOINCREMENT, userID, user, guildID, guild, timestamp, saloperies)")
 		self.escape = lambda a: json.dumps(a.replace("\"", ""))
 
@@ -42,16 +43,48 @@ class Database(commands.Cog):
 
 	######################### SHELL COMMANDS #########################
 
+	@commands.command()
+	async def foo(self, ctx, arg = None):
+		self.setDBMaitre(1, "test", 1, "guild", time.time(), 10, 1)
+
+	@commands.command()
+	async def bar(self, ctx, arg = None):
+		self.setDBArchiveMaire(2)
+
+	@commands.command()
+	async def baz(self, ctx, arg = None):
+		self.getDBMaitre()
+		await ctx.send("maitre")
+
 	############################ ROUTINES ############################
 
 	def setDBMaitre(self, userID, user, guildID, guild, timestamp, saloperies, megaarmyID):
-		request = "INSERT INTO maitre VALUES(NULL," + str(int(userID)) + ", " + self.escape(user) + ", " + \
+		maitreID = "NULL"
+		request = "SELECT maitreID, isArchive FROM maitre ORDER BY maitreID DESC LIMIT 1"
+		self.requestDB(request)
+		row = self.cur.fetchone()
+		if (row is None or row[1] != 0):
+			ggr_utilities.logger("No pass maitre, using a new line", self)
+		else:
+			ggr_utilities.logger("Old maitre is out, using his old line " + str(row[0]), self)
+			maitreID = str(row[0])
+		
+		request = "REPLACE INTO maitre VALUES(" + maitreID + ", " + str(int(userID)) + ", " + self.escape(user) + ", " + \
 		str(int(guildID)) + ", " + self.escape(guild) + ", " + str(float(timestamp)) + ", " + \
-		str(int(saloperies)) + ", " + str(int(megaarmyID)) + ")"
+		str(int(saloperies)) + ", " + str(int(megaarmyID)) + ", " + str(0) + ")"
 		ggr_utilities.logger("Request:  " + request, self)
 		self.requestDB(request)
 		return(self.cur.lastrowid)
+	
+	def getDBMaitre(self):
+		request = "SELECT * FROM maitre WHERE isArchive=0 ORDER BY maitreID DESC LIMIT 1"
+		self.requestDB(request)
+		row = self.cur.fetchone()
+		return (row)
 
+	def setDBArchiveMaire(self, maitreID):
+		request = "UPDATE maitre SET isArchive = 1 WHERE maitreID = " + str(maitreID)
+		self.requestDB(request)
 
 	def addDBArmy(self, userID, user, guildID, guild, timestamp, command, saloperies, wad):
 		request = "INSERT INTO army VALUES(NULL, " + str(int(userID)) + ", " + self.escape(user) + ", " + \
@@ -60,7 +93,6 @@ class Database(commands.Cog):
 		ggr_utilities.logger("Request:  " + request, self)
 		self.requestDB(request)
 		return(self.cur.lastrowid)
-
 
 	def addDBMegaArmy(self, userID, user, guildID, guild, timestamp, command, lines, saloperies, wad):
 		request = "INSERT INTO megaarmy VALUES(NULL," + str(int(userID)) + ", " + self.escape(user) + ", " + \
@@ -75,20 +107,12 @@ class Database(commands.Cog):
 			self.cur.execute(request)
 			self.con.commit()
 		except sqlite3.OperationalError as e:
-			if (request.__contains__("CREATE")):
-				ggr_utilities.logger(str(e) + " > Table '" + self.getTablename(request, " ") + "' already exist", self)
-			else:
-				ggr_utilities.logger(str(e), self)
+			ggr_utilities.logger(str(e), self)
 		else:
 			ggr_utilities.logger("Request OK", self)
-
-	def getTablename(self, request, breakword):
-		res = request.split(breakword)
-		return (res[2])
 
 def setup(bot):
 	bot.add_cog(Database(bot))
 
 def teardown(bot):
 	print('I am being unloaded!')
-

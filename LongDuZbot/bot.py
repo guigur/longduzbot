@@ -30,17 +30,17 @@ bot = Bot(command_prefix=prefix, intents=intents)
 async def on_ready():
 	global timeReady
 	timeReady = time.time()
-	ggr_utilities.logger("Logged in as " + bot.user.name + " " + str(bot.user.id))
+	ggr_utilities.logger("Logged in as " + bot.user.name + " " + str(bot.user.id), None, None, ggr_utilities.LogType.INFO)
 	await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name='les !megaarmy'))
 	
 def load_extentions():
 	for extension in startup_extensions:
 		try:
 			bot.load_extension(extension)
-			ggr_utilities.logger("Loaded extension " + extension)
+			ggr_utilities.logger("Loaded extension " + extension, None, None, ggr_utilities.LogType.SUCCESS)
 		except Exception as e:
 			exc = '{}: {}'.format(type(e).__name__, e)
-			ggr_utilities.logger("Failed to load extension " + extension + " \n" + exc)
+			ggr_utilities.logger("Failed to load extension " + extension + " \n" + exc, None, None, ggr_utilities.LogType.ERROR)
 
 if __name__ == "__main__":
 	load_extentions()

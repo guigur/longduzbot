@@ -3,6 +3,7 @@ import datetime
 import math
 import requests
 from termcolor import colored
+from enum import Enum
 
 #colors https://www.materialpalette.com/colors
 ggr_red = 0xf44336
@@ -80,13 +81,16 @@ def userIcon(user):
 	return userImg
 
 def checkIfIdValid(id):
-	if (isinstance(id, int)):
-		if (int(id) > 9999999999999999):
-			return True
-		else:
-			pass
-	print("Invalid ID")
-	return False
+	# if (isinstance(int(id), int) == True):
+	# 	if (int(id) > 9999999999999999):
+	# 		return True
+	# 	else:
+	# 		pass
+	# else:
+	# 	print("not instance")
+	# print("Invalid ID")
+	# return False
+	return True
 
 def treedotString(string, maxlen):
 	stringret = (string[:maxlen-2] + '...') if len(string) > maxlen else string
@@ -123,7 +127,24 @@ def pDT():
 	now = datetime.datetime.now()
 	return (now.strftime("%m/%d/%Y %H:%M:%S"))
 
-def logger(string, cog=None, ctx=None):
+class LogType(Enum):
+	NORMAL = 0
+	ERROR = 1
+	SUCCESS = 2
+	INFO = 3
+
+	def color(self):
+		if (self.value == 0):
+			return (None)
+		elif (self.value == 1):
+			return ("red")
+		elif (self.value == 2):
+			return ("green")
+		elif (self.value == 3):
+			return ("yellow")
+
+
+def logger(string, cog=None, ctx=None, logType=LogType.NORMAL):
 	usr = colored("server", "cyan")
 	if ctx:
 		usr = colored(ctx.message.author.name, "yellow")
@@ -132,7 +153,7 @@ def logger(string, cog=None, ctx=None):
 	if cog:
 		classname = ">" + colored(cog.__class__.__name__, "green") 
 		
-	string = pDT() + " " + usr + classname + "] "+ string
+	string = pDT() + " " + usr + classname + "] "+ colored(string, logType.color())
 	print(string)
 	#todo: add to file
 
