@@ -2,6 +2,7 @@
 import datetime
 import math
 import requests
+from termcolor import colored
 
 #colors https://www.materialpalette.com/colors
 ggr_red = 0xf44336
@@ -122,12 +123,16 @@ def pDT():
 	now = datetime.datetime.now()
 	return (now.strftime("%m/%d/%Y %H:%M:%S"))
 
-def logger(ctx, string):
+def logger(string, cog=None, ctx=None):
+	usr = colored("server", "cyan")
 	if ctx:
-		usr = ctx.message.author.name
-	else:
-		usr = "server"
-	string = pDT() + " " + usr + "] "+ string
+		usr = colored(ctx.message.author.name, "yellow")
+				
+	classname = ""
+	if cog:
+		classname = ">" + colored(cog.__class__.__name__, "green") 
+		
+	string = pDT() + " " + usr + classname + "] "+ string
 	print(string)
 	#todo: add to file
 
@@ -167,7 +172,7 @@ async def sudemote(ctx):
 	role = await getRole(guild)
 
 	for m in role.members:
-		logger(ctx, "Removing the role " + role.name + " to " + m.name)
+		logger("Removing the role " + role.name + " to " + m.name, None, ctx)
 		await m.remove_roles(role)
 
 async def supromote(ctx):
@@ -177,8 +182,8 @@ async def supromote(ctx):
 	role = await getRole(guild)
 
 	for m in role.members:
-		logger(ctx, "Removing the role " + role.name + " to " + m.name)
+		logger("Removing the role " + role.name + " to " + m.name, None, ctx)
 		await m.remove_roles(role)
 	
-	logger(ctx, "Adding the role " + role.name + " to " + member.name)
+	logger("Adding the role " + role.name + " to " + member.name, None, ctx)
 	await member.add_roles(role)

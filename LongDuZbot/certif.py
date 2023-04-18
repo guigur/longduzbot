@@ -22,7 +22,7 @@ class BestWorst(enum.Enum):
 
 def folderMaker():
 	if not os.path.exists("tmp"):
-		ggr_utilities.logger(None, "Creating the folder tmp")
+		ggr_utilities.logger("Creating the folder tmp")
 		os.makedirs("tmp")
 
 def genRoundImg(source):

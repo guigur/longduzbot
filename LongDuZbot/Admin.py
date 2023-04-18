@@ -11,7 +11,7 @@ class Admin(commands.Cog):
 	@commands.command()
 	async def claim(self, ctx):
 		"""Ce serveur de saloperies est a moi."""
-		ggr_utilities.logger(ctx, ctx.message.content)
+		ggr_utilities.logger(ctx.message.content, self, ctx)
 		self.initTable()
 		await ctx.send("Git version: ")
 

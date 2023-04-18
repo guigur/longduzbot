@@ -9,7 +9,8 @@ import json
 import os
 import ggr_utilities, ggr_emotes
 import certif
-import Eco, Com
+import Eco, Com, Database
+
 from collections import namedtuple 
 
 userStruct = namedtuple("userStruct", ["name", "discriminator", "icon", "balance"])
@@ -25,7 +26,7 @@ class Army(commands.Cog):
 	@commands.command()
 	async def maitre(self, ctx):
 		"""Affiche le maître des saloperies et son record."""
-		ggr_utilities.logger(ctx, ctx.message.content)
+		ggr_utilities.logger(ctx.message.content, self, ctx)
 		#msg = "Le maître des saloperie est **" + self.data['best']['user'] + "** avec un score de **" + str(self.data['best']['score']) + "** saloperies invoqués"
 		if ggr_utilities.checkIfIdValid(self.data['best']['userid']):
 			user = await self.bot.fetch_user(self.data['best']['userid'])
@@ -40,7 +41,7 @@ class Army(commands.Cog):
 	@commands.command()
 	async def jeanfoutre(self, ctx):
 		"""Affiche le jean-foutre des saloperies et son score."""
-		ggr_utilities.logger(ctx, ctx.message.content)
+		ggr_utilities.logger(ctx.message.content, self, ctx)
 		#msg = "Le jean-foutre des saloperie est **" + self.data['worst']['user'] + "** avec un score de minabke de **" + str(self.data['worst']['score']) + "** saloperies invoqués"
 		if ggr_utilities.checkIfIdValid(self.data['worst']['userid']):
 			user = await self.bot.fetch_user(self.data['worst']['userid'])
@@ -55,7 +56,7 @@ class Army(commands.Cog):
 	@commands.command()
 	async def armydory(self, ctx):
 		"""Affiche une belle armée de soldats dorés."""
-		ggr_utilities.logger(ctx, ctx.message.content)
+		ggr_utilities.logger(ctx.message.content, self, ctx)
 		armynbr = random.randint(10, 60)
 		army = ""
 		for x in range(0, armynbr):
@@ -65,7 +66,7 @@ class Army(commands.Cog):
 	@commands.command()
 	async def army(self, ctx):
 		"""Spawn une armée de minis Ulians et Moth de 10 à 50 membres dévoués et sanguinaires."""
-		ggr_utilities.logger(ctx, ctx.message.content)
+		ggr_utilities.logger(ctx.message.content, self, ctx)
 		timeUser = self.hasUserCoolDownRoutine(ctx.author)["date"]
 		if (time.time() >= timeUser):
 			for u in self.saveFileCoolDown:
@@ -80,6 +81,11 @@ class Army(commands.Cog):
 			armytotmembers = retarmy[1]
 			armyGold = retarmy[2]
 			await ctx.send(army)
+			#Database.Database.addDBxArmy(0, ctx.author.name, "test", 0, "testcmd", 1, 0, 0, 0) ###############
+			database = self.bot.get_cog('Database')
+			database.addDBxArmy(ctx.author.id, ctx.author.name, ctx.message.guild.id, ctx.message.guild.name, time.time(), ctx.message.content, 1, armytotmembers, armyGold)
+
+
 			for emojinmb in ggr_utilities.numbersToEmojis(armytotmembers):
 				await ctx.message.add_reaction(emojinmb)
 			if armyGold > 0:
@@ -99,7 +105,7 @@ class Army(commands.Cog):
 	@commands.command()
 	async def megaarmy(self, ctx):
 		"""Spawn une imposante armée de minis Ulians et Moth sur plusieurs lignes (5 à 20). Cette commande ne peut être utilisé qu'une fois toutes les 20 minutes."""
-		ggr_utilities.logger(ctx, ctx.message.content)
+		ggr_utilities.logger(ctx.message.content, self, ctx)
 		armytotmembers = 0
 		armyGold = 0
 		if ctx.author.name != self.data['best']['user']:
@@ -107,7 +113,7 @@ class Army(commands.Cog):
 				#game = discord.Game("envoyer une megaarmée")
 				#await bot.change_presence(status=discord.Status.online, activity=game)
 
-				ggr_utilities.logger(None, "User " + ctx.author.name + " summoned a megaarmy")
+				ggr_utilities.logger("User " + ctx.author.name + " summoned a megaarmy", self)
 				self.timeReady = time.time() + random.randint(900, 1500) #entre 15 et 25 min
 
 				armyLines = random.randint(5, 20)
@@ -120,7 +126,7 @@ class Army(commands.Cog):
 					await ctx.send(army)
 				for emojinmb in ggr_utilities.numbersToEmojis(armyLines):
 					await ctx.message.add_reaction(emojinmb)
-				ggr_utilities.logger(None, "User " + ctx.author.name + " summoned " + str(armytotmembers) + " saloperies")
+				ggr_utilities.logger("User " + ctx.author.name + " summoned " + str(armytotmembers) + " saloperies", self)
 				await ctx.send("Votre armée compte **" + str(armytotmembers) + "** saloperies. Beau travail.")
 				if armyGold > 0:
 					await ctx.send("Cette armée vous rapporte **" + str(armyGold) + " WADs**")
@@ -142,8 +148,17 @@ class Army(commands.Cog):
 	######################### SHELL COMMANDS #########################
 
 	@Com.add_method(Com.Shell)
-	def do_resetMaster(arg):
+	def do_reset(arg):
 		'Reset the master of the saloperies'
+
+		#ggr_utilities.sudemote()
+
+		#Eco.changeBallanceRoutine()	
+	
+	@Com.add_method(Com.Shell)
+	def do_routine(arg):
+		'test'
+		
 		#ggr_utilities.sudemote()
 
 		#Eco.changeBallanceRoutine()	
@@ -155,7 +170,7 @@ class Army(commands.Cog):
 			self.data = json.load(json_file)
 
 	def saveDataToFileRoutine(self):
-		ggr_utilities.logger(None, "Saving data")
+		ggr_utilities.logger("Saving data", self)
 		with open('data.json', 'w') as json_file:
 			json.dump(self.data, json_file)
 
@@ -166,19 +181,19 @@ class Army(commands.Cog):
 			mode = "r"
 		else:
 			mode = "w+"
-			ggr_utilities.logger(None, filename + " is non existant. Creating")
+			ggr_utilities.logger(filename + " is non existant. Creating", self)
 
 		with open(filename, mode, encoding='utf-8') as json_file:
 			filesize = os.path.getsize(filename)
-			print(str(filesize))
+			# print(str(filesize))
 			if filesize == 0:
-				ggr_utilities.logger(None, filename + " is empty. Initializing")
+				ggr_utilities.logger(filename + " is empty. Initializing", self)
 				self.saveFileCoolDown = json.loads("[]")
 			else:
 				self.saveFileCoolDown = json.load(json_file)
 
 	def saveToFileCoolDownRoutine(self):
-		ggr_utilities.logger(None, "Saving to file army cool down")
+		ggr_utilities.logger("Saving to file army cool down", self)
 		with open('army_cool_down.json', 'w') as json_file:
 			json.dump(self.saveFileCoolDown, json_file)
 
@@ -203,12 +218,12 @@ class Army(commands.Cog):
 		return [army, armynbr, armyGold]
 
 	def hasUserCoolDownRoutine(self, user):
-		ggr_utilities.logger(None, "Check if user cool down exist.")
+		ggr_utilities.logger("Check if user cool down exist.", self)
 		self.loadFromFileCoolDownRoutine()
 		for u in self.saveFileCoolDown:
 			if u["name"] == user.name:
 				return u
-		ggr_utilities.logger(None, "User " + user.name + " not found adding him/her to cool down file")
+		ggr_utilities.logger("User " + user.name + " not found adding him/her to cool down file", self)
 		newUserJson = {"name": user.name , "id": user.id, "date": time.time() }
 
 		self.saveFileCoolDown.append(newUserJson)
@@ -216,7 +231,7 @@ class Army(commands.Cog):
 		return newUserJson
 
 	async def grantMasterRoutine(self, ctx, armytotmembers):
-		ggr_utilities.logger(None, "User " + ctx.author.name + " is now the master of saloperies")
+		ggr_utilities.logger("User " + ctx.author.name + " is now the master of saloperies", self)
 		user = ctx.author
 		guild = ctx.message.guild
 		role = await ggr_utilities.getRole(guild)
@@ -248,7 +263,7 @@ class Army(commands.Cog):
 		await ctx.send("Ce certificat prouve votre presigieux titre de " + role.mention + "\nN'hésitez pas à mentionner ce titre prestigieux sur votre CV.")
 
 	async def grantWorstRoutine(self, ctx, armytotmembers):
-		ggr_utilities.logger(None, "User " + ctx.author.name + " is now the good-for-nothing of saloperies")
+		ggr_utilities.logger("User " + ctx.author.name + " is now the good-for-nothing of saloperies", self)
 		user = ctx.author
 
 		self.data['worst']['score'] = armytotmembers

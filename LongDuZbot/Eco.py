@@ -83,18 +83,18 @@ class Eco(commands.Cog):
 			self.saveFile = json.load(json_file)
 
 	def saveToFileRoutine(self):
-		ggr_utilities.logger(None, "Saving to file the new balance of an user")
+		ggr_utilities.logger("Saving to file the new balance of an user", self)
 		with open('economy.json', 'w') as json_file:
 			json.dump(self.saveFile, json_file)
 	
 	@classmethod
 	def checkUserExistRoutine(self, user):
-		ggr_utilities.logger(None, "Check if user exist.")
+		ggr_utilities.logger("Check if user exist.", self)
 		self.loadFromFileRoutine(self)
 		for u in self.saveFile:
 			if u["name"] == user.name:
 				return u
-		ggr_utilities.logger(None, "User " + user.name + " not found adding him/her to the economy file")
+		ggr_utilities.logger("User " + user.name + " not found adding him/her to the economy file", self)
 		newUserJson = {"name": user.name , "id": user.id, "balance": 1 }
 
 		self.saveFile.append(newUserJson)
@@ -104,7 +104,7 @@ class Eco(commands.Cog):
 	@classmethod
 	def changeBallanceRoutine(self, user, diff):
 		self.checkUserExistRoutine(user)
-		ggr_utilities.logger(None, "add " + str(diff) + " wads to " + user.name)
+		ggr_utilities.logger("add " + str(diff) + " wads to " + user.name, self)
 		self.loadFromFileRoutine(self)
 		for u in self.saveFile:
 			if u["name"] == user.name:
@@ -113,7 +113,7 @@ class Eco(commands.Cog):
 
 	@classmethod
 	def findUserMaxBalanceRoutine(self):
-		ggr_utilities.logger(None, "Find max balance.")
+		ggr_utilities.logger("Find max balance.", self)
 		self.loadFromFileRoutine(self)
 
 		self.saveFile.sort(key = lambda user:user["balance"], reverse = True)

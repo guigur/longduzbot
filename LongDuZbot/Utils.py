@@ -24,7 +24,7 @@ class Utils(commands.Cog):
 	@commands.command()
 	async def version(self, ctx):
 		"""Affiche la version du bot."""
-		ggr_utilities.logger(ctx, ctx.message.content)
+		ggr_utilities.logger(ctx.message.content, self, ctx)
 		sha = self.gitVerisonRoutine()
 		url = ggr_utilities.githubBaseUrl + "commit/" + sha
 		
@@ -38,7 +38,7 @@ class Utils(commands.Cog):
 	@commands.command()
 	async def diff(self, ctx):
 		"""Affiche les fichiers modifies en local du bot."""
-		ggr_utilities.logger(ctx, ctx.message.content)
+		ggr_utilities.logger(ctx.message.content, self, ctx)
 		diff = self.gitDiffRoutine()
 		if (not diff):
 			embed=discord.Embed(title="👍 Aucun changements locaux", color=ggr_utilities.ggr_green)
@@ -54,7 +54,7 @@ class Utils(commands.Cog):
 	def do_version(arg):
 		'Return the verion hash number'
 		sha = Utils.gitVerisonRoutine()
-		ggr_utilities.logger(None, "Git version: " + colored(sha, 'blue'))
+		ggr_utilities.logger("Git version: " + colored(sha, 'blue'), self)
 		
 	@Com.add_method(Com.Shell)
 	def do_diff(arg):

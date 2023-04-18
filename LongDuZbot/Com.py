@@ -56,7 +56,7 @@ class Shell(cmd.Cmd):
 		self.prompt = newPrompt
 
 	def stop_server(self):
-		ggr_utilities.logger(None, "Stopping server")
+		ggr_utilities.logger("Stopping server", self)
 		asyncio.run_coroutine_threadsafe(self.bot.close(), self.loop)
 	
 	async def get_user(self, id: int):
@@ -82,7 +82,7 @@ class Shell(cmd.Cmd):
 
 	def do_restart(self, arg):
 		'Restart the server'
-		ggr_utilities.logger(None, "Restarting server")
+		ggr_utilities.logger("Restarting server", self)
 		os.execl(sys.executable, os.path.abspath(__file__), *sys.argv) 
 
 	def do_selectUser(self, arg):
