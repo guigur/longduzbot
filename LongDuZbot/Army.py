@@ -129,7 +129,7 @@ class Army(commands.Cog):
 					await ctx.message.add_reaction(emojinmb)
 				ggr_utilities.logger("User " + ctx.author.name + " summoned " + str(armytotmembers) + " saloperies", self)
 
-				self.database.addDBMegaArmy(ctx.author.id, ctx.author.name, ctx.message.guild.id, ctx.message.guild.name, time.time(), ctx.message.content, armyLines, armytotmembers, armyGold)
+				megaarmyID = self.database.addDBMegaArmy(ctx.author.id, ctx.author.name, ctx.message.guild.id, ctx.message.guild.name, time.time(), ctx.message.content, armyLines, armytotmembers, armyGold)
 
 				await ctx.send("Votre armée compte **" + str(armytotmembers) + "** saloperies. Beau travail.")
 				if armyGold > 0:
@@ -137,6 +137,9 @@ class Army(commands.Cog):
 					await ctx.message.add_reaction(ggr_emotes.WAD)
 					Eco.Eco.changeBallanceRoutine(ctx.author, armyGold)
 				if armytotmembers > self.data['best']['score']:
+
+					self.database.setDBMaitre(ctx.author.id, ctx.author.name, ctx.message.guild.id, ctx.message.guild.name, time.time(), armytotmembers, megaarmyID)
+
 					await self.grantMasterRoutine(ctx, armytotmembers)
 				elif armytotmembers < self.data['worst']['score']:
 					await self.grantWorstRoutine(ctx, armytotmembers)
