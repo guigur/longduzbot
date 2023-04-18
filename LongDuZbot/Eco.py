@@ -20,7 +20,7 @@ class Eco(commands.Cog):
 	@commands.command()
 	async def wad(self, ctx, arg = None):
 		"""Affiche le nombre de WADs que vous disposez dans la banque des WADs"""
-		ggr_utilities.logger(ctx, ctx.message.content)
+		ggr_utilities.logger(ctx.message.content, self, ctx)
 		if arg:
 			try:
 				user = await commands.UserConverter().convert(ctx, str(arg))
@@ -38,7 +38,7 @@ class Eco(commands.Cog):
 
 	@commands.command()
 	async def topwad(self, ctx):
-		ggr_utilities.logger(ctx, ctx.message.content)
+		ggr_utilities.logger(ctx.message.content, self, ctx)
 		try:
 			userJson1, userJson2, userJson3 = self.findUserMaxBalanceRoutine()
 			u1 = await self.bot.fetch_user(userJson1["id"])
@@ -53,13 +53,13 @@ class Eco(commands.Cog):
 
 			await ctx.send(file = discord.File('tmp/card_podium_filled.png'))
 		except:
-			ggr_utilities.logger(None, "Error generating the topwaf card")
+			ggr_utilities.logger("Error generating the topwaf card", self, None, ggr_utilities.LogType.ERROR)
 			await ctx.send("Il n'y a pas assez d'actionnaires du WAD dans la banque !")
 
 	@commands.command()
 	async def buy(self, ctx):
 		"""La boutique !"""
-		ggr_utilities.logger(ctx, ctx.message.content)
+		ggr_utilities.logger(ctx.message.content, self, ctx)
 		user = self.checkUserExistRoutine(ctx.author)
 
 	######################### SHELL COMMANDS #########################
