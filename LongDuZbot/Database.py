@@ -53,6 +53,7 @@ class Database(commands.Cog):
 		ggr_utilities.logger(ctx.message.content, self, ctx)
 		await ggr_utilities.sudemote(ctx)
 		self.setDBArchiveMaitreJeanfoutre(MaitreJeanfoutreType.MAITRE)
+		self.setDBArchiveMaitreJeanfoutre(MaitreJeanfoutreType.JEANFOUTRE)
 
 	@commands.command()
 	async def changeBalance(self, ctx, arg = None):
@@ -70,6 +71,7 @@ class Database(commands.Cog):
 
 	############################ ROUTINES ############################
 
+	### ECO
 	def getDBMoneyVerif(self, user, guild):
 		money = self.getDBMoney(user, guild)
 		if (money == None):
@@ -92,7 +94,6 @@ class Database(commands.Cog):
 		else:
 			ggr_utilities.logger("The account for user " + user.name + " already exist", self)
 
-
 	def changeDBBalanceMoney(self, user, guild, diff):
 		currentBalance = self.getDBMoney(user, guild)
 
@@ -103,15 +104,14 @@ class Database(commands.Cog):
 		str(int(guild.id)) + ", " + self.escape(guild.name) + ", " + str(newMoney) + ")"
 		self.requestDB(request)
 
-
-
+	### ARMY
 	def setDBMaitreJeanfoutre(self, type, user, guild, timestamp, saloperies, megaarmyID):
 		tableID = "NULL"
 		request = "SELECT " + type.data()['idkey'] + ", isArchive FROM " + type.data()['table'] + " ORDER BY " + type.data()['idkey'] + " DESC LIMIT 1"
 		self.requestDB(request)
 		row = self.cur.fetchone()
 		if (row is None or row[1] != 0):
-			ggr_utilities.logger("No pass " + type.data()['table'] + " using a new line", self)
+			ggr_utilities.logger("No past " + type.data()['table'] + ". Creating a new line!", self)
 		else:
 			ggr_utilities.logger("Old " + type.data()['table'] + " is out, using his old line " + str(row[0]), self)
 			tableID = str(row[0])
@@ -149,7 +149,7 @@ class Database(commands.Cog):
 		self.requestDB(request)
 		return(self.cur.lastrowid)
 
-
+	### GENERAL
 	def requestDB(self, request):
 		try:
 			self.cur.execute(request)

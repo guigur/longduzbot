@@ -78,7 +78,7 @@ def generateCertifMaster(profilePictureLink, pseudo, score):
 	return certif.save("tmp/certif_best_filled.png")
 
 def generateCertifBitch(profilePictureLink, pseudo, score):
-	profile = Image.open(profilePictureLink) #profileg profile
+	profile = Image.open(profilePictureLink).convert("RGBA") #profileg profile
 	profile = profile.resize([512, 512]) #just to be sure
 
 	certif = Image.open('img/template/certif_worst.png', 'r')
