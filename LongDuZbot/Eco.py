@@ -11,8 +11,7 @@ import Com
 
 userStruct = namedtuple("userStruct", ["name", "discriminator", "icon", "balance"])
 
-money = lambda a: "WAD" if (a <= 1) else "WADs"
-
+moneyName = lambda a=2: "WAD" if (a <= 1) else "WADs"
 
 class Eco(commands.Cog):
 	def __init__(self, bot):
@@ -59,11 +58,11 @@ class Eco(commands.Cog):
 			ggr_utilities.logger("Error generating the topwaf card", self, None, ggr_utilities.LogType.ERROR)
 			await ctx.send("Il n'y a pas assez d'actionnaires du WAD dans la banque !")
 
-	@commands.command()
-	async def buy(self, ctx):
-		"""La boutique !"""
-		ggr_utilities.logger(ctx.message.content, self, ctx)
-		user = self.checkUserExistRoutine(ctx.author)
+	# @commands.command()
+	# async def buy(self, ctx):
+	# 	"""La boutique !"""
+	# 	ggr_utilities.logger(ctx.message.content, self, ctx)
+	# 	user = self.checkUserExistRoutine(ctx.author)
 
 	######################### SHELL COMMANDS #########################
 
@@ -105,7 +104,7 @@ class Eco(commands.Cog):
 
 	def changeBallanceRoutine(self, user, diff):
 		self.checkUserExistRoutine(user)
-		ggr_utilities.logger("add " + str(diff) + " " + money(diff) + " to " + user.name, self)
+		ggr_utilities.logger("add " + str(diff) + " " + moneyName(diff) + " to " + user.name, self)
 		self.loadFromFileRoutine()
 		for u in self.saveFile:
 			if u["name"] == user.name:

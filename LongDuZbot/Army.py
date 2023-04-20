@@ -88,12 +88,12 @@ class Army(commands.Cog):
 			armyGold = retarmy[2]
 			await ctx.send(army)
 
-			self.database.addDBArmy(ctx.author.id, ctx.author.name, ctx.message.guild.id, ctx.message.guild.name, time.time(), ctx.message.content, armytotmembers, armyGold)
+			self.database.addDBArmy(ctx.author, ctx.message.guild, time.time(), ctx.message.content, armytotmembers, armyGold)
 
 			for emojinmb in ggr_utilities.numbersToEmojis(armytotmembers):
 				await ctx.message.add_reaction(emojinmb)
 			if armyGold > 0:
-				await ctx.send("Cette armée vous rapporte **" + str(armyGold) + " " + Eco.money(armyGold) + "**")
+				await ctx.send("Cette armée vous rapporte **" + str(armyGold) + " " + Eco.moneyName(armyGold) + "**")
 				await ctx.message.add_reaction(ggr_emotes.WAD)
 				#Eco.Eco.changeBallanceRoutine(ctx.author, armyGold) ##TODO: change call to eco ##########==
 				self.eco.changeBallanceRoutine(ctx.author, armyGold) ##TODO: change call to eco ##########==
@@ -131,18 +131,18 @@ class Army(commands.Cog):
 					await ctx.message.add_reaction(emojinmb)
 				ggr_utilities.logger("User " + ctx.author.name + " summoned " + str(armytotmembers) + " saloperies", self)
 
-				megaarmyID = self.database.addDBMegaArmy(ctx.author.id, ctx.author.name, ctx.message.guild.id, ctx.message.guild.name, time.time(), ctx.message.content, armyLines, armytotmembers, armyGold)
+				megaarmyID = self.database.addDBMegaArmy(ctx.author, ctx.guild, time.time(), ctx.message.content, armyLines, armytotmembers, armyGold)
 
 				await ctx.send("Votre armée compte **" + str(armytotmembers) + "** saloperies. Beau travail.")
 				if armyGold > 0:
-					await ctx.send("Cette armée vous rapporte **" + str(armyGold) + " " + Eco.money(armyGold) + "**")
+					await ctx.send("Cette armée vous rapporte **" + str(armyGold) + " " + Eco.moneyName(armyGold) + "**")
 					await ctx.message.add_reaction(ggr_emotes.WAD)
 					self.eco.changeBallanceRoutine(ctx.author, armyGold) ##TODO: change call to eco ##########==
 
 				if (DBMaitre is None or armytotmembers > DBMaitre[6]):
-					await self.grantMasterRoutine(ctx, armytotmembers)
+					await self.grantMasterRoutine(ctx, armytotmembers, megaarmyID)
 				elif (DBJeanfoutre is None or armytotmembers < DBJeanfoutre[6]):
-					await self.grantWorstRoutine(ctx, armytotmembers)
+					await self.grantWorstRoutine(ctx, armytotmembers, megaarmyID)
 				else:
 					#TODO: mettre differentes reactions en fonction du score
 					await ctx.send("Bien mais il y a mieux")
@@ -228,7 +228,7 @@ class Army(commands.Cog):
 		self.saveToFileCoolDownRoutine()
 		return newUserJson
 
-	async def grantMasterRoutine(self, ctx, armytotmembers):
+	async def grantMasterRoutine(self, ctx, armytotmembers, megaarmyID):
 		ggr_utilities.logger("User " + ctx.author.name + " is now the master of saloperies", self)
 		user = ctx.author
 		guild = ctx.message.guild
@@ -248,10 +248,10 @@ class Army(commands.Cog):
 			except:
 				firstMaitre = True
 			
-		self.database.setDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.MAITRE, ctx.author.id, ctx.author.name, ctx.message.guild.id, ctx.message.guild.name, time.time(), armytotmembers, 1) #TODO: change armyid
+		self.database.setDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.MAITRE, ctx.author, ctx.guild, time.time(), armytotmembers, megaarmyID)
 		
 		if (DBJeanfoutre is None or armytotmembers < DBJeanfoutre[6]): #if the worst has not been choosen yetm we lower the minimum to the best score yet
-			self.database.setDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.JEANFOUTRE, 0, "", ctx.message.guild.id, ctx.message.guild.name, time.time(), armytotmembers, 1) #TODO: change armyid
+			self.database.setDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.JEANFOUTRE, ggr_utilities.dummyUser, ctx.guild, time.time(), armytotmembers, megaarmyID)
 
 		#self.saveDataToFileRoutine() ############
 		await ctx.send("Félicitations " + user.mention + " vous êtes le nouveau " + role.mention)
@@ -263,11 +263,11 @@ class Army(commands.Cog):
 		await ctx.send(file=discord.File('tmp/certif_best_filled.png'))
 		await ctx.send("Ce certificat prouve votre presigieux titre de " + role.mention + "\nN'hésitez pas à mentionner ce titre prestigieux sur votre CV.")
 
-	async def grantWorstRoutine(self, ctx, armytotmembers):
+	async def grantWorstRoutine(self, ctx, armytotmembers, megaarmyID):
 		ggr_utilities.logger("User " + ctx.author.name + " is now the good-for-nothing of saloperies", self)
 		user = ctx.author
 
-		self.database.setDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.JEANFOUTRE, ctx.author.id, ctx.author.name, ctx.message.guild.id, ctx.message.guild.name, time.time(), armytotmembers, 1) #TODO: change armyid
+		self.database.setDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.JEANFOUTRE, ctx.author, ctx.guild, time.time(), armytotmembers, megaarmyID)
 
 		await ctx.send("Félicitations " + user.mention + " vous êtes le nouveau **Jean-foutre des Saloperies**")
 		url = ctx.author.avatar_url_as(format='png')

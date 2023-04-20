@@ -207,3 +207,8 @@ async def supromote(ctx):
 	
 	logger("Adding the role " + role.name + " to " + member.name, None, ctx)
 	await member.add_roles(role)
+
+class dummyUser:
+	"""A dummy User/Guild for discord"""
+	id = 0
+	name = ""
