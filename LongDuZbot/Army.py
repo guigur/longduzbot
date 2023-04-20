@@ -95,8 +95,9 @@ class Army(commands.Cog):
 			if armyGold > 0:
 				await ctx.send("Cette armée vous rapporte **" + str(armyGold) + " " + Eco.moneyName(armyGold) + "**")
 				await ctx.message.add_reaction(ggr_emotes.WAD)
-				#Eco.Eco.changeBallanceRoutine(ctx.author, armyGold) ##TODO: change call to eco ##########==
-				self.eco.changeBallanceRoutine(ctx.author, armyGold) ##TODO: change call to eco ##########==
+				##self.eco.changeBallanceRoutine(ctx.author, armyGold) ##TODO: change call to eco ##########==
+				self.database.changeDBBalanceMoney(ctx.author, ctx.guild, armyGold)
+
 		else:
 			await ctx.send("Votre armée de saloperies n'est pas prête.\nRéessayez dans **" + str(math.trunc(self.hasUserCoolDownRoutine(ctx.author)["date"] - time.time())) + "** secondes.")
 			await ctx.message.add_reaction("❌")
@@ -137,7 +138,8 @@ class Army(commands.Cog):
 				if armyGold > 0:
 					await ctx.send("Cette armée vous rapporte **" + str(armyGold) + " " + Eco.moneyName(armyGold) + "**")
 					await ctx.message.add_reaction(ggr_emotes.WAD)
-					self.eco.changeBallanceRoutine(ctx.author, armyGold) ##TODO: change call to eco ##########==
+					#self.eco.changeBallanceRoutine(ctx.author, armyGold) ##TODO: change call to eco ##########==
+					self.database.changeDBBalanceMoney(ctx.author, ctx.guild, armyGold)
 
 				if (DBMaitre is None or armytotmembers > DBMaitre[6]):
 					await self.grantMasterRoutine(ctx, armytotmembers, megaarmyID)
@@ -154,22 +156,6 @@ class Army(commands.Cog):
 	
 	######################### SHELL COMMANDS #########################
 
-	@Com.add_method(Com.Shell)
-	def do_reset(arg):
-		'Reset the master of the saloperies'
-
-		#ggr_utilities.sudemote()
-
-		#Eco.changeBallanceRoutine()	
-	
-	@Com.add_method(Com.Shell)
-	def do_routine(arg):
-		'test'
-		
-		#ggr_utilities.sudemote()
-
-		#Eco.changeBallanceRoutine()	
-	
 	############################ ROUTINES ############################
 
 	#TODO: make a function with this stuff

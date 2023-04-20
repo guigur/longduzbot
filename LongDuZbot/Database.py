@@ -29,7 +29,7 @@ class Database(commands.Cog):
 		self.cur = self.con.cursor()
 
 		self.requestDB("CREATE TABLE money (moneyID INTEGER PRIMARY KEY AUTOINCREMENT, userID, user, guildID, guild, money)")
-		self.requestDB("CREATE TABLE transaction (transactionID INTEGER PRIMARY KEY AUTOINCREMENT, userEmitterID, userEmitter, userReceiverID, userReceiver, guildID, guild, timestamp, money)")
+		self.requestDB("CREATE TABLE moneyTransaction (moneyTransactionID INTEGER PRIMARY KEY AUTOINCREMENT, userEmitterID, userEmitter, userReceiverID, userReceiver, guildID, guild, timestamp, money)")
 
 		self.requestDB("CREATE TABLE army (armyID INTEGER PRIMARY KEY AUTOINCREMENT, userID, user, guildID, guild, timestamp, command, saloperies, money)")
 		self.requestDB("CREATE TABLE megaarmy (megaarmyID INTEGER PRIMARY KEY AUTOINCREMENT, userID, user, guildID, guild, timestamp, command, lines, saloperies, money)")
@@ -59,19 +59,21 @@ class Database(commands.Cog):
 	async def changeBalance(self, ctx, arg = None):
 		ggr_utilities.logger(ctx.message.content, self, ctx)
 		self.changeDBBalanceMoney(ctx.author, ctx.guild, 9)
-		money = self.getDBMoney(ctx.author, ctx.guild)
-
-	@commands.command()
-	async def money(self, ctx, arg = None):
-		ggr_utilities.logger(ctx.message.content, self, ctx)
-		money = self.getDBMoneyVerif(ctx.author, ctx.guild)
-		print(money)
-		await ctx.send(str(money[5]))
 	######################### SHELL COMMANDS #########################
 
 	############################ ROUTINES ############################
 
 	### ECO
+
+	def getDBMoneyRichOrder(self, guild, limit=0):
+		filter = ""
+		if(limit > 0):
+			filter = " DESC LIMIT 3"
+		request = "SELECT * FROM money ORDER BY money" + filter
+		self.requestDB(request)
+		rows = self.cur.fetchall()
+		return (rows)
+
 	def getDBMoneyVerif(self, user, guild):
 		money = self.getDBMoney(user, guild)
 		if (money == None):
@@ -95,13 +97,23 @@ class Database(commands.Cog):
 			ggr_utilities.logger("The account for user " + user.name + " already exist", self)
 
 	def changeDBBalanceMoney(self, user, guild, diff):
-		currentBalance = self.getDBMoney(user, guild)
+		currentBalance = self.getDBMoneyVerif(user, guild)
 
 		newMoney = currentBalance[5] + diff
 		moneyID = currentBalance[0]
 
 		request = "REPLACE INTO money VALUES(" + str(moneyID) + ", " + str(int(user.id)) + ", " + self.escape(user.name) + ", " + \
 		str(int(guild.id)) + ", " + self.escape(guild.name) + ", " + str(newMoney) + ")"
+		self.requestDB(request)
+		self.logDBMoneyTransaction(guild, user, guild, time.time(), diff)
+
+
+	def logDBMoneyTransaction(self, userEmitter, userReceiver, guild, timestamp, money):
+		request = "INSERT INTO moneyTransaction VALUES(NULL, " + \
+		str(int(userEmitter.id)) + ", " + self.escape(userEmitter.name) + ", " + \
+		str(int(userReceiver.id)) + ", " + self.escape(userReceiver.name) + ", " + \
+		str(int(guild.id)) + ", " + self.escape(guild.name) + ", " + \
+		str(timestamp) + ", " + str(money) + ")"
 		self.requestDB(request)
 
 	### ARMY
@@ -119,7 +131,6 @@ class Database(commands.Cog):
 		request = "REPLACE INTO " + type.data()['table'] + " VALUES(" + tableID + ", " + str(int(user.id)) + ", " + self.escape(user.name) + ", " + \
 		str(int(guild.id)) + ", " + self.escape(guild.name) + ", " + str(float(timestamp)) + ", " + \
 		str(int(saloperies)) + ", " + str(int(megaarmyID)) + ", " + str(0) + ")"
-		ggr_utilities.logger("Request:  " + request, self)
 		self.requestDB(request)
 		return(self.cur.lastrowid)
 	
@@ -137,7 +148,6 @@ class Database(commands.Cog):
 		request = "INSERT INTO army VALUES(NULL, " + str(int(user.id)) + ", " + self.escape(user.name) + ", " + \
 		str(int(guild.id)) + ", " + self.escape(guild.name) + ", " + str(float(timestamp)) + ", " + \
 		self.escape(command) + ", " + str(int(saloperies)) + ", " + str(int(money)) + ")"
-		ggr_utilities.logger("Request:  " + request, self)
 		self.requestDB(request)
 		return(self.cur.lastrowid)
 
@@ -145,19 +155,19 @@ class Database(commands.Cog):
 		request = "INSERT INTO megaarmy VALUES(NULL," + str(int(user.id)) + ", " + self.escape(user.name) + ", " + \
 		str(int(guild.id)) + ", " + self.escape(guild.name) + ", " + str(float(timestamp)) + ", " + \
 		self.escape(command) + ", " + str(int(lines)) + ", " + str(int(saloperies)) + ", " + str(int(money)) + ")"
-		ggr_utilities.logger("Request:  " + request, self)
 		self.requestDB(request)
 		return(self.cur.lastrowid)
 
 	### GENERAL
 	def requestDB(self, request):
+		ggr_utilities.logger("Request:  " + request, self)
 		try:
 			self.cur.execute(request)
 			self.con.commit()
 		except sqlite3.OperationalError as e:
-			ggr_utilities.logger(str(e), self)
+			ggr_utilities.logger(str(e), self, None, ggr_utilities.LogType.INFO)
 		else:
-			ggr_utilities.logger("Request OK", self)
+			ggr_utilities.logger("Request OK", self, None, ggr_utilities.LogType.SUCCESS)
 
 def setup(bot):
 	bot.add_cog(Database(bot))
