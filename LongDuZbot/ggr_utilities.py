@@ -2,6 +2,7 @@
 import datetime
 import math
 import requests
+import os
 from termcolor import colored
 from enum import Enum
 from functools import wraps
@@ -160,7 +161,8 @@ def logger(string, cog=None, ctx=None, logType=LogType.NORMAL):
 def check_admin():
 	async def predicate(ctx):
         # return ctx.guild and ctx.guild.id == guild_id
-		return ctx.author and ctx.author.id == 1092166932632965142
+		return ctx.author and ctx.author.id == int(os.getenv("ADMIN"))
+
 	return commands.check(predicate)
 
 async def getRole(guild):

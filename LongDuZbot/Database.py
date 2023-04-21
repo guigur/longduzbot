@@ -24,7 +24,8 @@ class MaitreJeanfoutreType(Enum):
 class Database(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
-		self.db = "test.db"
+		self.db = os.getenv("DATABASE_NAME")
+		ggr_utilities.logger("Using database: " + self.db , self, None, ggr_utilities.LogType.INFO)
 		self.con = sqlite3.connect(self.db)
 		self.cur = self.con.cursor()
 
