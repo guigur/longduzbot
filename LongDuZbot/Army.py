@@ -40,7 +40,7 @@ class Army(commands.Cog):
 			await ctx.send("Personne n'est maitre pour l'instant")
 			return
 		ustruct = userStruct(user.name, user.discriminator, ggr_utilities.userIcon(user), DBMaitre[6])
-		card = certif.cardSaloperieBestWorst(ustruct, ggr_utilities.userIcon(user), ggr_utilities.serverIcon(ctx.author), certif.BestWorst.best) #user n'a pas d'argument guild
+		card = certif.cardSaloperieBestWorst(ustruct, ggr_utilities.userIcon(user), ggr_utilities.serverIcon(ctx.guild), certif.BestWorst.best) #user n'a pas d'argument guild
 		
 		await ctx.send(file = discord.File('tmp/card_filled.png'))
 
@@ -55,7 +55,7 @@ class Army(commands.Cog):
 			await ctx.send("Personne n'est le jean-foutre pour l'instant")
 			return
 		ustruct = userStruct(user.name, user.discriminator, ggr_utilities.userIcon(user), DBJeanfoutre[6])
-		card = certif.cardSaloperieBestWorst(ustruct, ggr_utilities.userIcon(user), ggr_utilities.serverIcon(ctx.author), certif.BestWorst.worst) #user n'a pas d'argument guild
+		card = certif.cardSaloperieBestWorst(ustruct, ggr_utilities.userIcon(user), ggr_utilities.serverIcon(ctx.guild), certif.BestWorst.worst) #user n'a pas d'argument guild
 		
 		await ctx.send(file = discord.File('tmp/card_filled.png'))
 

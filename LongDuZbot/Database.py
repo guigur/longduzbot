@@ -47,18 +47,7 @@ class Database(commands.Cog):
 	#   embed.add_field(name="undefined", value="undefined", inline=False)
 	#   await ctx.send(embed=embed)
 
-	@commands.command()
-	async def hardreset(self, ctx, arg = None):
-		"""Hard reset the Maitre and Jeanfoutre"""
-		ggr_utilities.logger(ctx.message.content, self, ctx)
-		await ggr_utilities.sudemote(ctx)
-		self.setDBArchiveMaitreJeanfoutre(MaitreJeanfoutreType.MAITRE)
-		self.setDBArchiveMaitreJeanfoutre(MaitreJeanfoutreType.JEANFOUTRE)
 
-	@commands.command()
-	async def changeBalance(self, ctx, arg = None):
-		ggr_utilities.logger(ctx.message.content, self, ctx)
-		self.changeDBBalanceMoney(ctx.author, ctx.guild, 9)
 	######################### SHELL COMMANDS #########################
 
 	############################ ROUTINES ############################

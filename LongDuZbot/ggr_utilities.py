@@ -4,6 +4,8 @@ import math
 import requests
 from termcolor import colored
 from enum import Enum
+from functools import wraps
+from discord.ext import commands
 
 #colors https://www.materialpalette.com/colors
 ggr_red = 0xf44336
@@ -63,12 +65,12 @@ def userServerIcon(ctx, user = None):
 
 	return userImg, guildImg
 
-def serverIcon(ctx):
-	guildUrl = ctx.guild.icon_url_as(format='png')
+def serverIcon(guild):
+	guildUrl = guild.icon_url_as(format='png')
 	try:
 		guildImg = requests.get(guildUrl, stream=True).raw
 	except requests.exceptions.RequestException as e:
-		guildImg = pickDefImage(ctx.guild.name)
+		guildImg = pickDefImage(guild.name)
 
 	return guildImg
 
@@ -142,7 +144,6 @@ class LogType(Enum):
 		elif (self.value == 3):
 			return ("yellow")
 
-
 def logger(string, cog=None, ctx=None, logType=LogType.NORMAL):
 	usr = colored("server", "cyan")
 	if ctx:
@@ -155,6 +156,12 @@ def logger(string, cog=None, ctx=None, logType=LogType.NORMAL):
 	string = pDT() + " " + usr + classname + "] "+ colored(string, logType.color())
 	print(string)
 	#todo: add to file
+
+def check_admin():
+	async def predicate(ctx):
+        # return ctx.guild and ctx.guild.id == guild_id
+		return ctx.author and ctx.author.id == 1092166932632965142
+	return commands.check(predicate)
 
 async def getRole(guild):
 	guildRoles = await guild.fetch_roles()
