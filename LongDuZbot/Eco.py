@@ -42,7 +42,11 @@ class Eco(commands.Cog):
 		money = self.database.getDBMoneyVerif(user, ctx.guild)
 		userS = userStruct(user.name, user.discriminator, ggr_utilities.userIcon(user), money[5])
 		card = certif.generateMoneyCard(userS, ggr_utilities.serverIcon(ctx.guild))
-		await ctx.send(file = discord.File('tmp/card_filled.png'))
+
+		file = discord.File('tmp/card_filled.png')
+		embed=discord.Embed(color=0xFF5733)
+		embed.set_image(url='attachment://card_filled.png')
+		await ctx.send(embed=embed, file=file)
 
 	@commands.command()
 	async def topwad(self, ctx):
