@@ -17,7 +17,6 @@ from discord.ext.commands import Bot
 
 import ggr_utilities
 import ggr_emotes
-
 import cmd, sys
 from functools import wraps # This convenience func preserves name and docstring
 
@@ -48,6 +47,10 @@ class Shell(cmd.Cmd):
 		self.defaultprompt = self.prompt
 		self.workingType = ObjectComType.NONE
 
+		self.scheduler = self.bot.get_cog('Scheduler')
+		if self.scheduler is None:
+			ggr_utilities.logger("Missing Scheduler cog", self, None, ggr_utilities.LogType.ERROR)
+	
 	f = Figlet(font='slant')
 	intro = f.renderText("LongDuZbot") + "\nType help or ? to list commands.\n"
 	file = None
@@ -55,8 +58,9 @@ class Shell(cmd.Cmd):
 	
 	def stop_server(self):
 		ggr_utilities.logger("Stopping server", self, None, ggr_utilities.LogType.INFO)
+		#self.scheduler.stop() #does not work
 		asyncio.run_coroutine_threadsafe(self.bot.close(), self.loop)
-	
+
 	async def get_user(self, id: int):
 		self.user = await self.bot.fetch_user(id)
 		self.prompt = colored(self.user, "red") + "> "

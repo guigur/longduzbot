@@ -22,11 +22,11 @@ class Army(commands.Cog):
 
 		self.database = self.bot.get_cog('Database')
 		if self.database is None:
-			ggr_utilities.logger("Missing Database cog", self,)
+			ggr_utilities.logger("Missing Database cog", self, ggr_utilities.LogType.ERROR)
 
 		self.eco = self.bot.get_cog('Eco')
 		if self.eco is None:
-			ggr_utilities.logger("Missing Eco cog", self,)
+			ggr_utilities.logger("Missing Eco cog", ggr_utilities.LogType.ERROR)
 ######################## DISCORD COMMANDS ########################
 
 	@commands.command()
