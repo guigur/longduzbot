@@ -32,9 +32,11 @@ class Eco(commands.Cog):
 		if arg:
 			try:
 				user = await commands.UserConverter().convert(ctx, str(arg))
+				await ctx.message.delete()
+
 			except commands.BadArgument:
 				await ctx.send("Utilisateur non trouvé")
-				ggr_utilities.logger(ctx, "User not found")
+				ggr_utilities.logger("User not found", self, ctx, ggr_utilities.LogType.ERROR)
 				return #on quitte la fonction
 		else:
 			user = ctx.author
