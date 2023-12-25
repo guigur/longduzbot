@@ -93,13 +93,13 @@ class Army(commands.Cog):
 			for emojinmb in ggr_utilities.numbersToEmojis(armytotmembers):
 				await ctx.message.add_reaction(emojinmb)
 			if armyGold > 0:
-				await ctx.send("Cette armée vous rapporte **" + str(armyGold) + " " + Eco.moneyName(armyGold) + "**")
+				await ctx.reply("Cette armée vous rapporte **" + str(armyGold) + " " + Eco.moneyName(armyGold) + "**")
 				await ctx.message.add_reaction(ggr_emotes.WAD)
 				##self.eco.changeBallanceRoutine(ctx.author, armyGold) ##TODO: change call to eco ##########==
 				self.database.changeDBBalanceMoney(ctx.author, ctx.guild, armyGold)
 
 		else:
-			await ctx.send("Votre armée de saloperies n'est pas prête.\nRéessayez dans **" + str(math.trunc(self.hasUserCoolDownRoutine(ctx.author)["date"] - time.time())) + "** secondes.")
+			await ctx.reply("Votre armée de saloperies n'est pas prête.\nRéessayez dans **" + str(math.trunc(self.hasUserCoolDownRoutine(ctx.author)["date"] - time.time())) + "** secondes.")
 			await ctx.message.add_reaction("❌")
 
 	@commands.command()
@@ -134,9 +134,9 @@ class Army(commands.Cog):
 
 				megaarmyID = self.database.addDBMegaArmy(ctx.author, ctx.guild, time.time(), ctx.message.content, armyLines, armytotmembers, armyGold)
 
-				await ctx.send("Votre armée compte **" + str(armytotmembers) + "** saloperies. Beau travail.")
+				await ctx.reply("Votre armée compte **" + str(armytotmembers) + "** saloperies. Beau travail.")
 				if armyGold > 0:
-					await ctx.send("Cette armée vous rapporte **" + str(armyGold) + " " + Eco.moneyName(armyGold) + "**")
+					await ctx.reply("Cette armée vous rapporte **" + str(armyGold) + " " + Eco.moneyName(armyGold) + "**")
 					await ctx.message.add_reaction(ggr_emotes.WAD)
 					#self.eco.changeBallanceRoutine(ctx.author, armyGold) ##TODO: change call to eco ##########==
 					self.database.changeDBBalanceMoney(ctx.author, ctx.guild, armyGold)
@@ -147,12 +147,12 @@ class Army(commands.Cog):
 					await self.grantWorstRoutine(ctx, armytotmembers, megaarmyID)
 				else:
 					#TODO: mettre differentes reactions en fonction du score
-					await ctx.send("Bien mais il y a mieux")
+					await ctx.reply("Bien mais il y a mieux")
 			else:
-				await ctx.send("La méga armée de saloperies n'est pas prête.\nRéessayez dans quelques minutes.")
+				await ctx.reply("La méga armée de saloperies n'est pas prête.\nRéessayez dans quelques minutes.")
 				await ctx.message.add_reaction("❌")
 		else:
-			await ctx.send("Un maître n'a pas besoin de prouver sa valeur.\nLa votre est de **" + str(DBMaitre[6]) + "** Saloperies.")
+			await ctx.reply("Un maître n'a pas besoin de prouver sa valeur.\nLa votre est de **" + str(DBMaitre[6]) + "** Saloperies.")
 	
 	######################### SHELL COMMANDS #########################
 
@@ -240,14 +240,14 @@ class Army(commands.Cog):
 			self.database.setDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.JEANFOUTRE, ggr_utilities.dummyUser, ctx.guild, time.time(), armytotmembers, megaarmyID)
 
 		#self.saveDataToFileRoutine() ############
-		await ctx.send("Félicitations " + user.mention + " vous êtes le nouveau " + role.mention)
+		await ctx.reply("Félicitations " + user.mention + " vous êtes le nouveau " + role.mention)
 		if (not firstMaitre):
 			await ctx.send("Désolé " + oldMaitre.mention + ", il va falloir faire mieux !")
 
 		url = ctx.author.avatar_url_as(format='png')
 		picture = certif.generateCertifMaster(requests.get(url, stream=True).raw, ctx.author.name, armytotmembers)
-		await ctx.send(file=discord.File('tmp/certif_best_filled.png'))
-		await ctx.send("Ce certificat prouve votre presigieux titre de " + role.mention + "\nN'hésitez pas à mentionner ce titre prestigieux sur votre CV.")
+		await ctx.reply("Ce certificat prouve votre presigieux titre de " + role.mention + "\nN'hésitez pas à mentionner ce titre prestigieux sur votre CV.",
+			file=discord.File('tmp/certif_best_filled.png'))
 
 	async def grantWorstRoutine(self, ctx, armytotmembers, megaarmyID):
 		ggr_utilities.logger("User " + ctx.author.name + " is now the good-for-nothing of saloperies", self)
@@ -255,11 +255,11 @@ class Army(commands.Cog):
 
 		self.database.setDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.JEANFOUTRE, ctx.author, ctx.guild, time.time(), armytotmembers, megaarmyID)
 
-		await ctx.send("Félicitations " + user.mention + " vous êtes le nouveau **Jean-foutre des Saloperies**")
+		await ctx.reply("Félicitations " + user.mention + " vous êtes le nouveau **Jean-foutre des Saloperies**")
 		url = ctx.author.avatar_url_as(format='png')
 		picture = certif.generateCertifBitch(requests.get(url, stream=True).raw, ctx.author.name, armytotmembers)
-		await ctx.send(file=discord.File('tmp/certif_worst_filled.png'))
-		await ctx.send("Ce certificat prouve votre titre de **Jean-foutre des Saloperies**\nVous êtes un bon à rien, un cloporte, un ectoplasme à roulettes. Bref, pas ouf quoi.")
+		await ctx.reply("Ce certificat prouve votre titre de **Jean-foutre des Saloperies**\nVous êtes un bon à rien, un cloporte, un ectoplasme à roulettes. Bref, pas ouf quoi.",
+			file=discord.File('tmp/certif_worst_filled.png'))
 
 def setup(bot):
 	bot.add_cog(Army(bot))
