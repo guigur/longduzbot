@@ -9,7 +9,7 @@ image = Image.new("RGB", (image_width, image_height), "white")
 draw = ImageDraw.Draw(image)
 
 # Open an image to be placed within the popping circle
-circle_image_path = "img/default/blue.png"
+circle_image_path = "../img/default/blue.png"
 circle_image = Image.open(circle_image_path).resize((128, 128))  # Adjust the size as needed
 
 # Ensure that the image has an alpha channel

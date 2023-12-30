@@ -17,7 +17,6 @@ for i in range(0, max_radius, step):
     draw.ellipse((centerW - i, centerH - i, centerW + i, centerH + i), fill = color_1) 
     images.append(im) 
 
-open()
 images[0].save('pillow_imagedraw.gif', 
                save_all = True, append_images = images[1:],  
                optimize = True, duration = 60)
