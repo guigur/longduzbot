@@ -152,9 +152,9 @@ def cardSaloperieBestWorst(user, profilePictureLink, serverPictureLink, type):
 	textNameW,textNameH = fontCardBig.getsize(textName)
 	draw.text((240, ligneOffset[0]), text=textName, fill=(255,255,255,255), font=fontCardBig, anchor=None, spacing=0, align="left")
 
-	textIdentifier = " #" + user.discriminator
-	textIdentifierW,textIdentifierH = fontCardIdentifier.getsize(textIdentifier)
-	draw.text((240 + textNameW, ligneOffset[1]), text=textIdentifier, fill=(255,255,255,127), font=fontCardIdentifier, anchor=None, spacing=0, align="left")
+	# textIdentifier = " #" + user.discriminator
+	# textIdentifierW,textIdentifierH = fontCardIdentifier.getsize(textIdentifier)
+	# draw.text((240 + textNameW, ligneOffset[1]), text=textIdentifier, fill=(255,255,255,127), font=fontCardIdentifier, anchor=None, spacing=0, align="left")
 
 	if (type == BestWorst.best):
 		l2Text = "est le maître des saloperies"
@@ -297,9 +297,9 @@ def generateMoneyCard(user, serverPictureLink):
 	textNameW,textNameH = fontCardBig.getsize(textName)
 	draw.text((188, ligneOffset[0]), text=textName, fill=(255,255,255,255), font=fontCardBig, anchor=None, spacing=0, align="left")
 
-	textIdentifier = "#" + user.discriminator
-	textIdentifierW,textIdentifierH = fontCardIdentifier.getsize(textIdentifier)
-	draw.text((188 + textNameW, ligneOffset[1]), text=textIdentifier, fill=(255,255,255,127), font=fontCardIdentifier, anchor=None, spacing=0, align="left")
+	# textIdentifier = "#" + user.discriminator
+	# textIdentifierW,textIdentifierH = fontCardIdentifier.getsize(textIdentifier)
+	# draw.text((188 + textNameW, ligneOffset[1]), text=textIdentifier, fill=(255,255,255,127), font=fontCardIdentifier, anchor=None, spacing=0, align="left")
 
 	textOwn = secure_random.choice(ownSynonyms) + " "
 	textOwnW,textOwnH = fontCard.getsize(textOwn)

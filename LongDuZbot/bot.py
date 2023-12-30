@@ -31,7 +31,7 @@ async def on_ready():
 	global timeReady
 	timeReady = time.time()
 	ggr_utilities.logger("Logged in as " + bot.user.name + " " + str(bot.user.id), None, None, ggr_utilities.LogType.INFO)
-	await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name='les !megaarmy'))
+	await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name='les ' + prefix +'megaarmy'))
 	
 def load_extentions():
 	for extension in startup_extensions:

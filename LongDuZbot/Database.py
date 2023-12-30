@@ -54,7 +54,63 @@ class Database(commands.Cog):
 	############################ ROUTINES ############################
 
 	### ECO
+		
+	def periodHelper(self, startTimestamp, endTimestamp):
+		if (startTimestamp != None and endTimestamp != None):
+			return (" AND timestamp > " + str(startTimestamp) + " AND timestamp < " + str(endTimestamp))
+		return ""
 
+	def getStatsSaloperiesMegaarmyOnPeriod(self, user, guild, startTimestamp=None, endTimestamp=None):
+		request = "SELECT COALESCE(SUM(saloperies), 0) AS sumSaloperies FROM megaarmy WHERE userID=" + str(user.id) +" AND guildID=" + str(guild.id) + self.periodHelper(startTimestamp, endTimestamp) + " LIMIT 1"
+		self.requestDB(request)
+		#print(self.cur.description)
+		res = self.cur.fetchall()
+		#j = json.dumps( [dict(ix) for ix in res] ) #CREATE JSON
+		#print(j)
+		return (res)
+
+	def getStatsSaloperieArmyOnPeriod(self, user, guild, startTimestamp=None, endTimestamp=None):
+		request = "SELECT COALESCE(SUM(saloperies), 0) FROM army WHERE userID=" + str(user.id) +" AND guildID=" + str(guild.id) + self.periodHelper(startTimestamp, endTimestamp) + " LIMIT 1"
+		self.requestDB(request)
+		res = self.cur.fetchone()[0]
+		return (res)
+	
+	def getStatsWadsOnPeriod(self, user, guild, startTimestamp=None, endTimestamp=None):
+		request = "SELECT COALESCE(SUM(money), 0) FROM moneyTransaction WHERE userReceiverID=" + str(user.id) +" AND guildID=" + str(guild.id) + self.periodHelper(startTimestamp, endTimestamp) + " LIMIT 1"
+		self.requestDB(request)
+		res = self.cur.fetchone()
+		return (res)
+
+	def getStatsWadsBestDayOnPeriod(self, user, guild, startTimestamp=None, endTimestamp=None):
+		request = "SELECT *, COALESCE(MAX(money), 0) AS maxMoney FROM moneyTransaction WHERE userReceiverID=" + str(user.id) +" AND guildID=" + str(guild.id) + self.periodHelper(startTimestamp, endTimestamp) + " LIMIT 1"
+		self.requestDB(request)
+		res = self.cur.fetchone()
+		return (res)
+
+	def getBestMegaarmyOnPeriod(self, user, guild, startTimestamp=None, endTimestamp=None):
+		request = "SELECT *, COALESCE(MAX(saloperies), 0) AS maxSaloperies FROM megaarmy WHERE userID=" + str(user.id) +" AND guildID=" + str(guild.id) + self.periodHelper(startTimestamp, endTimestamp) + " LIMIT 1"
+		self.requestDB(request)
+		res = self.cur.fetchone()
+		return (res)
+
+	def getWorstMegaarmyOnPeriod(self, user, guild, startTimestamp=None, endTimestamp=None):
+		request = "SELECT *, COALESCE(MIN(saloperies), 0) AS maxSaloperies FROM megaarmy WHERE userID=" + str(user.id) +" AND guildID=" + str(guild.id) + self.periodHelper(startTimestamp, endTimestamp) + " LIMIT 1"
+		self.requestDB(request)
+		res = self.cur.fetchone()
+		return (res)
+
+	def getBestArmyOnPeriod(self, user, guild, startTimestamp=None, endTimestamp=None):
+		request = "SELECT *, COALESCE(MAX(saloperies), 0) AS maxSaloperies FROM army WHERE userID=" + str(user.id) +" AND guildID=" + str(guild.id) + self.periodHelper(startTimestamp, endTimestamp) + " LIMIT 1"
+		self.requestDB(request)
+		res = self.cur.fetchone()
+		return (res)
+	
+	def getWorstArmyOnPeriod(self, user, guild, startTimestamp=None, endTimestamp=None):
+		request = "SELECT *, COALESCE(MIN(saloperies), 0) AS maxSaloperies FROM army WHERE userID=" + str(user.id) +" AND guildID=" + str(guild.id) + self.periodHelper(startTimestamp, endTimestamp) + " LIMIT 1"
+		self.requestDB(request)
+		res = self.cur.fetchone()
+		return (res)
+	
 	def getDBMoneyRichOrder(self, guild, limit=0):
 		filter = ""
 		if(limit > 0):
