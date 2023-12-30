@@ -44,7 +44,7 @@ class Shell(cmd.Cmd):
 	def __init__(self, bot):
 		cmd.Cmd.__init__(self)
 		self.bot = bot
-		self.prompt = colored("> ", "light_magenta")
+		self.prompt = colored("> ", "magenta")
 		self.defaultprompt = self.prompt
 		self.workingType = ObjectComType.NONE
 
