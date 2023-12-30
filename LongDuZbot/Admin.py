@@ -10,7 +10,7 @@ class Admin(commands.Cog):
 
 		self.database = self.bot.get_cog('Database')
 		if self.database is None:
-			ggr_utilities.logger("Missing Database cog", self,)
+			ggr_utilities.logger("Missing Database cog", self)
 	# @commands.command()
 	# @ggr_utilities.check_admin()
 	# async def stop(self, ctx, arg = None):

@@ -5,7 +5,10 @@ import certif
 from discord.ext import commands
 import json
 from collections import namedtuple 
+import datetime
+from dateutil.relativedelta import relativedelta
 
+import sqlite3, os
 import ggr_utilities, ggr_emotes
 import Com, Database
 
@@ -14,6 +17,21 @@ userStruct = namedtuple("userStruct", ["name", "discriminator", "icon", "balance
 moneyName = lambda a=2: "WAD" if (a >= -1 and a <= 1) else "WADs"
 moneyGain = lambda a: "a gagné" if (a >= 0) else "a perdu"
 moneyGainEn = lambda a: "won" if (a >= 0) else "lost"
+
+def get_all_users( json_str = False ):
+	conn = sqlite3.connect( os.getenv("DATABASE_NAME") )
+	conn.row_factory = sqlite3.Row # This enables column access by name: row['column_name'] 
+	db = conn.cursor()
+
+	rows = db.execute("SELECT * from maitre")
+
+	conn.commit()
+	res = rows.fetchall()
+
+	if json_str:
+		return json.dumps( [dict(ix) for ix in res] ) #CREATE JSON
+
+	return res
 
 class Eco(commands.Cog):
 	def __init__(self, bot):
@@ -24,6 +42,49 @@ class Eco(commands.Cog):
 			ggr_utilities.logger("Missing Database cog", self,)
 		
 	######################## DISCORD COMMANDS ########################
+			
+	def genSalopeiresArrayYear(self, user, guild):
+		monthsSaloperies = []
+		month = 1
+		for month in range(1, 11):
+			start_month = datetime.datetime(2023, month, 1)
+			end_month = datetime.datetime(2023, month, 1)	+ relativedelta(months=+1)
+			monthsSaloperies.append({"month": month, "saloperies": self.database.getStatsSaloperiesMegaarmyOnPeriod(user, guild, start_month.timestamp(), end_month.timestamp())[0]})
+		print(monthsSaloperies)
+		
+		
+	@commands.command()
+	async def testwad(self, ctx):
+		print(get_all_users( True ))
+
+		guild = self.bot.get_guild(806284513583169596)
+		"""Affiche le nombre de WADs que vous disposez dans la banque des WADs"""
+
+		self.genSalopeiresArrayYear(ctx.author, guild)
+		statsSaloperiesMegaarmyOnPeriod = self.database.getStatsSaloperiesMegaarmyOnPeriod(ctx.author, guild)
+		await ctx.send("getStatsSaloperiesMegaarmyOnPeriod " + str(statsSaloperiesMegaarmyOnPeriod))
+
+		statsSaloperieArmyOnPeriod = self.database.getStatsSaloperieArmyOnPeriod(ctx.author, guild)
+		await ctx.send("getStatsSaloperieArmyOnPeriod " + str(statsSaloperieArmyOnPeriod))
+
+		statsWadsOnPeriod = self.database.getStatsWadsOnPeriod(ctx.author, guild)
+		await ctx.send("getStatsWadsOnPeriod " + str(statsWadsOnPeriod))
+
+		statsWadsBestDayOnPeriod = self.database.getStatsWadsBestDayOnPeriod(ctx.author, guild)
+		await ctx.send("getStatsWadsBestDayOnPeriod " + str(statsWadsBestDayOnPeriod))
+
+		statsBestMegaarmyOnPeriod = self.database.getBestMegaarmyOnPeriod(ctx.author, guild)
+		await ctx.send("getBestMegaarmyOnPeriod " + str(statsBestMegaarmyOnPeriod))
+
+		statsWorstMegaarmyOnPeriod = self.database.getWorstMegaarmyOnPeriod(ctx.author, guild)
+		await ctx.send("getWorstMegaarmyOnPeriod " + str(statsWorstMegaarmyOnPeriod))
+
+		statsBestArmyOnPeriod = self.database.getBestArmyOnPeriod(ctx.author, guild)
+		await ctx.send("getBestArmyOnPeriod " + str(statsBestArmyOnPeriod))
+
+		statsWorstArmyOnPeriod = self.database.getWorstArmyOnPeriod(ctx.author, guild)
+		await ctx.send("getWorstArmyOnPeriod " + str(statsWorstArmyOnPeriod))
+
 
 	@commands.command()
 	async def wad(self, ctx, arg = None):  #TODO FIX other user
@@ -40,7 +101,6 @@ class Eco(commands.Cog):
 				return #on quitte la fonction
 		else:
 			user = ctx.author
-
 		money = self.database.getDBMoneyVerif(user, ctx.guild)
 		userS = userStruct(user.name, user.discriminator, ggr_utilities.userIcon(user), money[5])
 		card = certif.generateMoneyCard(userS, ggr_utilities.serverIcon(ctx.guild))
