@@ -19,7 +19,7 @@ token = os.getenv("DISCORD_TOKEN")
 prefix = os.getenv("DISCORD_COMMAND_PREFIX")
 
 #Com need to loaded first. Otherwise, the additional commands in other modules wont be utilized
-startup_extensions = ["Com", "Database", "Utils", "Eco", "Army", "Test", "Admin"] #"status",
+startup_extensions = ["Com", "Database", "Utils", "Eco", "Army", "Test", "Admin", "Rewind2023"] #"status",
 
 intents = discord.Intents.all()
 intents.members = True

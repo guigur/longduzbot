@@ -53,37 +53,37 @@ class Eco(commands.Cog):
 		print(monthsSaloperies)
 		
 		
-	@commands.command()
-	async def testwad(self, ctx):
-		print(get_all_users( True ))
+	# @commands.command()
+	# async def testwad(self, ctx):
+	# 	print(get_all_users( True ))
+	# 	await rewind_2023.generate_2023_wrapped(ctx.author, ctx)
+	# 	guild = self.bot.get_guild(806284513583169596)
+	# 	"""Affiche le nombre de WADs que vous disposez dans la banque des WADs"""
 
-		guild = self.bot.get_guild(806284513583169596)
-		"""Affiche le nombre de WADs que vous disposez dans la banque des WADs"""
+	# 	self.genSalopeiresArrayYear(ctx.author, guild)
+	# 	statsSaloperiesMegaarmyOnPeriod = self.database.getStatsSaloperiesMegaarmyOnPeriod(ctx.author, guild)
+	# 	await ctx.send("getStatsSaloperiesMegaarmyOnPeriod " + str(statsSaloperiesMegaarmyOnPeriod))
 
-		self.genSalopeiresArrayYear(ctx.author, guild)
-		statsSaloperiesMegaarmyOnPeriod = self.database.getStatsSaloperiesMegaarmyOnPeriod(ctx.author, guild)
-		await ctx.send("getStatsSaloperiesMegaarmyOnPeriod " + str(statsSaloperiesMegaarmyOnPeriod))
+	# 	statsSaloperieArmyOnPeriod = self.database.getStatsSaloperieArmyOnPeriod(ctx.author, guild)
+	# 	await ctx.send("getStatsSaloperieArmyOnPeriod " + str(statsSaloperieArmyOnPeriod))
 
-		statsSaloperieArmyOnPeriod = self.database.getStatsSaloperieArmyOnPeriod(ctx.author, guild)
-		await ctx.send("getStatsSaloperieArmyOnPeriod " + str(statsSaloperieArmyOnPeriod))
+	# 	statsWadsOnPeriod = self.database.getStatsWadsOnPeriod(ctx.author, guild)
+	# 	await ctx.send("getStatsWadsOnPeriod " + str(statsWadsOnPeriod))
 
-		statsWadsOnPeriod = self.database.getStatsWadsOnPeriod(ctx.author, guild)
-		await ctx.send("getStatsWadsOnPeriod " + str(statsWadsOnPeriod))
+	# 	statsWadsBestDayOnPeriod = self.database.getStatsWadsBestDayOnPeriod(ctx.author, guild)
+	# 	await ctx.send("getStatsWadsBestDayOnPeriod " + str(statsWadsBestDayOnPeriod))
 
-		statsWadsBestDayOnPeriod = self.database.getStatsWadsBestDayOnPeriod(ctx.author, guild)
-		await ctx.send("getStatsWadsBestDayOnPeriod " + str(statsWadsBestDayOnPeriod))
+	# 	statsBestMegaarmyOnPeriod = self.database.getBestMegaarmyOnPeriod(ctx.author, guild)
+	# 	await ctx.send("getBestMegaarmyOnPeriod " + str(statsBestMegaarmyOnPeriod))
 
-		statsBestMegaarmyOnPeriod = self.database.getBestMegaarmyOnPeriod(ctx.author, guild)
-		await ctx.send("getBestMegaarmyOnPeriod " + str(statsBestMegaarmyOnPeriod))
+	# 	statsWorstMegaarmyOnPeriod = self.database.getWorstMegaarmyOnPeriod(ctx.author, guild)
+	# 	await ctx.send("getWorstMegaarmyOnPeriod " + str(statsWorstMegaarmyOnPeriod))
 
-		statsWorstMegaarmyOnPeriod = self.database.getWorstMegaarmyOnPeriod(ctx.author, guild)
-		await ctx.send("getWorstMegaarmyOnPeriod " + str(statsWorstMegaarmyOnPeriod))
+	# 	statsBestArmyOnPeriod = self.database.getBestArmyOnPeriod(ctx.author, guild)
+	# 	await ctx.send("getBestArmyOnPeriod " + str(statsBestArmyOnPeriod))
 
-		statsBestArmyOnPeriod = self.database.getBestArmyOnPeriod(ctx.author, guild)
-		await ctx.send("getBestArmyOnPeriod " + str(statsBestArmyOnPeriod))
-
-		statsWorstArmyOnPeriod = self.database.getWorstArmyOnPeriod(ctx.author, guild)
-		await ctx.send("getWorstArmyOnPeriod " + str(statsWorstArmyOnPeriod))
+	# 	statsWorstArmyOnPeriod = self.database.getWorstArmyOnPeriod(ctx.author, guild)
+	# 	await ctx.send("getWorstArmyOnPeriod " + str(statsWorstArmyOnPeriod))
 
 
 	@commands.command()
