@@ -128,7 +128,7 @@ class Rewind2023(commands.Cog):
 		medium_font = ImageFont.truetype(font_path, medium_font_size)
 
 		frames = []
-		m = 4
+		m = 8
 		cnt = 0
 
 		mydate = datetime.datetime.now()
