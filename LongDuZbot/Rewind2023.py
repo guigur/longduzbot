@@ -138,7 +138,7 @@ class Rewind2023(commands.Cog):
 			pass
 		elif (slide == 1):
 			times_megaarmy_command = self.database.getStatsCountSaloperiesMegaarmyOnPeriod(ctx.author, ctx.guild, first_january_2023_timestamp, thirtyfirst_decemeber_2023_timestamp)[0]
-			percent_megaarmy_more = round(self.database.getStatsPercentileCommandMegaarmyOnPeriod(ctx.author, ctx.guild, first_january_2023_timestamp, thirtyfirst_decemeber_2023_timestamp)[2], 1)
+			percent_megaarmy_more = round(self.database.getStatsPercentileCommandMegaarmyOnPeriod(ctx.author, ctx.guild, first_january_2023_timestamp, thirtyfirst_decemeber_2023_timestamp)[3], 1)
 			lilian_bouche_img = Image.open('img/lilian_bouche.png', 'r')
 
 		elif (slide == 2):
