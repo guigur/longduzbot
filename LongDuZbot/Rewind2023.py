@@ -21,7 +21,9 @@ tile_height = 512
 tile_color = (0, 0, 0, 128)  # Red tile color with 50% transparency
 image_width = 480
 image_height = 854
-target_cnt = 3000
+
+first_january_2023_timestamp = 1672531200
+thirtyfirst_decemeber_2023_timestamp = 1704067199
 
 def drawCenterText(text, font, text_max_width, img, image_width, fill=(255, 255, 255, 255),origin_y=10):
 	current_h = origin_y + 40
@@ -80,9 +82,12 @@ class Rewind2023(commands.Cog):
 			await ctx.send(file = discord.File('tmp/animated_tile.gif'))
 		print("done")
 
-	def profile_and_server(self, ctx, img, size=(256,256), origin=None):
-		url = ctx.author.avatar_url_as(format='png')
-		
+	def profile_and_server(self, ctx, img, size=(256,256), origin=None, mode="profile"):
+		if (mode == "profile"):
+			url = ctx.author.avatar_url_as(format='png')
+		else:
+			url = ctx.guild.icon_url_as(format='png')
+
 		profile = Image.open(requests.get(url, stream=True).raw).convert("RGBA") #profile pic
 		profile = profile.resize(size) #just to be sure
 
@@ -103,7 +108,7 @@ class Rewind2023(commands.Cog):
 		for month in range(1, 13):
 			start_month = datetime.datetime(2023, month, 1)
 			end_month = datetime.datetime(2023, month, 1)	+ relativedelta(months=+1)
-			print({"month": month, "saloperies": self.database.getStatsSaloperiesMegaarmyOnPeriod(user, guild, start_month.timestamp(), end_month.timestamp())[0][0]})
+			# print({"month": month, "saloperies": self.database.getStatsSaloperiesMegaarmyOnPeriod(user, guild, start_month.timestamp(), end_month.timestamp())[0][0]})
 			monthsSaloperies.append(self.database.getStatsSaloperiesMegaarmyOnPeriod(user, guild, start_month.timestamp(), end_month.timestamp())[0][0])		
 		return monthsSaloperies
 
@@ -132,30 +137,35 @@ class Rewind2023(commands.Cog):
 		if (slide == 0):
 			pass
 		elif (slide == 1):
-			times_megaarmy_command = self.database.getStatsCountSaloperiesMegaarmyOnPeriod(ctx.author, ctx.guild)[0]
-			percent_megaarmy_more = round(self.database.getStatsPercentileCommandMegaarmyOnPeriod(ctx.author, ctx.guild)[2], 1)
+			times_megaarmy_command = self.database.getStatsCountSaloperiesMegaarmyOnPeriod(ctx.author, ctx.guild, first_january_2023_timestamp, thirtyfirst_decemeber_2023_timestamp)[0]
+			percent_megaarmy_more = round(self.database.getStatsPercentileCommandMegaarmyOnPeriod(ctx.author, ctx.guild, first_january_2023_timestamp, thirtyfirst_decemeber_2023_timestamp)[2], 1)
+			lilian_bouche_img = Image.open('img/lilian_bouche.png', 'r')
 
 		elif (slide == 2):
-			number_saloperies_total = self.database.getStatsSaloperiesMegaarmyOnPeriod(ctx.author, ctx.guild)[0][0]
+			number_saloperies_total = self.database.getStatsSaloperiesMegaarmyOnPeriod(ctx.author, ctx.guild, first_january_2023_timestamp, thirtyfirst_decemeber_2023_timestamp)[0][0]
 			list_saloperie_month = self.genSalopeiresListYear(ctx.author, ctx.guild)
 			month_nbr = max(enumerate(list_saloperie_month),key=lambda x: x[1])[0] + 1
 			month_datetime = datetime.datetime(2023, month_nbr, 1)
 			slide_2_month_most_active = month_datetime.strftime("%B").title()
 
 		elif (slide == 3):
-			statsBestDaySaloperiesMegaarmyOnPeriod = self.database.getStatsBestDaySaloperiesMegaarmyOnPeriod(ctx.author, ctx.guild)
+			statsBestDaySaloperiesMegaarmyOnPeriod = self.database.getStatsBestDaySaloperiesMegaarmyOnPeriod(ctx.author, ctx.guild, first_january_2023_timestamp, thirtyfirst_decemeber_2023_timestamp)
 			dayStatsBestDaySaloperiesMegaarmyOnPeriod = datetime.datetime.fromtimestamp(statsBestDaySaloperiesMegaarmyOnPeriod[1]).strftime("%A %d %B %Y")
 			saloperiesStatsBestDaySaloperiesMegaarmyOnPeriod = statsBestDaySaloperiesMegaarmyOnPeriod[2]
+			mat_big = Image.open('img/mat_big.png', 'r')
 
 		elif (slide == 4):
-			statsBestMegaarmyOnPeriod = self.database.getBestMegaarmyOnPeriod(ctx.author, ctx.guild)[10]
-			statsWorstMegaarmyOnPeriod = self.database.getWorstMegaarmyOnPeriod(ctx.author, ctx.guild)[10]
+			statsBestMegaarmyOnPeriod = self.database.getBestMegaarmyOnPeriod(ctx.author, ctx.guild, first_january_2023_timestamp, thirtyfirst_decemeber_2023_timestamp)[10]
+			statsWorstMegaarmyOnPeriod = self.database.getWorstMegaarmyOnPeriod(ctx.author, ctx.guild, first_january_2023_timestamp, thirtyfirst_decemeber_2023_timestamp)[10]
 			# print(statsBestMegaarmyOnPeriod)
 			# print(statsWorstMegaarmyOnPeriod)
+			guogur = Image.open('img/guogur.png', 'r')
+
 		elif (slide == 5):
-			statsWadsOnPeriod = self.database.getStatsWadsOnPeriod(ctx.author, ctx.guild)[0]
+			statsWadsOnPeriod = self.database.getStatsWadsOnPeriod(ctx.author, ctx.guild, first_january_2023_timestamp, thirtyfirst_decemeber_2023_timestamp)[0]
 			money_rich_persentile = round(self.database.getStatsPercentileWads(ctx.author, ctx.guild)[3], 1)
-			print(statsWadsOnPeriod)
+			alex_voiture = Image.open('img/alex_voiture.png', 'r')
+			
 		# Create frames for the animation
 		for i in range(tile_width//m):
 			# Create a new frame by pasting tiles side by side on the background image
@@ -180,6 +190,10 @@ class Rewind2023(commands.Cog):
 				drawCenterText(slide_1_big_text, big_font, 20, frame, image_width, (255, 255, 255, 255), 10)
 				drawCenterText(slide_1_small_text, medium_font, 32, frame, image_width, (255, 255, 255, 255), 630)
 
+				slide_1_overlay = Image.new('RGBA', (image_width, image_height))
+				slide_1_overlay.paste(lilian_bouche_img, ((image_width - lilian_bouche_img.size[0]) // 2, (image_height - lilian_bouche_img.size[1]) // 2))
+				frame = Image.alpha_composite(frame, slide_1_overlay)
+
 			elif (slide == 2):
 				
 				if (cnt < number_saloperies_total):
@@ -198,13 +212,21 @@ class Rewind2023(commands.Cog):
 				slide_3_big_text = "Votre journée la plus productive à été le " + dayStatsBestDaySaloperiesMegaarmyOnPeriod + "."
 				slide_3_small_text = "Avec un nombre impressionant de " + str(saloperiesStatsBestDaySaloperiesMegaarmyOnPeriod) + " saloperies invoquées ce jour-là."
 				drawCenterText(slide_3_big_text, big_font, 20, frame, image_width, (255, 255, 255, 255), 10)
-				drawCenterText(slide_3_small_text, medium_font, 32, frame, image_width, (255, 255, 255, 255), 630)
+				drawCenterText(slide_3_small_text, medium_font, 32, frame, image_width, (255, 255, 255, 255), 600)
+
+				slide_3_overlay = Image.new('RGBA', (image_width, image_height))
+				slide_3_overlay.paste(mat_big, ((image_width - mat_big.size[0]) // 2, (image_height - mat_big.size[1]) // 2))
+				frame = Image.alpha_composite(frame, slide_3_overlay)
 
 			elif (slide == 4): #bare minimum done
 				slide_4_big_text = "Votre meilleure !megaarmy cette année comptait " + str(statsBestMegaarmyOnPeriod) + " saloperies."
 				slide_4_small_text = "Et votre pire en avait seulement " + str(statsWorstMegaarmyOnPeriod) + "."
 				drawCenterText(slide_4_big_text, big_font, 20, frame, image_width, (255, 255, 255, 255), 10)
 				drawCenterText(slide_4_small_text, medium_font, 32, frame, image_width, (255, 255, 255, 255), 630)
+				
+				slide_4_overlay = Image.new('RGBA', (image_width, image_height))
+				slide_4_overlay.paste(guogur, ((image_width - guogur.size[0]) // 2, (image_height - guogur.size[1]) // 2))
+				frame = Image.alpha_composite(frame, slide_4_overlay)
 
 			elif (slide == 5): #missing percents
 				slide_5_big_text = "Vous avez raflé " + str(statsWadsOnPeriod) + " WADs en 2023."
@@ -212,9 +234,23 @@ class Rewind2023(commands.Cog):
 				drawCenterText(slide_5_big_text, big_font, 20, frame, image_width, (255, 255, 255, 255), 10)
 				drawCenterText(slide_5_small_text, medium_font, 32, frame, image_width, (255, 255, 255, 255), 630)
 
+				slide_5_overlay = Image.new('RGBA', (image_width, image_height))
+				slide_5_overlay.paste(alex_voiture, ((image_width - alex_voiture.size[0]) // 2, (image_height - alex_voiture.size[1]) // 2))
+				frame = Image.alpha_composite(frame, slide_5_overlay)
+
+
 			slides_username_text = "@" + ctx.author.name + " | 2023 Rewind"
+
+
+			overlay = Image.new('RGBA', (image_width, image_height))
+			draw_rect = ImageDraw.Draw(overlay)
+			draw_rect.rectangle([0, 854-96, 480, 854], (0, 0, 0, 127))
+			frame = Image.alpha_composite(frame, overlay)
+
 			draw_text = ImageDraw.Draw(frame)
-			draw_text.text((16+64+16, 854-64), slides_username_text, font=medium_font, fill=(255, 255, 255, 255))
+			draw_text.text((16+64+64-8+16, 854-64), slides_username_text, font=medium_font, fill=(255, 255, 255, 255))
+			
+			self.profile_and_server(ctx, frame, (64, 64), (16+64-8, 854-(64+16)), mode="server")
 			self.profile_and_server(ctx, frame, (64, 64), (16, 854-(64+16)))
 
 			# text = f"Counter: {i}"
