@@ -60,8 +60,32 @@ class Database(commands.Cog):
 			return (" AND timestamp > " + str(startTimestamp) + " AND timestamp < " + str(endTimestamp))
 		return ""
 
+	def getStatsPercentileSaloperiesMegaarmyOnPeriod(self, user, guild, startTimestamp=None, endTimestamp=None):
+		request = "SELECT * FROM (SELECT userID, guildID, SUM(saloperies) AS total_saloperies, 100 - PERCENT_RANK() OVE (ORDER BY SUM(saloperies) DESC) * 100 AS percentile_rankR FROM megaarmy WHERE guildID=" + str(guild.id) + " GROUP BY userID, guildID) AS subquery WHERE userID =" + str(user.id) + ";"
+		self.requestDB(request)
+		res = self.cur.fetchone()
+		return (res)
+	
+	def getStatsPercentileCommandMegaarmyOnPeriod(self, user, guild, startTimestamp=None, endTimestamp=None):
+		request = "SELECT * FROM (SELECT userID, guildID, count(*) AS total_saloperies, 100 - PERCENT_RANK() OVER (ORDER BY COUNT(saloperies) DESC) * 100 AS percentile_rank, * FROM megaarmy WHERE guildID=" + str(guild.id) + " GROUP BY userID, guildID) AS subquery WHERE userID =" + str(user.id) + ";"
+		self.requestDB(request)
+		res = self.cur.fetchone()
+		return (res)
+
+	def getStatsCountSaloperiesMegaarmyOnPeriod(self, user, guild, startTimestamp=None, endTimestamp=None):
+		request = "SELECT COUNT(*) AS nbr_cmds, * FROM megaarmy WHERE userID=" + str(user.id) +" AND guildID=" + str(guild.id) + self.periodHelper(startTimestamp, endTimestamp)
+		self.requestDB(request)
+		res = self.cur.fetchone()
+		return (res)
+
+	def getStatsBestDaySaloperiesMegaarmyOnPeriod(self, user, guild, startTimestamp=None, endTimestamp=None):
+		request = "SELECT strftime('%Y-%m-%d', timestamp, 'unixepoch') AS day, timestamp, SUM(saloperies) AS max_saloperies FROM megaarmy WHERE userID=" + str(user.id) +" AND guildID=" + str(guild.id) + self.periodHelper(startTimestamp, endTimestamp) + " GROUP BY day ORDER BY max_saloperies DESC LIMIT 1;"
+		self.requestDB(request)
+		res = self.cur.fetchone()
+		return (res)
+
 	def getStatsSaloperiesMegaarmyOnPeriod(self, user, guild, startTimestamp=None, endTimestamp=None):
-		request = "SELECT COALESCE(SUM(saloperies), 0) AS sumSaloperies FROM megaarmy WHERE userID=" + str(user.id) +" AND guildID=" + str(guild.id) + self.periodHelper(startTimestamp, endTimestamp) + " LIMIT 1"
+		request = "SELECT COALESCE(SUM(saloperies), 0) AS sumSaloperies FROM megaarmy WHERE userID=" + str(user.id) +" AND guildID=" + str(guild.id) + self.periodHelper(startTimestamp, endTimestamp) + " LIMIT 1;"
 		self.requestDB(request)
 		#print(self.cur.description)
 		res = self.cur.fetchall()
@@ -89,6 +113,12 @@ class Database(commands.Cog):
 
 	def getBestMegaarmyOnPeriod(self, user, guild, startTimestamp=None, endTimestamp=None):
 		request = "SELECT *, COALESCE(MAX(saloperies), 0) AS maxSaloperies FROM megaarmy WHERE userID=" + str(user.id) +" AND guildID=" + str(guild.id) + self.periodHelper(startTimestamp, endTimestamp) + " LIMIT 1"
+		self.requestDB(request)
+		res = self.cur.fetchone()
+		return (res)
+
+	def getStatsPercentileWads(self, user, guild):
+		request = "SELECT * FROM (SELECT userID, guildID, money, 100 - PERCENT_RANK() OVER (ORDER BY money DESC) * 100 AS percentile_rank, * FROM money WHERE guildID=" + str(guild.id) + " GROUP BY userID, guildID) AS subquery WHERE userID =" + str(user.id) + ";"
 		self.requestDB(request)
 		res = self.cur.fetchone()
 		return (res)

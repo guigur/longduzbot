@@ -6,7 +6,7 @@ from discord.ext import commands
 import json
 from collections import namedtuple 
 import datetime
-from dateutil.relativedelta import relativedelta
+import Rewind2023
 
 import sqlite3, os
 import ggr_utilities, ggr_emotes
@@ -42,17 +42,29 @@ class Eco(commands.Cog):
 			ggr_utilities.logger("Missing Database cog", self,)
 		
 	######################## DISCORD COMMANDS ########################
-			
-	def genSalopeiresArrayYear(self, user, guild):
-		monthsSaloperies = []
-		month = 1
-		for month in range(1, 11):
-			start_month = datetime.datetime(2023, month, 1)
-			end_month = datetime.datetime(2023, month, 1)	+ relativedelta(months=+1)
-			monthsSaloperies.append({"month": month, "saloperies": self.database.getStatsSaloperiesMegaarmyOnPeriod(user, guild, start_month.timestamp(), end_month.timestamp())[0]})
-		print(monthsSaloperies)
+	@commands.command()
+	async def testwad(self, ctx):
+		print(get_all_users( True ))
+
+		ctx.guild = self.bot.get_guild(806284513583169596)
+		"""Affiche le nombre de WADs que vous disposez dans la banque des WADs"""
+
+		#self.database.getStatsPercentileCommanMegaarmyOnPeriod(ctx.author, guild))
+		#print(self.database.getStatsSaloperiesMegaarmyOnPeriod(ctx.author, ctx.guild)[0][0])
+		list_saloperie_month = [11, 2334, 545, 55, 44444, 3]
+		month = max(enumerate(list_saloperie_month),key=lambda x: x[1])[0] + 1
 		
-		
+		# statsBestDaySaloperiesMegaarmyOnPeriod = self.database.getStatsBestDaySaloperiesMegaarmyOnPeriod(ctx.author, guild)
+		# print(statsBestDaySaloperiesMegaarmyOnPeriod)
+		# dayStatsBestDaySaloperiesMegaarmyOnPeriod = datetime.datetime.fromtimestamp(statsBestDaySaloperiesMegaarmyOnPeriod[1]).strftime("%A %d %B %Y")
+		# print(dayStatsBestDaySaloperiesMegaarmyOnPeriod)
+		# print(self.database.getStatsBestDaySaloperiesMegaarmyOnPeriod(ctx.author, guild))
+		# self.genSalopeiresArrayYear(ctx.author, guild)
+		# statsBestDaySaloperiesMegaarmyOnPeriod = self.database.getStatsBestDaySaloperiesMegaarmyOnPeriod(ctx.author, guild)
+		# await ctx.send("getStatsBestDaySaloperiesMegaarmyOnPeriod " + str(statsBestDaySaloperiesMegaarmyOnPeriod))
+		await ctx.send("ok")
+	
+
 	# @commands.command()
 	# async def testwad(self, ctx):
 	# 	print(get_all_users( True ))
