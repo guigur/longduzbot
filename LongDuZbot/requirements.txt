@@ -1,7 +1,8 @@
-discord.py
+discord.py == 1.6.0
 requests
 python-dotenv
 Pillow
 termcolor
 pyfiglet
 gitpython
+python-dateutil
