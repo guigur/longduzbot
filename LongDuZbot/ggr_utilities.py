@@ -30,9 +30,12 @@ ggr_grey = 0x9e9e9e
 ggr_bluegrey = 0x607d8b
 
 
-roleName = "Maître des Saloperies"
+MasterRoleName = "Maître des Saloperies"
 githubBaseUrl = "https://github.com/guigur/longduzbot/"
 roleColor = ggr_yellow
+roles_list = [{"name":"Maître des Saloperies", "meta": "master", "color": ggr_yellow}, 
+			  {"name":"Jean-foutre", "meta": "worst", "color": ggr_purple}]
+
 embedUtilitiesColor = ggr_deeppurple
 
 def pickDefImage(name):
@@ -165,57 +168,49 @@ def check_admin():
 
 	return commands.check(predicate)
 
-async def getRole(guild):
-	guildRoles = await guild.fetch_roles()
-	role = None
-	for r in guildRoles:
-		if (r.name == roleName):
-			doRoleExist = True
-			role = r
-	if (role == None):
-		role = await guild.create_role(name=roleName, color=roleColor, hoist=True, mentionable=True)
+#return the index of the available role. Return None if the index is not found
+def check_if_role_available(role_name=None, role_meta=None):
+	
+	for ri, rl in enumerate(roles_list):
+		if (role_name != None):
+			if (role_name == rl["name"]):
+				return ri
+		elif (role_meta != None):
+			if (role_meta == rl["meta"]):
+				return ri
+	return None
+
+async def getRole(guild, role_name=None, role_meta=None):
+	ri = check_if_role_available(role_name, role_meta)
+	if (ri != None):
+		guildRoles = await guild.fetch_roles()
+		for gr in guildRoles:
+			if gr.name == roles_list[ri]["name"]:
+				return gr
+		role = await guild.create_role(name=roles_list[ri]["name"], color=roles_list[ri]["color"], hoist=True, mentionable=True)
+		return role
+	print("role not found")
+	return None
+
+async def sudemote(ctx, role_meta):
+	"""super promote rank"""
+	guild = ctx.message.guild
+	role = await getRole(guild, role_meta=role_meta)
+	if (role != None):
+		for m in role.members:
+			logger("Removing the role " + role.name + " to " + m.name, None, ctx)
+			await m.remove_roles(role)
 	return role
 
-async def initr(ctx):
-	"""init rank"""
-	guild = ctx.message.guild
-	role = await getRole(guild)
-
-async def promote(ctx):
-	"""promote rank"""
-	member = ctx.message.author
-	guild = ctx.message.guild
-	role = await getRole(guild)
-	await member.add_roles(role)
-
-async def demote(ctx):
-	"""demote rank"""
-	member = ctx.message.author
-	guild = ctx.message.guild
-	role = await getRole(guild)
-	await member.remove_roles(role)
-
-async def sudemote(ctx):
-	"""super promote rank"""
-	guild = ctx.message.guild
-	role = await getRole(guild)
-
-	for m in role.members:
-		logger("Removing the role " + role.name + " to " + m.name, None, ctx)
-		await m.remove_roles(role)
-
-async def supromote(ctx):
+async def supromote(ctx, role_meta):
 	"""super promote rank"""
 	member = ctx.message.author
-	guild = ctx.message.guild
-	role = await getRole(guild)
+	role = await sudemote(ctx, role_meta=role_meta)
 
-	for m in role.members:
-		logger("Removing the role " + role.name + " to " + m.name, None, ctx)
-		await m.remove_roles(role)
-	
-	logger("Adding the role " + role.name + " to " + member.name, None, ctx)
-	await member.add_roles(role)
+	if (role != None):
+		logger("Adding the role " + role.name + " to " + member.name, None, ctx)
+		await member.add_roles(role)
+	return role
 
 class dummyUser:
 	"""A dummy User/Guild for discord"""

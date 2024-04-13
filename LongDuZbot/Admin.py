@@ -38,7 +38,8 @@ class Admin(commands.Cog):
 	async def resetArmy(self, ctx, arg = None):
 		"""Reset the Maitre and Jeanfoutre"""
 		ggr_utilities.logger(ctx.message.content, self, ctx)
-		await ggr_utilities.sudemote(ctx)
+		await ggr_utilities.sudemote(ctx, role_meta="master")
+		await ggr_utilities.sudemote(ctx, role_meta="worst")
 		self.database.setDBArchiveMaitreJeanfoutre(Database.MaitreJeanfoutreType.MAITRE)
 		self.database.setDBArchiveMaitreJeanfoutre(Database.MaitreJeanfoutreType.JEANFOUTRE)
 		ggr_utilities.logger("The maitre and the jean foutre have been reseted.", self, ctx)
