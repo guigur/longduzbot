@@ -186,19 +186,32 @@ class Army(commands.Cog):
 		armynbr = random.randint(10, 40)
 		armyGold = 0
 		for x in range(0, armynbr):
-			doreeNbr = random.randint(0, 2999)
-			if doreeNbr < 10:
+			wadProbaNbr = random.randint(0, 2499)
+			brandonProbaNbr = random.randint(0, 2499)
+
+			if wadProbaNbr < 10:
 				army += ggr_emotes.Saloperiedoree
 				armynbr += 9 #Une saloperie doree vaut 10 saloperies classiques 
 				armyGold += 1
 			else:
-				armymbr = random.randint(0, 100)
-				if armymbr <= 49:
+				armymbr = random.randint(0, 160)
+				if armymbr <= 20:
 					army += ggr_emotes.Ulian
-				elif armymbr == 50:
+				elif armymbr > 20 and armymbr <= 40:
+					army += ggr_emotes.Polpoth
+				elif armymbr > 40 and armymbr <= 60:
+					army += ggr_emotes.Salstealthy
+				elif armymbr > 60 and armymbr <= 80:
+					army += ggr_emotes.Culian
+				elif armymbr > 80 and armymbr <= 100:
+					army += ggr_emotes.Culoth
+				elif armymbr > 100 and armymbr <= 120:
 					army += ggr_emotes.Guigor
-				elif armymbr >= 51:
+				elif armymbr > 120 and armymbr <= 140:
+					army += ggr_emotes.Brandon
+				elif armymbr > 140 and armymbr <= 160:
 					army += ggr_emotes.Moth
+
 		return [army, armynbr, armyGold]
 
 	def hasUserCoolDownRoutine(self, user):
