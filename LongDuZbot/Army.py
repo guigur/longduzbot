@@ -230,9 +230,9 @@ class Army(commands.Cog):
 	async def grantMasterRoutine(self, ctx, armytotmembers, megaarmyID):
 		ggr_utilities.logger("User " + ctx.author.name + " is now the master of saloperies", self)
 		user = ctx.author
-		guild = ctx.message.guild
-		role = await ggr_utilities.getRole(guild)
-		await ggr_utilities.supromote(ctx)
+		# guild = ctx.message.guild
+		# role = await ggr_utilities.getRole(guild, role_meta="master")
+		role = await ggr_utilities.supromote(ctx, role_meta="master")
 
 		DBMaitre = self.database.getDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.MAITRE)
 		DBJeanfoutre = self.database.getDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.JEANFOUTRE)
@@ -265,13 +265,16 @@ class Army(commands.Cog):
 	async def grantWorstRoutine(self, ctx, armytotmembers, megaarmyID):
 		ggr_utilities.logger("User " + ctx.author.name + " is now the good-for-nothing of saloperies", self)
 		user = ctx.author
+		role = await ggr_utilities.supromote(ctx, role_meta="worst")
+
+		DBJeanfoutre = self.database.getDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.JEANFOUTRE)
 
 		self.database.setDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.JEANFOUTRE, ctx.author, ctx.guild, time.time(), armytotmembers, megaarmyID)
 
-		await ctx.reply("Félicitations " + user.mention + " vous êtes le nouveau **Jean-foutre des Saloperies**")
+		await ctx.reply("Félicitations " + user.mention + " vous êtes le nouveau " + role.mention)
 		url = ctx.author.avatar_url_as(format='png')
 		picture = certif.generateCertifBitch(requests.get(url, stream=True).raw, ctx.author.name, armytotmembers)
-		await ctx.reply("Ce certificat prouve votre titre de **Jean-foutre des Saloperies**\nVous êtes un bon à rien, un cloporte, un ectoplasme à roulettes. Bref, pas ouf quoi.",
+		await ctx.reply("Ce certificat prouve votre titre de " + role.mention + "\nVous êtes un bon à rien, un cloporte, un ectoplasme à roulettes. Bref, pas ouf quoi.",
 			file=discord.File('tmp/certif_worst_filled.png'))
 
 def setup(bot):
