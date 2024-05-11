@@ -6,3 +6,4 @@ termcolor
 pyfiglet
 gitpython
 python-dateutil
+matplotlib

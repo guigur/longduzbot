@@ -7,9 +7,13 @@ import requests
 import math
 import json
 import os
+# import asyncio
+import threading
 import ggr_utilities, ggr_emotes
 import certif
 import Eco, Com, Database
+
+import matplotlib.pyplot as plt
 
 from collections import namedtuple 
 
@@ -27,6 +31,21 @@ class Army(commands.Cog):
 		self.eco = self.bot.get_cog('Eco')
 		if self.eco is None:
 			ggr_utilities.logger("Missing Eco cog", self,)
+
+		self.random_precision = 6
+		self.random_max_int = 10 ** self.random_precision
+
+		self.saloperies = [{"emote":  ggr_emotes.Ulian, "name": "Ulian", "commonness": 1},
+		{"emote": ggr_emotes.Moth, "name": "Moth", "commonness": 1},
+		{"emote": ggr_emotes.Polpoth, "name": "Polpoth", "commonness": 0.1},
+		{"emote": ggr_emotes.Guigor, "name": "Guigor", "commonness": 0.1},
+		{"emote": ggr_emotes.Salstealthy, "name": "Salstealthy", "commonness": 0.1},
+		{"emote": ggr_emotes.Culian, "name": "Salstealthy", "commonness": 0.1},
+		{"emote": ggr_emotes.Culoth, "name": "Salstealthy", "commonness": 0.1},
+		{"emote": ggr_emotes.Brandon, "name": "Salstealthy", "commonness": 0.1},
+		{"emote": ggr_emotes.Saloperiedoree, "name": "Salstealthy", "commonness": 0.1}]
+		
+		self.init_drop_saloperies()
 ######################## DISCORD COMMANDS ########################
 
 	@commands.command()
@@ -154,6 +173,15 @@ class Army(commands.Cog):
 		else:
 			await ctx.reply("Un maître n'a pas besoin de prouver sa valeur.\nLa votre est de **" + str(DBMaitre[6]) + "** Saloperies.")
 	
+	@commands.command()
+	async def drop(self, ctx):
+		x = threading.Thread(target=self.draw_piechart_drop())
+		x.start()
+		# loop = asyncio.get_event_loop()
+
+		await ctx.send(file = discord.File("tmp/drop.png"))
+
+
 	######################### SHELL COMMANDS #########################
 
 	############################ ROUTINES ############################
@@ -181,36 +209,91 @@ class Army(commands.Cog):
 		with open('army_cool_down.json', 'w') as json_file:
 			json.dump(self.saveFileCoolDown, json_file)
 
+	def init_drop_saloperies(self):
+		total_commonness = 0
+
+		for s in self.saloperies:
+			total_commonness += s["commonness"]
+		
+		prev = 0
+		for sp in self.saloperies:
+			drop = sp["commonness"]/total_commonness
+			sp["drop"] = float(f"{(drop):.{self.random_precision}f}") 
+			stop = (sp["drop"] * self.random_max_int) + prev
+			sp["start"] = prev
+			sp["stop"] = stop
+			prev = stop
+			print("common ",sp["commonness"], " drop ", sp["drop"])
+
+	def pickSaloperie(self):
+		number = random.randint(0, self.random_max_int)
+		for s in self.saloperies:
+			if (number >= s["start"] and number < s["stop"]):
+				# print(f'GOT EM! numb: {number} | {s["name"]}: {s["start"]} -> {s["stop"]} | {s["drop"]}')
+				return s
+		print("error, adding ulian")
+		return self.saloperies[0] #if error
+
+	def draw_piechart_drop(self):
+		labels = []
+		sizes = []
+		for s in self.saloperies:
+			sizes.append(s["drop"])
+			labels.append(s["name"])
+		fig, ax = plt.subplots()
+		ax.pie(sizes, labels=labels,  autopct='%1.3f%%', startangle=140)
+		ax.set_title("Longduzbot new drop (< apr. 2024)")
+		#plt.show()
+		plt.savefig('tmp/drop.png')
+
+	def draw_piechart_old_drop(self):
+		labels = "Saloperiedoree", "Ulian", "Guigor", "Moth"
+		image_paths = ['img/guogur.png', 'img/guogur.png', 'img/guogur.png', 'img/guogur.png']
+		images = [plt.imread(path) for path in image_paths]
+
+		sizes = [10/3000, 50/101, 1/101, 50/101] 
+		fig, ax = plt.subplots()
+		ax.pie(sizes, labels=labels,  autopct='%1.3f%%', startangle=140)
+		ax.set_title("Longduzbot old drop (> apr. 2024)")
+		plt.show()
+
+	async def on_reaction_add(self, reaction: discord.Reaction, user):
+		print(f'User {user} added reaction {reaction} in channel {reaction.message.channel}')
+		# await bot_channel.send(content=f"A rating of {reaction} was placed in {reaction.message.channel} for link {reaction.message.content}")
+
 	def spawnArmyRoutine(self):
 		army = ""
 		armynbr = random.randint(10, 40)
 		armyGold = 0
+		# self.draw_piechart_drop()
+		# self.draw_piechart_old_drop()
 		for x in range(0, armynbr):
-			wadProbaNbr = random.randint(0, 2499)
-			brandonProbaNbr = random.randint(0, 2499)
+			army += self.pickSaloperie()["emote"]
+			# wadProbaNbr = random.randint(0, 2499)
+			# brandonProbaNbr = random.randint(0, 2499)
 
-			if wadProbaNbr < 10:
-				army += ggr_emotes.Saloperiedoree
-				armynbr += 9 #Une saloperie doree vaut 10 saloperies classiques 
-				armyGold += 1
-			else:
-				armymbr = random.randint(0, 160)
-				if armymbr <= 20:
-					army += ggr_emotes.Ulian
-				elif armymbr > 20 and armymbr <= 40:
-					army += ggr_emotes.Polpoth
-				elif armymbr > 40 and armymbr <= 60:
-					army += ggr_emotes.Salstealthy
-				elif armymbr > 60 and armymbr <= 80:
-					army += ggr_emotes.Culian
-				elif armymbr > 80 and armymbr <= 100:
-					army += ggr_emotes.Culoth
-				elif armymbr > 100 and armymbr <= 120:
-					army += ggr_emotes.Guigor
-				elif armymbr > 120 and armymbr <= 140:
-					army += ggr_emotes.Brandon
-				elif armymbr > 140 and armymbr <= 160:
-					army += ggr_emotes.Moth
+			# if wadProbaNbr < 10:
+			# 	army += ggr_emotes.Saloperiedoree
+			# 	armynbr += 9 #Une saloperie doree vaut 10 saloperies classiques 
+			# 	armyGold += 1
+			# else:
+			# 	armymbr = random.randint(0, 160)
+			# 	if armymbr <= 20:
+			# 		army += ggr_emotes.Ulian
+			# 	elif armymbr > 20 and armymbr <= 40:
+			# 		army += ggr_emotes.Polpoth
+			# 	elif armymbr > 40 and armymbr <= 60:
+			# 		army += ggr_emotes.Salstealthy
+			# 	elif armymbr > 60 and armymbr <= 80:
+			# 		army += ggr_emotes.Culian
+			# 	elif armymbr > 80 and armymbr <= 100:
+			# 		army += ggr_emotes.Culoth
+			# 	elif armymbr > 100 and armymbr <= 120:
+			# 		army += ggr_emotes.Guigor
+			# 	elif armymbr > 120 and armymbr <= 140:
+			# 		army += ggr_emotes.Brandon
+			# 	elif armymbr > 140 and armymbr <= 160:
+			# 		army += ggr_emotes.Moth
 
 		return [army, armynbr, armyGold]
 
