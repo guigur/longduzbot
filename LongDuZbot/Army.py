@@ -16,6 +16,8 @@ import Eco, Com, Database
 import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
+import matplotlib.image as mpli
+from matplotlib.offsetbox import (OffsetImage, AnnotationBbox)
 
 from collections import namedtuple 
 
@@ -38,14 +40,15 @@ class Army(commands.Cog):
 		self.random_max_int = 10 ** self.random_precision
 
 		self.saloperies = [{"emote":  ggr_emotes.Ulian, "name": "Ulian", "commonness": 1},
-		{"emote": ggr_emotes.Moth, "name": "Moth", "commonness": 1},
 		{"emote": ggr_emotes.Polpoth, "name": "Polpoth", "commonness": 0.1},
 		{"emote": ggr_emotes.Guigor, "name": "Guigor", "commonness": 0.1},
 		{"emote": ggr_emotes.Salstealthy, "name": "Salstealthy", "commonness": 0.1},
-		{"emote": ggr_emotes.Culian, "name": "Salstealthy", "commonness": 0.1},
-		{"emote": ggr_emotes.Culoth, "name": "Salstealthy", "commonness": 0.1},
-		{"emote": ggr_emotes.Brandon, "name": "Salstealthy", "commonness": 0.1},
-		{"emote": ggr_emotes.Saloperiedoree, "name": "Salstealthy", "commonness": 0.1}]
+		{"emote": ggr_emotes.Culian, "name": "Culian", "commonness": 0.025},
+		{"emote": ggr_emotes.Culoth, "name": "Culoth", "commonness": 0.025},
+		{"emote": ggr_emotes.Brandon, "name": "Brandon", "commonness": 0.1},
+		{"emote": ggr_emotes.Saloperiedoree, "name": "Saloperiedoree", "commonness": 0.01},
+		{"emote": ggr_emotes.Moth, "name": "Moth", "commonness": 1}
+		]
 		
 		self.init_drop_saloperies()
 ######################## DISCORD COMMANDS ########################
@@ -177,12 +180,24 @@ class Army(commands.Cog):
 	
 	@commands.command()
 	async def drop(self, ctx):
-		x = threading.Thread(target=self.draw_piechart_drop())
-		x.start()
-		# loop = asyncio.get_event_loop()
+		data = {"title": "Longduzbot drop (< may 2024)",
+		"sizes": [], "labels": []}
 
+		for s in self.saloperies:
+			data["sizes"].append(s["drop"])
+			data["labels"].append(s["name"])
+			
+		self.draw_piechart_drop(data)
 		await ctx.send(file = discord.File("tmp/drop.png"))
 
+	@commands.command()
+	async def olddrop(self, ctx):
+		data = {"title": "Longduzbot old drop (> may 2024)",
+		  		"sizes": [10/3000, 50/101, 1/101, 50/101] ,
+		  		"labels": ["Saloperiedoree", "Ulian", "Guigor", "Moth"]}
+
+		self.draw_piechart_drop(data)
+		await ctx.send(file = discord.File("tmp/drop.png"))
 
 	######################### SHELL COMMANDS #########################
 
@@ -225,7 +240,7 @@ class Army(commands.Cog):
 			sp["start"] = prev
 			sp["stop"] = stop
 			prev = stop
-			print("common ",sp["commonness"], " drop ", sp["drop"])
+			# print("common ",sp["commonness"], " drop ", sp["drop"])
 
 	def pickSaloperie(self):
 		number = random.randint(0, self.random_max_int)
@@ -236,28 +251,37 @@ class Army(commands.Cog):
 		print("error, adding ulian")
 		return self.saloperies[0] #if error
 
-	def draw_piechart_drop(self):
-		labels = []
-		sizes = []
-		for s in self.saloperies:
-			sizes.append(s["drop"])
-			labels.append(s["name"])
-		fig, ax = plt.subplots()
-		ax.pie(sizes, labels=labels,  autopct='%1.3f%%', startangle=140)
-		ax.set_title("Longduzbot new drop (< apr. 2024)")
-		#plt.show()
+	def draw_piechart_drop(self, data):
+
+		fg_color = "#ffffff"
+		bg_color = "#2F3136"
+		# emote = mpli.imread("culoth.png")
+		plt.subplots_adjust(wspace=500)
+
+		fig, ax = plt.subplots(facecolor=bg_color)
+		# plt.figure(figsize=(8, 6))
+
+		legend_data = []
+		for i, d in enumerate(data["labels"]):
+			legend_data.append(f"{d} ({data["sizes"][i]:.3f}%)")
+
+		patches, texts =  ax.pie(data["sizes"], labels=data["labels"], startangle=180, labeldistance=1.05, frame=False,
+		wedgeprops = {"linewidth": 1, "edgecolor": "white"})
+		plt.setp(texts, color='white')
+
+		# plt.legend(fig, labels, loc="best")
+
+		# imagebox = OffsetImage(emote, zoom=0.2)
+		# ab = AnnotationBbox(imagebox, (1, 1), xycoords='axes fraction', frameon=False, pad=0)
+		# ab.xybox = (1, 1)
+		#ax.add_artist(ab)
+
+		# patches, texts = plt.pie(sizes, colors=colors, startangle=90)
+		# plt.legend(patches, labels, loc="best")
+
+		ax.legend(patches, legend_data, loc= "lower left",  bbox_to_anchor=(-0.35, -0.1))
+		ax.set_title(data["title"], color=fg_color, fontsize=20)
 		plt.savefig('tmp/drop.png')
-
-	def draw_piechart_old_drop(self):
-		labels = "Saloperiedoree", "Ulian", "Guigor", "Moth"
-		image_paths = ['img/guogur.png', 'img/guogur.png', 'img/guogur.png', 'img/guogur.png']
-		images = [plt.imread(path) for path in image_paths]
-
-		sizes = [10/3000, 50/101, 1/101, 50/101] 
-		fig, ax = plt.subplots()
-		ax.pie(sizes, labels=labels,  autopct='%1.3f%%', startangle=140)
-		ax.set_title("Longduzbot old drop (> apr. 2024)")
-		plt.show()
 
 	async def on_reaction_add(self, reaction: discord.Reaction, user):
 		print(f'User {user} added reaction {reaction} in channel {reaction.message.channel}')
