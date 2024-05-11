@@ -13,6 +13,8 @@ import ggr_utilities, ggr_emotes
 import certif
 import Eco, Com, Database
 
+import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.pyplot as plt
 
 from collections import namedtuple 
