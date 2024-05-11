@@ -263,7 +263,7 @@ class Army(commands.Cog):
 
 		legend_data = []
 		for i, d in enumerate(data["labels"]):
-			legend_data.append(f"{d} ({data["sizes"][i]:.3f}%)")
+			legend_data.append(f"{d} ({data["sizes"][i]*100:.2f}%)")
 
 		patches, texts =  ax.pie(data["sizes"], labels=data["labels"], startangle=180, labeldistance=1.05, frame=False,
 		wedgeprops = {"linewidth": 1, "edgecolor": "white"})
