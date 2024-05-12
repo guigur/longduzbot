@@ -40,7 +40,7 @@ def setup(bot):
 	bot.add_cog(Test(bot))
 
 def teardown(bot):
-	print('I am being unloaded!')
+	print('test I am being unloaded!')
 
 		#os.execl(sys.executable, os.path.abspath(__file__), *sys.argv) 
 		#print("exit")

@@ -7,9 +7,17 @@ import requests
 import math
 import json
 import os
+# import asyncio
+import threading
 import ggr_utilities, ggr_emotes
 import certif
 import Eco, Com, Database
+
+import matplotlib as mpl
+mpl.use('Agg')
+import matplotlib.pyplot as plt
+import matplotlib.image as mpli
+from matplotlib.offsetbox import (OffsetImage, AnnotationBbox)
 
 from collections import namedtuple 
 
@@ -27,6 +35,22 @@ class Army(commands.Cog):
 		self.eco = self.bot.get_cog('Eco')
 		if self.eco is None:
 			ggr_utilities.logger("Missing Eco cog", self,)
+
+		self.random_precision = 6
+		self.random_max_int = 10 ** self.random_precision
+
+		self.saloperies = [{"emote":  ggr_emotes.Ulian, "name": "Ulian", "commonness": 1},
+		{"emote": ggr_emotes.Polpoth, "name": "Polpoth", "commonness": 0.1},
+		{"emote": ggr_emotes.Guigor, "name": "Guigor", "commonness": 0.1},
+		{"emote": ggr_emotes.Salstealthy, "name": "Salstealthy", "commonness": 0.1},
+		{"emote": ggr_emotes.Culian, "name": "Culian", "commonness": 0.025},
+		{"emote": ggr_emotes.Culoth, "name": "Culoth", "commonness": 0.025},
+		{"emote": ggr_emotes.Brandon, "name": "Brandon", "commonness": 0.1},
+		{"emote": ggr_emotes.Saloperiedoree, "name": "Saloperiedoree", "commonness": 0.01},
+		{"emote": ggr_emotes.Moth, "name": "Moth", "commonness": 1}
+		]
+		
+		self.init_drop_saloperies()
 ######################## DISCORD COMMANDS ########################
 
 	@commands.command()
@@ -154,6 +178,27 @@ class Army(commands.Cog):
 		else:
 			await ctx.reply("Un maître n'a pas besoin de prouver sa valeur.\nLa votre est de **" + str(DBMaitre[6]) + "** Saloperies.")
 	
+	@commands.command()
+	async def drop(self, ctx):
+		data = {"title": "Longduzbot drop (< may 2024)",
+		"sizes": [], "labels": []}
+
+		for s in self.saloperies:
+			data["sizes"].append(s["drop"])
+			data["labels"].append(s["name"])
+			
+		self.draw_piechart_drop(data)
+		await ctx.send(file = discord.File("tmp/drop.png"))
+
+	@commands.command()
+	async def olddrop(self, ctx):
+		data = {"title": "Longduzbot old drop (> may 2024)",
+		  		"sizes": [10/3000, 50/101, 1/101, 50/101] ,
+		  		"labels": ["Saloperiedoree", "Ulian", "Guigor", "Moth"]}
+
+		self.draw_piechart_drop(data)
+		await ctx.send(file = discord.File("tmp/drop.png"))
+
 	######################### SHELL COMMANDS #########################
 
 	############################ ROUTINES ############################
@@ -181,24 +226,101 @@ class Army(commands.Cog):
 		with open('army_cool_down.json', 'w') as json_file:
 			json.dump(self.saveFileCoolDown, json_file)
 
+	def init_drop_saloperies(self):
+		total_commonness = 0
+
+		for s in self.saloperies:
+			total_commonness += s["commonness"]
+		
+		prev = 0
+		for sp in self.saloperies:
+			drop = sp["commonness"]/total_commonness
+			sp["drop"] = float(f"{(drop):.{self.random_precision}f}") 
+			stop = (sp["drop"] * self.random_max_int) + prev
+			sp["start"] = prev
+			sp["stop"] = stop
+			prev = stop
+			# print("common ",sp["commonness"], " drop ", sp["drop"])
+
+	def pickSaloperie(self):
+		number = random.randint(0, self.random_max_int)
+		for s in self.saloperies:
+			if (number >= s["start"] and number < s["stop"]):
+				# print(f'GOT EM! numb: {number} | {s["name"]}: {s["start"]} -> {s["stop"]} | {s["drop"]}')
+				return s
+		print("error, adding ulian")
+		return self.saloperies[0] #if error
+
+	def draw_piechart_drop(self, data):
+
+		fg_color = "#ffffff"
+		bg_color = "#2F3136"
+		# emote = mpli.imread("culoth.png")
+		plt.subplots_adjust(wspace=500)
+
+		fig, ax = plt.subplots(facecolor=bg_color)
+		# plt.figure(figsize=(8, 6))
+
+		legend_data = []
+		for i, d in enumerate(data["labels"]):
+			legend_data.append(f"{d} ({data["sizes"][i]*100:.2f}%)")
+
+		patches, texts =  ax.pie(data["sizes"], labels=data["labels"], startangle=180, labeldistance=1.05, frame=False,
+		wedgeprops = {"linewidth": 1, "edgecolor": "white"})
+		plt.setp(texts, color='white')
+
+		# plt.legend(fig, labels, loc="best")
+
+		# imagebox = OffsetImage(emote, zoom=0.2)
+		# ab = AnnotationBbox(imagebox, (1, 1), xycoords='axes fraction', frameon=False, pad=0)
+		# ab.xybox = (1, 1)
+		#ax.add_artist(ab)
+
+		# patches, texts = plt.pie(sizes, colors=colors, startangle=90)
+		# plt.legend(patches, labels, loc="best")
+
+		ax.legend(patches, legend_data, loc= "lower left",  bbox_to_anchor=(-0.35, -0.1))
+		ax.set_title(data["title"], color=fg_color, fontsize=20)
+		plt.savefig('tmp/drop.png')
+
+	async def on_reaction_add(self, reaction: discord.Reaction, user):
+		print(f'User {user} added reaction {reaction} in channel {reaction.message.channel}')
+		# await bot_channel.send(content=f"A rating of {reaction} was placed in {reaction.message.channel} for link {reaction.message.content}")
+
 	def spawnArmyRoutine(self):
 		army = ""
 		armynbr = random.randint(10, 40)
 		armyGold = 0
+		# self.draw_piechart_drop()
+		# self.draw_piechart_old_drop()
 		for x in range(0, armynbr):
-			doreeNbr = random.randint(0, 2999)
-			if doreeNbr < 10:
-				army += ggr_emotes.Saloperiedoree
-				armynbr += 9 #Une saloperie doree vaut 10 saloperies classiques 
-				armyGold += 1
-			else:
-				armymbr = random.randint(0, 100)
-				if armymbr <= 49:
-					army += ggr_emotes.Ulian
-				elif armymbr == 50:
-					army += ggr_emotes.Guigor
-				elif armymbr >= 51:
-					army += ggr_emotes.Moth
+			army += self.pickSaloperie()["emote"]
+			# wadProbaNbr = random.randint(0, 2499)
+			# brandonProbaNbr = random.randint(0, 2499)
+
+			# if wadProbaNbr < 10:
+			# 	army += ggr_emotes.Saloperiedoree
+			# 	armynbr += 9 #Une saloperie doree vaut 10 saloperies classiques 
+			# 	armyGold += 1
+			# else:
+			# 	armymbr = random.randint(0, 160)
+			# 	if armymbr <= 20:
+			# 		army += ggr_emotes.Ulian
+			# 	elif armymbr > 20 and armymbr <= 40:
+			# 		army += ggr_emotes.Polpoth
+			# 	elif armymbr > 40 and armymbr <= 60:
+			# 		army += ggr_emotes.Salstealthy
+			# 	elif armymbr > 60 and armymbr <= 80:
+			# 		army += ggr_emotes.Culian
+			# 	elif armymbr > 80 and armymbr <= 100:
+			# 		army += ggr_emotes.Culoth
+			# 	elif armymbr > 100 and armymbr <= 120:
+			# 		army += ggr_emotes.Guigor
+			# 	elif armymbr > 120 and armymbr <= 140:
+			# 		army += ggr_emotes.Brandon
+			# 	elif armymbr > 140 and armymbr <= 160:
+			# 		army += ggr_emotes.Moth
+
 		return [army, armynbr, armyGold]
 
 	def hasUserCoolDownRoutine(self, user):

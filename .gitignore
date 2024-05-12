@@ -5,3 +5,5 @@
 test
 test/*
 *.db
+experiments
+experiments/*
