@@ -27,6 +27,7 @@ class Army(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 		self.timeReady = 0
+		self.coolDownTime = 1 #300 #5min
 
 		self.database = self.bot.get_cog('Database')
 		if self.database is None:
@@ -39,20 +40,47 @@ class Army(commands.Cog):
 		self.random_precision = 6
 		self.random_max_int = 10 ** self.random_precision
 
-		self.saloperies = [{"emote":  ggr_emotes.Ulian, "name": "Ulian", "commonness": 1},
-		{"emote": ggr_emotes.Polpoth, "name": "Polpoth", "commonness": 0.1},
-		{"emote": ggr_emotes.Guigor, "name": "Guigor", "commonness": 0.1},
-		{"emote": ggr_emotes.Salstealthy, "name": "Salstealthy", "commonness": 0.1},
-		{"emote": ggr_emotes.Culian, "name": "Culian", "commonness": 0.025},
-		{"emote": ggr_emotes.Culoth, "name": "Culoth", "commonness": 0.025},
-		{"emote": ggr_emotes.Brandon, "name": "Brandon", "commonness": 0.1},
-		{"emote": ggr_emotes.Saloperiedoree, "name": "Saloperiedoree", "commonness": 0.01},
-		{"emote": ggr_emotes.Moth, "name": "Moth", "commonness": 1}
+		self.saloperies = [
+		{"emote": ggr_emotes.Ulian, 			"name": "Ulian", 			"commonness": 1,		"effect": self.effetCollocU},
+		{"emote": ggr_emotes.Polpoth, 			"name": "Polpoth",	 		"commonness": 0.1, 		"effect": None},
+		{"emote": ggr_emotes.Guigor, 			"name": "Guigor", 			"commonness": 0.1, 		"effect": None},
+		{"emote": ggr_emotes.Salstealthy, 		"name": "Salstealthy", 		"commonness": 0.1,	 	"effect": None},
+		{"emote": ggr_emotes.Culian, 			"name": "Culian", 			"commonness": 0.15, 	"effect": self.effetCullocU},
+		{"emote": ggr_emotes.Culoth, 			"name": "Culoth", 			"commonness": 0.15, 	"effect": self.effetCullocM},
+		{"emote": ggr_emotes.Brandon,			"name": "Brandon", 			"commonness": 0.1, 		"effect": None},
+		{"emote": ggr_emotes.Saloperiedoree,	"name": "Saloperiedoree", 	"commonness": 0.01, 	"effect": self.effetSaloperieDoree},
+		{"emote": ggr_emotes.Moth, 				"name": "Moth", 			"commonness": 1, 		"effect": self.effetCollocM}
 		]
 		
 		self.init_drop_saloperies()
 ######################## DISCORD COMMANDS ########################
+	def effetSaloperieDoree(self, armyMembers):
+		return(+9, +1, f"{armyMembers[-1]["emote"]}: \"Saloperie dorée\" -> +10 saloperies, +1 WAD\n")
 
+	def effetCollocU(self, armyMembers):
+		if (len(armyMembers) > 1):
+			if (armyMembers[-2]["name"] == "Moth"):
+				return(+1, 0, f"{armyMembers[-2]["emote"]}+{armyMembers[-1]["emote"]}: \"effect colloc\" -> +1 saloperie\n")
+		return(0, 0, "")
+	
+	def effetCollocM(self, armyMembers):
+		if (len(armyMembers) > 1):
+			if (armyMembers[-2]["name"] == "Ulian"):
+				return(+1, 0, f"{armyMembers[-2]["emote"]}+{armyMembers[-1]["emote"]}: \"effect colloc\" -> +1 saloperie\n")
+		return(0, 0, "")
+
+	def effetCullocU(self, armyMembers):
+		if (len(armyMembers) > 1):
+			if (armyMembers[-2]["name"] == "Culoth"):
+				return(-1, 0, f"{armyMembers[-2]["emote"]}+{armyMembers[-1]["emote"]}: \"effect culloc\" -> -1 saloperie\n")
+		return(0, 0, "")
+	
+	def effetCullocM(self, armyMembers):
+		if (len(armyMembers) > 1):
+			if (armyMembers[-2]["name"] == "Culian"):
+				return(-1, 0, f"{armyMembers[-2]["emote"]}+{armyMembers[-1]["emote"]}: \"effect culloc\" -> -1 saloperie\n")
+		return(0, 0, "")
+	
 	@commands.command()
 	async def maitre(self, ctx):
 		"""Affiche le maître des saloperies et son record."""
@@ -101,7 +129,7 @@ class Army(commands.Cog):
 		if (time.time() >= timeUser):
 			for u in self.saveFileCoolDown:
 				if u["name"] == ctx.author.name:
-					u["date"] =  time.time() + 300 #5min
+					u["date"] =  time.time() + self.coolDownTime #5min
 			#game = discord.Game("envoyer une armée")
 			#await bot.change_presence(status=discord.Status.online, activity=game)
 			self.saveToFileCoolDownRoutine()
@@ -111,6 +139,9 @@ class Army(commands.Cog):
 			armytotmembers = retarmy[1]
 			armyGold = retarmy[2]
 			await ctx.send(army)
+			if (retarmy[3] != ""):
+				await ctx.send(f"||{retarmy[3]}||")
+
 
 			self.database.addDBArmy(ctx.author, ctx.message.guild, time.time(), ctx.message.content, armytotmembers, armyGold)
 
@@ -145,15 +176,22 @@ class Army(commands.Cog):
 				self.timeReady = time.time() + random.randint(900, 1500) #entre 15 et 25 min
 
 				armyLines = random.randint(5, 20)
-				for x in range(0, armyLines):
+				armyDesc = []
+				for x in range(0, armyLines): #the megaarmy
 					retarmy = self.spawnArmyRoutine()
 					army = retarmy[0]
 					armytotmembers += retarmy[1]
 					armyGold += retarmy[2]
-
+					armyDesc.append(retarmy[3])
 					await ctx.send(army)
-				for emojinmb in ggr_utilities.numbersToEmojis(armyLines):
+
+				for emojinmb in ggr_utilities.numbersToEmojis(armyLines): #emojis number lines
 					await ctx.message.add_reaction(emojinmb)
+		
+				for i, d in enumerate(armyDesc): #desciption
+					if (d != ""):
+						await ctx.send(f"ligne{i+1}\n||{d}||")
+
 				ggr_utilities.logger("User " + ctx.author.name + " summoned " + str(armytotmembers) + " saloperies", self)
 
 				megaarmyID = self.database.addDBMegaArmy(ctx.author, ctx.guild, time.time(), ctx.message.content, armyLines, armytotmembers, armyGold)
@@ -288,40 +326,33 @@ class Army(commands.Cog):
 		# await bot_channel.send(content=f"A rating of {reaction} was placed in {reaction.message.channel} for link {reaction.message.content}")
 
 	def spawnArmyRoutine(self):
-		army = ""
+		armyMembers = []
+		effectsDesc = ""
+		armyEffect = 0
 		armynbr = random.randint(10, 40)
 		armyGold = 0
-		# self.draw_piechart_drop()
-		# self.draw_piechart_old_drop()
 		for x in range(0, armynbr):
-			army += self.pickSaloperie()["emote"]
-			# wadProbaNbr = random.randint(0, 2499)
-			# brandonProbaNbr = random.randint(0, 2499)
+			armyMember = self.pickSaloperie()
+			armyMembers.append(armyMember)
+
+			if (armyMember["effect"] != None):
+				effects = armyMember["effect"](armyMembers)
+				armyEffect += effects[0]
+				armyGold += effects[1]
+				effectsDesc += effects[2]
 
 			# if wadProbaNbr < 10:
 			# 	army += ggr_emotes.Saloperiedoree
 			# 	armynbr += 9 #Une saloperie doree vaut 10 saloperies classiques 
 			# 	armyGold += 1
-			# else:
-			# 	armymbr = random.randint(0, 160)
-			# 	if armymbr <= 20:
-			# 		army += ggr_emotes.Ulian
-			# 	elif armymbr > 20 and armymbr <= 40:
-			# 		army += ggr_emotes.Polpoth
-			# 	elif armymbr > 40 and armymbr <= 60:
-			# 		army += ggr_emotes.Salstealthy
-			# 	elif armymbr > 60 and armymbr <= 80:
-			# 		army += ggr_emotes.Culian
-			# 	elif armymbr > 80 and armymbr <= 100:
-			# 		army += ggr_emotes.Culoth
-			# 	elif armymbr > 100 and armymbr <= 120:
-			# 		army += ggr_emotes.Guigor
-			# 	elif armymbr > 120 and armymbr <= 140:
-			# 		army += ggr_emotes.Brandon
-			# 	elif armymbr > 140 and armymbr <= 160:
-			# 		army += ggr_emotes.Moth
 
-		return [army, armynbr, armyGold]
+		armyEmotes = ""
+		for e in armyMembers:
+			armyEmotes += e["emote"]
+
+		print(armynbr, armyEffect, armyGold)
+		print(effectsDesc)
+		return [armyEmotes, armynbr + armyEffect, armyGold, effectsDesc]
 
 	def hasUserCoolDownRoutine(self, user):
 		ggr_utilities.logger("Check if user cool down exist.", self)
