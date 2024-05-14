@@ -28,6 +28,7 @@ bot = Bot(command_prefix=prefix, intents=intents)
 
 @bot.event
 async def on_ready():
+	os.makedirs("tmp", exist_ok=True)
 	global timeReady
 	timeReady = time.time()
 	ggr_utilities.logger("Logged in as " + bot.user.name + " " + str(bot.user.id), None, None, ggr_utilities.LogType.INFO)
