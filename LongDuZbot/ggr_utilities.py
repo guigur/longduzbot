@@ -7,6 +7,7 @@ from termcolor import colored
 from enum import Enum
 from functools import wraps
 from discord.ext import commands
+import ggr_emotes
 
 #colors https://www.materialpalette.com/colors
 ggr_red = 0xf44336
@@ -123,9 +124,12 @@ def digitToEmoji(digit):
 	elif digit == 9:
 		return "9️⃣"
 
+def digitToEmoji2(digit):
+	return ggr_emotes.emote_nbrs[digit]
+
 def numbersToEmojis(number):
 	decade = digitToEmoji(math.trunc( number / 10))
-	dec = digitToEmoji(number % 10)
+	dec = digitToEmoji2(number % 10)
 	return [decade, dec]
 
 def pDT():
