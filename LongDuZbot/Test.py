@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+
 import sys
 import os
 
@@ -9,17 +10,21 @@ import Eco, Com
 class Test(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
-	
 
+	def __del__(self):
+		ggr_utilities.logger(self.__class__.__name__ + " Cog Unloaded!" , self, None, ggr_utilities.LogType.WARN)
 
 	######################## DISCORD COMMANDS ########################
 	
-	# @commands.command()
-	# async def testeEmbed(self, ctx):
-	# 	embed=discord.Embed(color=0xFF5733)
-	# 	embed.add_field(name="undefined", value="undefined", inline=False)
-	# 	await ctx.send(embed=embed)
+	@commands.command()
+	async def testeEmbed(self, ctx):
+		embed=discord.Embed(color=0xFF5733)
+		embed.add_field(name="undefined", value=" lorem ipsup sit dolor estlorem ipsup sit dolor estlorem ipsup sit dolor estlorem ipsup sit dolor estlorem ipsup sit dolor estlorem ipsup sit dolor estlorem ipsup sit dolor estlorem ipsup sit dolor estlorem ipsup sit dolor estlorem ipsup sit dolor estlorem ipsup sit dolor estlorem ipsup sit dolor estlorem ipsup sit dolor estlorem ipsup sit dolor estlorem ipsup sit dolor estlorem ipsup sit dolor estlorem ipsup sit dolor estlorem ipsup sit dolor estlorem ipsup sit dolor estlorem ipsup sit dolor estlorem ipsup sit dolor estlorem ipsup sit dolor estlorem ipsup sit dolor estlorem ipsup sit dolor estlorem ipsup sit dolor estlorem ipsup sit dolor estlorem ipsup sit dolor estlorem ipsup sit dolor estlorem ipsup sit dolor estlorem ipsup sit dolor estlorem ipsup sit dolor estlorem ipsup sit dolor estlorem ipsup sit dolor estlorem ipsup sit dolor estlorem ipsup sit dolor estlorem ipsup sit dolor estlorem ipsup sit dolor estlorem ipsup sit dolor est", inline=False)
+		await ctx.send(embed=embed)
 
+
+			# await reaction.message.channel.send("currieux va")
+    # do something with reaction and user
 	# @commands.command()
 	# async def foo(self, ctx, arg = None):
 	# 	if arg:

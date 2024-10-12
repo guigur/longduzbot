@@ -122,19 +122,26 @@ class LogType(Enum):
 	ERROR = 1
 	SUCCESS = 2
 	INFO = 3
+	WARN = 4
+	CRIT = 5
 
 	def color(self):
 		if (self.value == 0):
-			return (None)
+			return (None, None, None)
 		elif (self.value == 1):
-			return ("red")
+			return ("red", None, ["bold"])
 		elif (self.value == 2):
-			return ("green")
+			return ("green", None, None)
 		elif (self.value == 3):
-			return ("yellow")
+			return ("yellow", None, None)
+		elif (self.value == 4):
+			return ("yellow", None, ["bold"])
+		elif (self.value == 5):
+			return ("red", "on_blue", ["bold", "blink"])
+
 
 def logger(string, cog=None, ctx=None, logType=LogType.NORMAL):
-	usr = colored("server", "cyan")
+	usr = colored("Server", "cyan")
 	if ctx:
 		usr = colored(ctx.message.author.name, "yellow")
 				
@@ -142,7 +149,7 @@ def logger(string, cog=None, ctx=None, logType=LogType.NORMAL):
 	if cog:
 		classname = ">" + colored(cog.__class__.__name__, "green") 
 		
-	string = pDT() + " " + usr + classname + "] "+ colored(string, logType.color())
+	string = pDT() + " " + usr + classname + "] "+ colored(string, logType.color()[0], logType.color()[1], logType.color()[2])
 	print(string)
 	#todo: add to file
 

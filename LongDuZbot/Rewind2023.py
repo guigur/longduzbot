@@ -69,8 +69,11 @@ class Rewind2023(commands.Cog):
 		
 		self.database = self.bot.get_cog('Database')
 		if self.database is None:
-			ggr_utilities.logger("Missing Database cog", self)
-	
+			ggr_utilities.logger("Missing Database Cog", self, ggr_utilities.LogType.CRIT)
+
+	def __del__(self):
+		ggr_utilities.logger(self.__class__.__name__ + " Cog Unloaded!" , self, None, ggr_utilities.LogType.WARN)
+
 	@commands.command()
 	async def rewind(self, ctx):
 		ctx.guild = self.bot.get_guild(806284513583169596)

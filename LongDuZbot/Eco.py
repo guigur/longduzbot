@@ -39,8 +39,11 @@ class Eco(commands.Cog):
 
 		self.database = self.bot.get_cog('Database')
 		if self.database is None:
-			ggr_utilities.logger("Missing Database cog", self,)
-		
+			ggr_utilities.logger("Missing Database Cog", self, ggr_utilities.LogType.CRIT)
+
+	def __del__(self):
+		ggr_utilities.logger(self.__class__.__name__ + " Cog Unloaded!" , self, None, ggr_utilities.LogType.WARN)
+
 	######################## DISCORD COMMANDS ########################
 	@commands.command()
 	async def testwad(self, ctx):

@@ -40,6 +40,9 @@ class Database(commands.Cog):
 		
 		self.escape = lambda a: json.dumps(a.replace("\"", ""))
 
+	def __del__(self):
+		ggr_utilities.logger(self.__class__.__name__ + " Cog Unloaded!" , self, None, ggr_utilities.LogType.WARN)
+
 	######################## DISCORD COMMANDS ########################
 	
 	# @commands.command()
@@ -249,4 +252,4 @@ def setup(bot):
 	bot.add_cog(Database(bot))
 
 def teardown(bot):
-	print('I am being unloaded!')
+    print(bot.__name__)

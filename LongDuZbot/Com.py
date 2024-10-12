@@ -48,6 +48,9 @@ class Shell(cmd.Cmd):
 		self.defaultprompt = self.prompt
 		self.workingType = ObjectComType.NONE
 
+	def __del__(self):
+		ggr_utilities.logger(self.__class__.__name__ + " Cog Unloaded!" , self, None, ggr_utilities.LogType.WARN)
+
 	f = Figlet(font='slant')
 	intro = f.renderText("LongDuZbot") + "\nType help or ? to list commands.\n"
 	file = None

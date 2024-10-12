@@ -26,16 +26,17 @@ userStruct = namedtuple("userStruct", ["name", "discriminator", "icon", "balance
 class Army(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
+		self.bot.add_listener(self.on_reaction_add, 'on_reaction_add')
 		self.timeReady = 0
 		self.coolDownTime = 1 #300 #5min
 
 		self.database = self.bot.get_cog('Database')
 		if self.database is None:
-			ggr_utilities.logger("Missing Database cog", self,)
+			ggr_utilities.logger("Missing Database Cog", self, ggr_utilities.LogType.CRIT)
 
 		self.eco = self.bot.get_cog('Eco')
 		if self.eco is None:
-			ggr_utilities.logger("Missing Eco cog", self,)
+			ggr_utilities.logger("Missing Eco Cog", self, ggr_utilities.LogType.CRIT)
 
 		self.random_precision = 6
 		self.random_max_int = 10 ** self.random_precision
@@ -51,8 +52,20 @@ class Army(commands.Cog):
 		{"emote": ggr_emotes.Saloperiedoree,	"name": "Saloperiedoree", 	"commonness": 0.01, 	"effect": self.effetSaloperieDoree},
 		{"emote": ggr_emotes.Moth, 				"name": "Moth", 			"commonness": 1, 		"effect": self.effetCollocM}
 		]
-		
 		self.init_drop_saloperies()
+
+	def __del__(self):
+		ggr_utilities.logger(self.__class__.__name__ + " Cog Unloaded!" , self, None, ggr_utilities.LogType.WARN)
+
+######################## DISCORD REACTIONS ########################
+    
+	@commands.Cog.listener()
+	async def on_reaction_add(self, reaction, user):
+		print(f"User {user.name} added reaction {reaction.emoji} to message {reaction.message.id}")
+        # Example logic: Check for a specific emoji and send a response
+		if str(reaction.emoji) == '❓':
+			await reaction.message.reply("Caca")
+
 ######################## DISCORD COMMANDS ########################
 	def effetSaloperieDoree(self, armyMembers):
 		return(+9, +1, f"{armyMembers[-1]["emote"]}: \"Saloperie dorée\" -> +10 saloperies, +1 WAD\n")
@@ -60,25 +73,25 @@ class Army(commands.Cog):
 	def effetCollocU(self, armyMembers):
 		if (len(armyMembers) > 1):
 			if (armyMembers[-2]["name"] == "Moth"):
-				return(+1, 0, f"{armyMembers[-2]["emote"]}+{armyMembers[-1]["emote"]}: \"effect colloc\" -> +1 saloperie\n")
+				return(+1, 0, f"{armyMembers[-2]["emote"]}+{armyMembers[-1]["emote"]}: \"effet colloc\" -> +1 saloperie\n")
 		return(0, 0, "")
 	
 	def effetCollocM(self, armyMembers):
 		if (len(armyMembers) > 1):
 			if (armyMembers[-2]["name"] == "Ulian"):
-				return(+1, 0, f"{armyMembers[-2]["emote"]}+{armyMembers[-1]["emote"]}: \"effect colloc\" -> +1 saloperie\n")
+				return(+1, 0, f"{armyMembers[-2]["emote"]}+{armyMembers[-1]["emote"]}: \"effet colloc\" -> +1 saloperie\n")
 		return(0, 0, "")
 
 	def effetCullocU(self, armyMembers):
 		if (len(armyMembers) > 1):
 			if (armyMembers[-2]["name"] == "Culoth"):
-				return(-1, 0, f"{armyMembers[-2]["emote"]}+{armyMembers[-1]["emote"]}: \"effect culloc\" -> -1 saloperie\n")
+				return(-1, 0, f"{armyMembers[-2]["emote"]}+{armyMembers[-1]["emote"]}: \"effet culloc\" -> -1 saloperie\n")
 		return(0, 0, "")
 	
 	def effetCullocM(self, armyMembers):
 		if (len(armyMembers) > 1):
 			if (armyMembers[-2]["name"] == "Culian"):
-				return(-1, 0, f"{armyMembers[-2]["emote"]}+{armyMembers[-1]["emote"]}: \"effect culloc\" -> -1 saloperie\n")
+				return(-1, 0, f"{armyMembers[-2]["emote"]}+{armyMembers[-1]["emote"]}: \"effet culloc\" -> -1 saloperie\n")
 		return(0, 0, "")
 	
 	@commands.command()
@@ -123,6 +136,7 @@ class Army(commands.Cog):
 
 	@commands.command()
 	async def army(self, ctx):
+		print(ctx.message.id) #########################################################################################
 		"""Spawn une armée de minis Ulians et Moth de 10 à 50 membres dévoués et sanguinaires."""
 		ggr_utilities.logger(ctx.message.content, self, ctx)
 		timeUser = self.hasUserCoolDownRoutine(ctx.author)["date"]
@@ -156,6 +170,7 @@ class Army(commands.Cog):
 		else:
 			await ctx.reply("Votre armée de saloperies n'est pas prête.\nRéessayez dans **" + str(math.trunc(self.hasUserCoolDownRoutine(ctx.author)["date"] - time.time())) + "** secondes.")
 			await ctx.message.add_reaction("❌")
+		await ctx.message.add_reaction("❓")
 
 	@commands.command()
 	async def megaarmy(self, ctx):
@@ -210,12 +225,13 @@ class Army(commands.Cog):
 				else:
 					#TODO: mettre differentes reactions en fonction du score
 					await ctx.reply("Bien mais il y a mieux")
+				await ctx.message.add_reaction("❓")
 			else:
 				await ctx.reply("La méga armée de saloperies n'est pas prête.\nRéessayez dans quelques minutes.")
 				await ctx.message.add_reaction("❌")
 		else:
 			await ctx.reply("Un maître n'a pas besoin de prouver sa valeur.\nLa votre est de **" + str(DBMaitre[6]) + "** Saloperies.")
-	
+
 	@commands.command()
 	async def drop(self, ctx):
 		data = {"title": "Longduzbot drop (< may 2024)",

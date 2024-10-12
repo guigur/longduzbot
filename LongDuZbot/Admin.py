@@ -10,13 +10,17 @@ class Admin(commands.Cog):
 
 		self.database = self.bot.get_cog('Database')
 		if self.database is None:
-			ggr_utilities.logger("Missing Database cog", self)
+			ggr_utilities.logger("Missing Database Cog", self, ggr_utilities.LogType.CRIT)
+
+	def __del__(self):
+		ggr_utilities.logger(self.__class__.__name__ + " Cog Unloaded!" , self, None, ggr_utilities.LogType.WARN)
+
 	# @commands.command()
 	# @ggr_utilities.check_admin()
 	# async def stop(self, ctx, arg = None):
 	# 	'Stop the server'
 	# 	ggr_utilities.logger("Stoping server", self)
-		
+
 	@commands.command()
 	@ggr_utilities.check_admin()
 	async def restart(self, ctx, arg = None):
