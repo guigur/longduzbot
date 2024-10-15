@@ -7,3 +7,4 @@ pyfiglet
 gitpython
 python-dateutil
 matplotlib
+sqlalchemy

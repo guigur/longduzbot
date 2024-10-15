@@ -58,13 +58,15 @@ class Army(commands.Cog):
 		ggr_utilities.logger(self.__class__.__name__ + " Cog Unloaded!" , self, None, ggr_utilities.LogType.WARN)
 
 ######################## DISCORD REACTIONS ########################
-    
+
 	@commands.Cog.listener()
-	async def on_reaction_add(self, reaction, user):
-		print(f"User {user.name} added reaction {reaction.emoji} to message {reaction.message.id}")
-        # Example logic: Check for a specific emoji and send a response
-		if str(reaction.emoji) == '❓':
-			await reaction.message.reply("Caca")
+	async def on_raw_reaction_add(self, payload): #on_reaction_add does not work
+		message = await self.bot.get_channel(payload.channel_id).fetch_message(payload.message_id)
+		reaction = discord.utils.get(message.reactions, emoji="👍")
+		user = payload.member
+		print(message)
+		print(reaction)
+		print(user)
 
 ######################## DISCORD COMMANDS ########################
 	def effetSaloperieDoree(self, armyMembers):
