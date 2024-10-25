@@ -45,61 +45,6 @@ class Eco(commands.Cog):
 		ggr_utilities.logger(self.__class__.__name__ + " Cog Unloaded!" , self, None, ggr_utilities.LogType.WARN)
 
 	######################## DISCORD COMMANDS ########################
-	@commands.command()
-	async def testwad(self, ctx):
-		print(get_all_users( True ))
-
-		ctx.guild = self.bot.get_guild(806284513583169596)
-		"""Affiche le nombre de WADs que vous disposez dans la banque des WADs"""
-
-		#self.database.getStatsPercentileCommanMegaarmyOnPeriod(ctx.author, guild))
-		#print(self.database.getStatsSaloperiesMegaarmyOnPeriod(ctx.author, ctx.guild)[0][0])
-		list_saloperie_month = [11, 2334, 545, 55, 44444, 3]
-		month = max(enumerate(list_saloperie_month),key=lambda x: x[1])[0] + 1
-		
-		# statsBestDaySaloperiesMegaarmyOnPeriod = self.database.getStatsBestDaySaloperiesMegaarmyOnPeriod(ctx.author, guild)
-		# print(statsBestDaySaloperiesMegaarmyOnPeriod)
-		# dayStatsBestDaySaloperiesMegaarmyOnPeriod = datetime.datetime.fromtimestamp(statsBestDaySaloperiesMegaarmyOnPeriod[1]).strftime("%A %d %B %Y")
-		# print(dayStatsBestDaySaloperiesMegaarmyOnPeriod)
-		# print(self.database.getStatsBestDaySaloperiesMegaarmyOnPeriod(ctx.author, guild))
-		# self.genSalopeiresArrayYear(ctx.author, guild)
-		# statsBestDaySaloperiesMegaarmyOnPeriod = self.database.getStatsBestDaySaloperiesMegaarmyOnPeriod(ctx.author, guild)
-		# await ctx.send("getStatsBestDaySaloperiesMegaarmyOnPeriod " + str(statsBestDaySaloperiesMegaarmyOnPeriod))
-		await ctx.send("ok")
-	
-
-	# @commands.command()
-	# async def testwad(self, ctx):
-	# 	print(get_all_users( True ))
-	# 	await rewind_2023.generate_2023_wrapped(ctx.author, ctx)
-	# 	guild = self.bot.get_guild(806284513583169596)
-	# 	"""Affiche le nombre de WADs que vous disposez dans la banque des WADs"""
-
-	# 	self.genSalopeiresArrayYear(ctx.author, guild)
-	# 	statsSaloperiesMegaarmyOnPeriod = self.database.getStatsSaloperiesMegaarmyOnPeriod(ctx.author, guild)
-	# 	await ctx.send("getStatsSaloperiesMegaarmyOnPeriod " + str(statsSaloperiesMegaarmyOnPeriod))
-
-	# 	statsSaloperieArmyOnPeriod = self.database.getStatsSaloperieArmyOnPeriod(ctx.author, guild)
-	# 	await ctx.send("getStatsSaloperieArmyOnPeriod " + str(statsSaloperieArmyOnPeriod))
-
-	# 	statsWadsOnPeriod = self.database.getStatsWadsOnPeriod(ctx.author, guild)
-	# 	await ctx.send("getStatsWadsOnPeriod " + str(statsWadsOnPeriod))
-
-	# 	statsWadsBestDayOnPeriod = self.database.getStatsWadsBestDayOnPeriod(ctx.author, guild)
-	# 	await ctx.send("getStatsWadsBestDayOnPeriod " + str(statsWadsBestDayOnPeriod))
-
-	# 	statsBestMegaarmyOnPeriod = self.database.getBestMegaarmyOnPeriod(ctx.author, guild)
-	# 	await ctx.send("getBestMegaarmyOnPeriod " + str(statsBestMegaarmyOnPeriod))
-
-	# 	statsWorstMegaarmyOnPeriod = self.database.getWorstMegaarmyOnPeriod(ctx.author, guild)
-	# 	await ctx.send("getWorstMegaarmyOnPeriod " + str(statsWorstMegaarmyOnPeriod))
-
-	# 	statsBestArmyOnPeriod = self.database.getBestArmyOnPeriod(ctx.author, guild)
-	# 	await ctx.send("getBestArmyOnPeriod " + str(statsBestArmyOnPeriod))
-
-	# 	statsWorstArmyOnPeriod = self.database.getWorstArmyOnPeriod(ctx.author, guild)
-	# 	await ctx.send("getWorstArmyOnPeriod " + str(statsWorstArmyOnPeriod))
-
 
 	@commands.command()
 	async def wad(self, ctx, arg = None):  #TODO FIX other user
@@ -117,7 +62,7 @@ class Eco(commands.Cog):
 		else:
 			user = ctx.author
 		money = self.database.getDBMoneyVerif(user, ctx.guild)
-		userS = userStruct(user.name, user.discriminator, ggr_utilities.userIcon(user), money[5])
+		userS = userStruct(user.name, user.discriminator, ggr_utilities.userIcon(user), money.money)
 		card = certif.generateMoneyCard(userS, ggr_utilities.serverIcon(ctx.guild))
 		await ctx.send(file = discord.File('tmp/card_filled.png'))
 
@@ -126,15 +71,14 @@ class Eco(commands.Cog):
 		#ggr_utilities.logger(ctx.message.content, self, ctx)
 		users = self.findUserMaxBalanceRoutine(ctx.guild)
 		if (users != None and len(users) == 3):
-		
 			try:
-				u1 = await self.bot.fetch_user(users[0][1])
-				u2 = await self.bot.fetch_user(users[1][1])
-				u3 = await self.bot.fetch_user(users[2][1])
+				u1 = await self.bot.fetch_user(users[0].userID)
+				u2 = await self.bot.fetch_user(users[1].userID)
+				u3 = await self.bot.fetch_user(users[2].userID)
 
-				userStruct1 = userStruct(u1.name, u1.discriminator, ggr_utilities.userIcon(u1), users[0][5])
-				userStruct2 = userStruct(u2.name, u2.discriminator, ggr_utilities.userIcon(u2), users[1][5])
-				userStruct3 = userStruct(u3.name, u3.discriminator, ggr_utilities.userIcon(u3), users[2][5])
+				userStruct1 = userStruct(u1.name, u1.discriminator, ggr_utilities.userIcon(u1), users[0].money)
+				userStruct2 = userStruct(u2.name, u2.discriminator, ggr_utilities.userIcon(u2), users[1].money)
+				userStruct3 = userStruct(u3.name, u3.discriminator, ggr_utilities.userIcon(u3), users[2].money)
 
 				card = certif.generateMoneyPodium(userStruct1, userStruct2, userStruct3, ggr_utilities.serverIcon(ctx.guild), ctx.guild.name)
 

@@ -101,12 +101,12 @@ class Army(commands.Cog):
 		"""Affiche le maître des saloperies et son record."""
 		ggr_utilities.logger(ctx.message.content, self, ctx)
 		DBMaitre = self.database.getDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.MAITRE)
-		if (DBMaitre and ggr_utilities.checkIfIdValid(DBMaitre[1])):
-			user = await self.bot.fetch_user(DBMaitre[1])
+		if (DBMaitre and ggr_utilities.checkIfIdValid(DBMaitre.userID)):
+			user = await self.bot.fetch_user(DBMaitre.userID)
 		else:
 			await ctx.send("Personne n'est maitre pour l'instant")
 			return
-		ustruct = userStruct(user.name, user.discriminator, ggr_utilities.userIcon(user), DBMaitre[6])
+		ustruct = userStruct(user.name, user.discriminator, ggr_utilities.userIcon(user), DBMaitre.saloperies)
 		card = certif.cardSaloperieBestWorst(ustruct, ggr_utilities.userIcon(user), ggr_utilities.serverIcon(ctx.guild), certif.BestWorst.best) #user n'a pas d'argument guild
 		
 		await ctx.send(file = discord.File('tmp/card_filled.png'))
@@ -116,12 +116,12 @@ class Army(commands.Cog):
 		"""Affiche le jean-foutre des saloperies et son score."""
 		ggr_utilities.logger(ctx.message.content, self, ctx)
 		DBJeanfoutre= self.database.getDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.JEANFOUTRE)
-		if (DBJeanfoutre and ggr_utilities.checkIfIdValid(DBJeanfoutre[1])):
-			user = await self.bot.fetch_user(DBJeanfoutre[1])
+		if (DBJeanfoutre and ggr_utilities.checkIfIdValid(DBJeanfoutre.userID)):
+			user = await self.bot.fetch_user(DBJeanfoutre.userID)
 		else:
 			await ctx.send("Personne n'est le jean-foutre pour l'instant")
 			return
-		ustruct = userStruct(user.name, user.discriminator, ggr_utilities.userIcon(user), DBJeanfoutre[6])
+		ustruct = userStruct(user.name, user.discriminator, ggr_utilities.userIcon(user), DBJeanfoutre.saloperies)
 		card = certif.cardSaloperieBestWorst(ustruct, ggr_utilities.userIcon(user), ggr_utilities.serverIcon(ctx.guild), certif.BestWorst.worst) #user n'a pas d'argument guild
 		
 		await ctx.send(file = discord.File('tmp/card_filled.png'))
@@ -167,8 +167,7 @@ class Army(commands.Cog):
 				await ctx.reply("Cette armée vous rapporte **" + str(armyGold) + " " + Eco.moneyName(armyGold) + "**")
 				await ctx.message.add_reaction(ggr_emotes.WAD)
 				##self.eco.changeBallanceRoutine(ctx.author, armyGold) ##TODO: change call to eco ##########==
-				self.database.changeDBBalanceMoney(ctx.author, ctx.guild, armyGold)
-
+				self.database.changeDBBalanceMoney(user=ctx.author, guild=ctx.guild, diff=armyGold)
 		else:
 			await ctx.reply("Votre armée de saloperies n'est pas prête.\nRéessayez dans **" + str(math.trunc(self.hasUserCoolDownRoutine(ctx.author)["date"] - time.time())) + "** secondes.")
 			await ctx.message.add_reaction("❌")
@@ -184,7 +183,7 @@ class Army(commands.Cog):
 		DBMaitre = self.database.getDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.MAITRE)
 		DBJeanfoutre = self.database.getDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.JEANFOUTRE)
 
-		if (DBMaitre is None or ctx.author.id != DBMaitre[1]):
+		if (DBMaitre is None or ctx.author.id != DBMaitre.userID):
 			if (time.time() > self.timeReady):
 				#game = discord.Game("envoyer une megaarmée")
 				#await bot.change_presence(status=discord.Status.online, activity=game)
@@ -218,11 +217,11 @@ class Army(commands.Cog):
 					await ctx.reply("Cette armée vous rapporte **" + str(armyGold) + " " + Eco.moneyName(armyGold) + "**")
 					await ctx.message.add_reaction(ggr_emotes.WAD)
 					#self.eco.changeBallanceRoutine(ctx.author, armyGold) ##TODO: change call to eco ##########==
-					self.database.changeDBBalanceMoney(ctx.author, ctx.guild, armyGold)
+					self.database.changeDBBalanceMoney(user=ctx.author, guild=ctx.guild, diff=armyGold)
 
-				if (DBMaitre is None or armytotmembers > DBMaitre[6]):
+				if (DBMaitre is None or armytotmembers > DBMaitre.saloperies):
 					await self.grantMasterRoutine(ctx, armytotmembers, megaarmyID)
-				elif (DBJeanfoutre is None or armytotmembers < DBJeanfoutre[6]):
+				elif (DBJeanfoutre is None or armytotmembers < DBJeanfoutre.saloperies):
 					await self.grantWorstRoutine(ctx, armytotmembers, megaarmyID)
 				else:
 					#TODO: mettre differentes reactions en fonction du score
@@ -232,7 +231,14 @@ class Army(commands.Cog):
 				await ctx.reply("La méga armée de saloperies n'est pas prête.\nRéessayez dans quelques minutes.")
 				await ctx.message.add_reaction("❌")
 		else:
-			await ctx.reply("Un maître n'a pas besoin de prouver sa valeur.\nLa votre est de **" + str(DBMaitre[6]) + "** Saloperies.")
+			await ctx.reply("Un maître n'a pas besoin de prouver sa valeur.\nLa votre est de **" + str(DBMaitre.saloperies) + "** Saloperies.")
+
+	@commands.command()
+	async def megaarmycd(self, ctx):
+		if (time.time() > self.timeReady):
+			await ctx.reply("La mega armée de saloperies est **prête**!")
+		else:
+			await ctx.reply("Il resete **" + str(int(self.timeReady - time.time())) + "** secondes avant que la mega army soit prête.")
 
 	@commands.command()
 	async def drop(self, ctx):
@@ -398,7 +404,7 @@ class Army(commands.Cog):
 		if (DBMaitre is None):
 			firstMaitre = True
 		else:
-			oldMaitreID = DBMaitre[1] 
+			oldMaitreID = DBMaitre.userID
 			try:
 				oldMaitre = await self.bot.fetch_user(oldMaitreID)
 				firstMaitre = False
@@ -407,7 +413,7 @@ class Army(commands.Cog):
 			
 		self.database.setDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.MAITRE, ctx.author, ctx.guild, time.time(), armytotmembers, megaarmyID)
 		
-		if (DBJeanfoutre is None or armytotmembers < DBJeanfoutre[6]): #if the worst has not been choosen yetm we lower the minimum to the best score yet
+		if (DBJeanfoutre is None or armytotmembers < DBJeanfoutre.saloperies): #if the worst has not been choosen yetm we lower the minimum to the best score yet
 			self.database.setDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.JEANFOUTRE, ggr_utilities.dummyUser, ctx.guild, time.time(), armytotmembers, megaarmyID)
 
 		#self.saveDataToFileRoutine() ############

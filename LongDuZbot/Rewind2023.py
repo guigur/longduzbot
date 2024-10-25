@@ -32,17 +32,22 @@ def drawCenterText(text, font, text_max_width, img, image_width, fill=(255, 255,
 	draw = ImageDraw.Draw(img)
 
 	for line in para:
-		w, h = draw.textsize(line, font=font)
+		# w = draw.textlength(line, font=font) ## HERE
+		# h = 10 #TemP cHANGE mE
+		_, _, w, h = draw.textbbox((0, 0), text=line, font=font)
 		draw_text = ImageDraw.Draw(img)
 		draw_text.text(((image_width - w) // 2, current_h), line, font=font, fill=fill)
 		current_h += h + interline
 
-def create_bar_graph(data, img, image_width, origin_x=0, bar_width=30, spacers=5, colors=["cyan","blue"]):
+def create_bar_graph(data, img, image_width, origin_x=0, bar_width=30, spacers=5, colors=["cyan","blue"], nodatacolors=["pink", "red"]):
 	# Calculate image size based on data
 	#image_width = len(data) * bar_width
 	image_height = 660 #max(data) * bar_height_multiplier
 	max_pix_height = 400
-	bar_height_multiplier=max_pix_height / max(data)
+	if max(data) == 0: #If no data at all
+		bar_height_multiplier = max_pix_height
+	else:
+		bar_height_multiplier=max_pix_height / max(data)
 
 	# Create a blank image
 	draw = ImageDraw.Draw(img)
@@ -57,11 +62,12 @@ def create_bar_graph(data, img, image_width, origin_x=0, bar_width=30, spacers=5
 		y2 = image_height - 1
 		
 			#draw.rectangle([x1, y1, x2, y2], fill='blue')
-		draw.rounded_rectangle([x1, y1, x2, y2], fill=colors[0], outline=colors[1], width=3, radius=7)
+		if (value > 0):
+			draw.rounded_rectangle([x1, y1, x2, y2], fill=colors[0], outline=colors[1], width=3, radius=7)
+		else:
+			draw.rounded_rectangle([x1, y1, x2, y2], fill=nodatacolors[0], outline=nodatacolors[1], width=3, radius=7)
 
-	# Save the image
 	ImageDraw.Draw(img)
-
 
 class Rewind2023(commands.Cog):
 	def __init__(self, bot):
@@ -79,11 +85,11 @@ class Rewind2023(commands.Cog):
 		ctx.guild = self.bot.get_guild(806284513583169596)
 
 		print("generating slides...")
-		for slide in range(6):
+		for slide in range(0, 6):
 			self.gen_slide_2023_wrapped(slide, ctx)
 			print("slide " + str(slide) +" done...")
 			await ctx.send(file = discord.File('tmp/animated_tile.gif'))
-		print("done")
+		print("done generating slides for @" + ctx.author.name)
 
 	def profile_and_server(self, ctx, img, size=(256,256), origin=None, mode="profile"):
 		if (mode == "profile"):
@@ -111,8 +117,7 @@ class Rewind2023(commands.Cog):
 		for month in range(1, 13):
 			start_month = datetime.datetime(2023, month, 1)
 			end_month = datetime.datetime(2023, month, 1)	+ relativedelta(months=+1)
-			# print({"month": month, "saloperies": self.database.getStatsSaloperiesMegaarmyOnPeriod(user, guild, start_month.timestamp(), end_month.timestamp())[0][0]})
-			monthsSaloperies.append(self.database.getStatsSaloperiesMegaarmyOnPeriod(user, guild, start_month.timestamp(), end_month.timestamp())[0][0])		
+			monthsSaloperies.append(self.database.getStatsSaloperiesMegaArmyOnPeriod(user, guild, start_month.timestamp(), end_month.timestamp())) #[0][0])		
 		return monthsSaloperies
 
 	def gen_slide_2023_wrapped(self, slide, ctx):
@@ -140,33 +145,31 @@ class Rewind2023(commands.Cog):
 		if (slide == 0):
 			pass
 		elif (slide == 1):
-			times_megaarmy_command = self.database.getStatsCountSaloperiesMegaarmyOnPeriod(ctx.author, ctx.guild, first_january_2023_timestamp, thirtyfirst_decemeber_2023_timestamp)[0]
-			percent_megaarmy_more = round(self.database.getStatsPercentileCommandMegaarmyOnPeriod(ctx.author, ctx.guild, first_january_2023_timestamp, thirtyfirst_decemeber_2023_timestamp)[3], 1)
+			times_MegaArmy_command = self.database.getStatsCountSaloperiesMegaArmyOnPeriod(ctx.author, ctx.guild, first_january_2023_timestamp, thirtyfirst_decemeber_2023_timestamp)
+			percent_MegaArmy_more = round(self.database.getStatsPercentileCommandMegaArmyOnPeriod(ctx.author, ctx.guild, first_january_2023_timestamp, thirtyfirst_decemeber_2023_timestamp)["percentile_rank"], 1)
 			lilian_bouche_img = Image.open('img/lilian_bouche.png', 'r')
 
 		elif (slide == 2):
-			number_saloperies_total = self.database.getStatsSaloperiesMegaarmyOnPeriod(ctx.author, ctx.guild, first_january_2023_timestamp, thirtyfirst_decemeber_2023_timestamp)[0][0]
+			number_saloperies_total = self.database.getStatsSaloperiesMegaArmyOnPeriod(ctx.author, ctx.guild, first_january_2023_timestamp, thirtyfirst_decemeber_2023_timestamp)
 			list_saloperie_month = self.genSalopeiresListYear(ctx.author, ctx.guild)
 			month_nbr = max(enumerate(list_saloperie_month),key=lambda x: x[1])[0] + 1
 			month_datetime = datetime.datetime(2023, month_nbr, 1)
 			slide_2_month_most_active = month_datetime.strftime("%B").title()
 
 		elif (slide == 3):
-			statsBestDaySaloperiesMegaarmyOnPeriod = self.database.getStatsBestDaySaloperiesMegaarmyOnPeriod(ctx.author, ctx.guild, first_january_2023_timestamp, thirtyfirst_decemeber_2023_timestamp)
-			dayStatsBestDaySaloperiesMegaarmyOnPeriod = datetime.datetime.fromtimestamp(statsBestDaySaloperiesMegaarmyOnPeriod[1]).strftime("%A %d %B %Y")
-			saloperiesStatsBestDaySaloperiesMegaarmyOnPeriod = statsBestDaySaloperiesMegaarmyOnPeriod[2]
+			statsBestDaySaloperiesMegaArmyOnPeriod = self.database.getStatsBestDaySaloperiesMegaArmyOnPeriod(ctx.author, ctx.guild, first_january_2023_timestamp, thirtyfirst_decemeber_2023_timestamp)
+			dayStatsBestDaySaloperiesMegaArmyOnPeriod = datetime.datetime.fromtimestamp(statsBestDaySaloperiesMegaArmyOnPeriod["timestamp"]).strftime("%A %d %B %Y") #day of most saloperies
+			saloperiesStatsBestDaySaloperiesMegaArmyOnPeriod = statsBestDaySaloperiesMegaArmyOnPeriod["saloperies"] #number of saloperies that day
 			mat_big = Image.open('img/mat_big.png', 'r')
 
 		elif (slide == 4):
-			statsBestMegaarmyOnPeriod = self.database.getBestMegaarmyOnPeriod(ctx.author, ctx.guild, first_january_2023_timestamp, thirtyfirst_decemeber_2023_timestamp)[10]
-			statsWorstMegaarmyOnPeriod = self.database.getWorstMegaarmyOnPeriod(ctx.author, ctx.guild, first_january_2023_timestamp, thirtyfirst_decemeber_2023_timestamp)[10]
-			# print(statsBestMegaarmyOnPeriod)
-			# print(statsWorstMegaarmyOnPeriod)
+			statsBestMegaArmyOnPeriod = self.database.getBestMegaArmyOnPeriod(ctx.author, ctx.guild, first_january_2023_timestamp, thirtyfirst_decemeber_2023_timestamp)
+			statsWorstMegaArmyOnPeriod = self.database.getWorstMegaArmyOnPeriod(ctx.author, ctx.guild, first_january_2023_timestamp, thirtyfirst_decemeber_2023_timestamp)
 			guogur = Image.open('img/guogur.png', 'r')
 
 		elif (slide == 5):
-			statsWadsOnPeriod = self.database.getStatsWadsOnPeriod(ctx.author, ctx.guild, first_january_2023_timestamp, thirtyfirst_decemeber_2023_timestamp)[0]
-			money_rich_persentile = round(self.database.getStatsPercentileWads(ctx.author, ctx.guild)[3], 1)
+			statsWadsOnPeriod = self.database.getStatsWadsOnPeriod(ctx.author, ctx.guild, first_january_2023_timestamp, thirtyfirst_decemeber_2023_timestamp)
+			money_rich_persentile = round(self.database.getStatsPercentileWads(ctx.author, ctx.guild), 1)
 			alex_voiture = Image.open('img/alex_voiture.png', 'r')
 			
 		# Create frames for the animation
@@ -188,8 +191,8 @@ class Rewind2023(commands.Cog):
 				self.profile_and_server(ctx, frame)
 
 			elif (slide == 1): #bare done
-				slide_1_big_text = "Vous avez saisi " + str(times_megaarmy_command) + " fois la commande !megaarmy cette année."
-				slide_1_small_text = "C'est plus que " + str(percent_megaarmy_more) + "% des membres du serveur."
+				slide_1_big_text = "Vous avez saisi " + str(times_MegaArmy_command) + " fois la commande !MegaArmy cette année."
+				slide_1_small_text = "C'est plus que " + str(percent_MegaArmy_more) + "% des membres du serveur."
 				drawCenterText(slide_1_big_text, big_font, 20, frame, image_width, (255, 255, 255, 255), 10)
 				drawCenterText(slide_1_small_text, medium_font, 32, frame, image_width, (255, 255, 255, 255), 630)
 
@@ -212,8 +215,8 @@ class Rewind2023(commands.Cog):
 				drawCenterText(slide_2_small_text, medium_font, 32, frame, image_width, (255, 255, 255, 255), 630)
 
 			elif (slide == 3): #bare minimum done ?
-				slide_3_big_text = "Votre journée la plus productive à été le " + dayStatsBestDaySaloperiesMegaarmyOnPeriod + "."
-				slide_3_small_text = "Avec un nombre impressionant de " + str(saloperiesStatsBestDaySaloperiesMegaarmyOnPeriod) + " saloperies invoquées ce jour-là."
+				slide_3_big_text = "Votre journée la plus productive à été le " + dayStatsBestDaySaloperiesMegaArmyOnPeriod + "."
+				slide_3_small_text = "Avec un nombre impressionant de " + str(saloperiesStatsBestDaySaloperiesMegaArmyOnPeriod) + " saloperies invoquées ce jour-là."
 				drawCenterText(slide_3_big_text, big_font, 20, frame, image_width, (255, 255, 255, 255), 10)
 				drawCenterText(slide_3_small_text, medium_font, 32, frame, image_width, (255, 255, 255, 255), 600)
 
@@ -222,8 +225,8 @@ class Rewind2023(commands.Cog):
 				frame = Image.alpha_composite(frame, slide_3_overlay)
 
 			elif (slide == 4): #bare minimum done
-				slide_4_big_text = "Votre meilleure !megaarmy cette année comptait " + str(statsBestMegaarmyOnPeriod) + " saloperies."
-				slide_4_small_text = "Et votre pire en avait seulement " + str(statsWorstMegaarmyOnPeriod) + "."
+				slide_4_big_text = "Votre meilleure !MegaArmy cette année comptait " + str(statsBestMegaArmyOnPeriod) + " saloperies."
+				slide_4_small_text = "Et votre pire en avait seulement " + str(statsWorstMegaArmyOnPeriod) + "."
 				drawCenterText(slide_4_big_text, big_font, 20, frame, image_width, (255, 255, 255, 255), 10)
 				drawCenterText(slide_4_small_text, medium_font, 32, frame, image_width, (255, 255, 255, 255), 630)
 				

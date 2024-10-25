@@ -3,6 +3,7 @@ import time
 import math
 import json
 import threading
+import traceback
 
 import discord
 from discord.ext.commands import Bot
@@ -41,6 +42,7 @@ def load_extentions():
 			bot.load_extension(extension)
 			ggr_utilities.logger("Loaded Cog " + extension, None, None, ggr_utilities.LogType.SUCCESS)
 		except Exception as e:
+			traceback.print_exc()
 			exc = '{}: {}'.format(type(e).__name__, e)
 			ggr_utilities.logger("Failed to load Cog " + extension + " \n" + exc, None, None, ggr_utilities.LogType.ERROR)
 
