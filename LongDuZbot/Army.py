@@ -28,7 +28,7 @@ class Army(commands.Cog):
 		self.bot = bot
 		self.bot.add_listener(self.on_reaction_add, 'on_reaction_add')
 		self.timeReady = 0
-		self.coolDownTime = 1 #300 #5min
+		self.coolDownTime = 300 #5min
 
 		self.database = self.bot.get_cog('Database')
 		if self.database is None:
@@ -100,7 +100,7 @@ class Army(commands.Cog):
 	async def maitre(self, ctx):
 		"""Affiche le maître des saloperies et son record."""
 		ggr_utilities.logger(ctx.message.content, self, ctx)
-		DBMaitre = self.database.getDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.MAITRE)
+		DBMaitre = self.database.getDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.MAITRE, ctx.guild)
 		if (DBMaitre and ggr_utilities.checkIfIdValid(DBMaitre.userID)):
 			user = await self.bot.fetch_user(DBMaitre.userID)
 		else:
@@ -115,7 +115,7 @@ class Army(commands.Cog):
 	async def jeanfoutre(self, ctx):
 		"""Affiche le jean-foutre des saloperies et son score."""
 		ggr_utilities.logger(ctx.message.content, self, ctx)
-		DBJeanfoutre= self.database.getDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.JEANFOUTRE)
+		DBJeanfoutre= self.database.getDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.JEANFOUTRE, ctx.guild)
 		if (DBJeanfoutre and ggr_utilities.checkIfIdValid(DBJeanfoutre.userID)):
 			user = await self.bot.fetch_user(DBJeanfoutre.userID)
 		else:
@@ -180,8 +180,8 @@ class Army(commands.Cog):
 		armytotmembers = 0
 		armyGold = 0
 		
-		DBMaitre = self.database.getDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.MAITRE)
-		DBJeanfoutre = self.database.getDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.JEANFOUTRE)
+		DBMaitre = self.database.getDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.MAITRE, ctx.guild)
+		DBJeanfoutre = self.database.getDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.JEANFOUTRE, ctx.guild)
 
 		if (DBMaitre is None or ctx.author.id != DBMaitre.userID):
 			if (time.time() > self.timeReady):
@@ -382,7 +382,7 @@ class Army(commands.Cog):
 		ggr_utilities.logger("Check if user cool down exist.", self)
 		self.loadFromFileCoolDownRoutine()
 		for u in self.saveFileCoolDown:
-			if u["name"] == user.name:
+			if u["id"] == user.id:
 				return u
 		ggr_utilities.logger("User " + user.name + " not found adding him/her to cool down file", self)
 		newUserJson = {"name": user.name , "id": user.id, "date": time.time() }
@@ -398,8 +398,8 @@ class Army(commands.Cog):
 		# role = await ggr_utilities.getRole(guild, role_meta="master")
 		role = await ggr_utilities.supromote(ctx, role_meta="master")
 
-		DBMaitre = self.database.getDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.MAITRE)
-		DBJeanfoutre = self.database.getDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.JEANFOUTRE)
+		DBMaitre = self.database.getDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.MAITRE, ctx.guild)
+		DBJeanfoutre = self.database.getDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.JEANFOUTRE, ctx.guild)
 
 		if (DBMaitre is None):
 			firstMaitre = True
@@ -431,7 +431,7 @@ class Army(commands.Cog):
 		user = ctx.author
 		role = await ggr_utilities.supromote(ctx, role_meta="worst")
 
-		DBJeanfoutre = self.database.getDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.JEANFOUTRE)
+		DBJeanfoutre = self.database.getDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.JEANFOUTRE, ctx.guild)
 
 		self.database.setDBMaitreJeanfoutre(Database.MaitreJeanfoutreType.JEANFOUTRE, ctx.author, ctx.guild, time.time(), armytotmembers, megaarmyID)
 

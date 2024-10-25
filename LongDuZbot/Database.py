@@ -398,14 +398,14 @@ class Database(commands.Cog):
 			self.session.commit()
 			return row.id
 
-	def getDBMaitreJeanfoutre(self, type):
+	def getDBMaitreJeanfoutre(self, type, guild):
 		table_class = Maitre if type == MaitreJeanfoutreType.MAITRE else Jeanfoutre
-		row = self.session.query(table_class).filter_by(isArchive=0).order_by(table_class.__table__.c[type.data()['idkey']].desc()).first()
+		row = self.session.query(table_class).filter_by(isArchive=0, guildID=guild.id).order_by(table_class.__table__.c[type.data()['idkey']].desc()).first()
 		return row
 
-	def setDBArchiveMaitreJeanfoutre(self, type):
+	def setDBArchiveMaitreJeanfoutre(self, type, guild):
 		table_class = Maitre if type == MaitreJeanfoutreType.MAITRE else Jeanfoutre
-		self.session.query(table_class).filter_by(isArchive=0).update({"isArchive": 1})
+		self.session.query(table_class).filter_by(isArchive=0, guildID=guild.id).update({"isArchive": 1})
 		self.session.commit()
 
 	def addDBArmy(self, user, guild, timestamp, command, saloperies, money):
