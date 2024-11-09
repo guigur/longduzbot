@@ -159,7 +159,7 @@ class Army(commands.Cog):
 				await ctx.send(f"||{retarmy[3]}||")
 
 
-			self.database.addDBArmy(ctx.author, ctx.message.guild, time.time(), ctx.message.content, armytotmembers, armyGold)
+			self.database.addDBArmy(ctx.author, ctx.message.guild, ctx.message.id, time.time(), ctx.message.content, armytotmembers, armyGold)
 
 			for emojinmb in ggr_utilities.numbersToEmojis(armytotmembers):
 				await ctx.message.add_reaction(emojinmb)
@@ -210,7 +210,7 @@ class Army(commands.Cog):
 
 				ggr_utilities.logger("User " + ctx.author.name + " summoned " + str(armytotmembers) + " saloperies", self)
 
-				megaarmyID = self.database.addDBMegaArmy(ctx.author, ctx.guild, time.time(), ctx.message.content, armyLines, armytotmembers, armyGold)
+				megaarmyID = self.database.addDBMegaArmy(ctx.author, ctx.guild, ctx.message.id, time.time(), ctx.message.content, armyLines, armytotmembers, armyGold)
 
 				await ctx.reply("Votre armée compte **" + str(armytotmembers) + "** saloperies. Beau travail.")
 				if armyGold > 0:

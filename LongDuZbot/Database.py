@@ -9,10 +9,11 @@ from datetime import datetime
 import ggr_utilities, ggr_emotes
 import Eco, Com
 
-from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey, BigInteger, and_, func, desc, case
+from sqlalchemy import create_engine, inspect, Column, Integer, String, Float, ForeignKey, BigInteger, and_, func, desc, case, text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.sql import select
+from sqlalchemy.exc import OperationalError
 
 Base = declarative_base()
 
@@ -55,6 +56,7 @@ class Army(Base):
 	user = Column(String)
 	guildID = Column(BigInteger)
 	guild = Column(String)
+	messageID = Column(BigInteger, default=0, nullable=False)
 	timestamp = Column(Float)
 	command = Column(String)
 	saloperies = Column(Integer)
@@ -67,6 +69,7 @@ class MegaArmy(Base):
 	user = Column(String)
 	guildID = Column(BigInteger)
 	guild = Column(String)
+	messageID = Column(BigInteger, default=0, nullable=False)
 	timestamp = Column(Float)
 	command = Column(String)
 	lines = Column(Integer)
@@ -106,6 +109,7 @@ class Database(commands.Cog):
 		Base.metadata.create_all(self.engine)
 		Session = sessionmaker(bind=self.engine)
 		self.session = Session()
+		self.sync_all_models(Base)
 
 	def __del__(self):
 		ggr_utilities.logger(self.__class__.__name__ + " Cog Unloaded!", self, None, ggr_utilities.LogType.WARN)
@@ -115,6 +119,39 @@ class Database(commands.Cog):
 	######################### SHELL COMMANDS #########################
 
 	############################ ROUTINES ############################
+
+	def add_column_if_not_exists(self, model, column_name, column_type, is_null=True, default_value=None):
+		table_name = model.__tablename__
+		
+		# Inspect existing columns in the table
+		inspector = inspect(self.engine)
+		columns = [col['name'] for col in inspector.get_columns(table_name)]
+		
+		# If the column doesn't exist, add it
+		if column_name not in columns:
+			with self.engine.connect() as conn:
+				# Add column
+				null_req = "NULL"
+				if (not is_null):
+					null_req = "NOT NULL"
+				constrain_req = ""
+				if (default_value is not None):
+					constrain_req = f"CONSTRAINT D_{table_name}_{column_name} DEFAULT {default_value}"
+				conn.execute(text(f'ALTER TABLE {table_name} ADD COLUMN {column_name} {column_type} {null_req} {constrain_req}'))
+		else:
+			pass#print(f"Column '{column_name}' already exists in '{table_name}'")
+
+	def sync_model_columns_to_db(self, model):
+		for column in model.__table__.columns:
+			default_value = column.default.arg if column.default is not None else None
+			column_type = column.type.compile(dialect=self.engine.dialect)
+			self.add_column_if_not_exists(model, column.name, column_type, is_null=column.nullable, default_value=default_value)
+
+	def sync_all_models(self, base):
+		for model in base.registry._class_registry.values():
+			if hasattr(model, '__table__'):  # Filter out non-table entries
+				print(f"Syncing table '{model.__tablename__}'...")
+				self.sync_model_columns_to_db(model)
 
 	#ECO
 	def periodHelper(self, startTimestamp, endTimestamp):
@@ -408,19 +445,34 @@ class Database(commands.Cog):
 		self.session.query(table_class).filter_by(isArchive=0, guildID=guild.id).update({"isArchive": 1})
 		self.session.commit()
 
-	def addDBArmy(self, user, guild, timestamp, command, saloperies, money):
+	def addDBArmy(self, user, guild, messageID, timestamp, command, saloperies, money):
 		new_army = Army(
-			userID=user.id, user=user.name, guildID=guild.id, guild=guild.name,
-			timestamp=timestamp, command=command, saloperies=saloperies, money=money
+			userID=user.id,
+			user=user.name,
+			guildID=guild.id,
+			guild=guild.name,
+			messageID = messageID,
+			timestamp=timestamp,
+			command=command,
+			saloperies=saloperies,
+			money=money
 		)
 		self.session.add(new_army)
 		self.session.commit()
 		return new_army.armyID
 
-	def addDBMegaArmy(self, user, guild, timestamp, command, lines, saloperies, money):
+	def addDBMegaArmy(self, user, guild, messageID, timestamp, command, lines, saloperies, money):
 		new_mega_army = MegaArmy(
-			userID=user.id, user=user.name, guildID=guild.id, guild=guild.name,
-			timestamp=timestamp, command=command, lines=lines, saloperies=saloperies, money=money
+			userID=user.id,
+			user=user.name,
+			guildID=guild.id,
+			guild=guild.name,
+			messageID = messageID,
+			timestamp=timestamp,
+			command=command,
+			lines=lines,
+			saloperies=saloperies,
+			money=money
 		)
 		self.session.add(new_mega_army)
 		self.session.commit()
