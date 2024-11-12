@@ -9,7 +9,7 @@ from datetime import datetime
 import ggr_utilities, ggr_emotes
 import Eco, Com
 
-from sqlalchemy import create_engine, inspect, Column, Integer, String, Float, ForeignKey, BigInteger, and_, func, desc, case, text
+from sqlalchemy import create_engine, inspect, Column, Integer, String, Float, Text, ForeignKey, BigInteger, and_, func, desc, case, text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.sql import select
@@ -61,7 +61,8 @@ class Army(Base):
 	command = Column(String)
 	saloperies = Column(Integer)
 	money = Column(Integer)
-
+	explaination = Column(Text)
+ 
 class MegaArmy(Base):
 	__tablename__ = 'megaarmy'
 	megaarmyID = Column(Integer, primary_key=True, autoincrement=True)
@@ -75,6 +76,7 @@ class MegaArmy(Base):
 	lines = Column(Integer)
 	saloperies = Column(Integer)
 	money = Column(Integer)
+	explaination = Column(Text)
 
 class Maitre(Base):
     __tablename__ = 'maitre'
@@ -87,7 +89,6 @@ class Maitre(Base):
     saloperies = Column(Integer)
     megaarmyID = Column(Integer)
     isArchive = Column(Integer)
-
 
 class Jeanfoutre(Base):
     __tablename__ = 'jeanfoutre'
@@ -445,7 +446,7 @@ class Database(commands.Cog):
 		self.session.query(table_class).filter_by(isArchive=0, guildID=guild.id).update({"isArchive": 1})
 		self.session.commit()
 
-	def addDBArmy(self, user, guild, messageID, timestamp, command, saloperies, money):
+	def addDBArmy(self, user, guild, messageID, timestamp, command, saloperies, money, explaination):
 		new_army = Army(
 			userID=user.id,
 			user=user.name,
@@ -455,13 +456,14 @@ class Database(commands.Cog):
 			timestamp=timestamp,
 			command=command,
 			saloperies=saloperies,
-			money=money
+			money=money,
+			explaination=explaination
 		)
 		self.session.add(new_army)
 		self.session.commit()
 		return new_army.armyID
 
-	def addDBMegaArmy(self, user, guild, messageID, timestamp, command, lines, saloperies, money):
+	def addDBMegaArmy(self, user, guild, messageID, timestamp, command, lines, saloperies, money, explaination):
 		new_mega_army = MegaArmy(
 			userID=user.id,
 			user=user.name,
@@ -472,11 +474,21 @@ class Database(commands.Cog):
 			command=command,
 			lines=lines,
 			saloperies=saloperies,
-			money=money
+			money=money,
+			explaination=explaination
 		)
 		self.session.add(new_mega_army)
 		self.session.commit()
 		return new_mega_army.megaarmyID
+
+	def getArmyMegaArmyExplaination(self, guild, messageID):
+		row = self.session.query(Army).filter_by(messageID=messageID, guildID=guild.id).first()
+		if (row is not None):
+			return(row.explaination)
+		row = self.session.query(MegaArmy).filter_by(messageID=messageID, guildID=guild.id).first()
+		if (row is not None):
+			return(row.explaination)
+		return None
 
 	def requestDB(self, query):
 		ggr_utilities.logger("SQLAlchemy Query Executed", self)

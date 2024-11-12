@@ -59,43 +59,10 @@ class Army(commands.Cog):
 
 ######################## DISCORD REACTIONS ########################
 
-	@commands.Cog.listener()
-	async def on_raw_reaction_add(self, payload): #on_reaction_add does not work
-		message = await self.bot.get_channel(payload.channel_id).fetch_message(payload.message_id)
-		reaction = discord.utils.get(message.reactions, emoji="👍")
-		user = payload.member
-		print(message)
-		print(reaction)
-		print(user)
 
-######################## DISCORD COMMANDS ########################
-	def effetSaloperieDoree(self, armyMembers):
-		return(+9, +1, f"{armyMembers[-1]["emote"]}: \"Saloperie dorée\" -> +10 saloperies, +1 WAD\n")
 
-	def effetCollocU(self, armyMembers):
-		if (len(armyMembers) > 1):
-			if (armyMembers[-2]["name"] == "Moth"):
-				return(+1, 0, f"{armyMembers[-2]["emote"]}+{armyMembers[-1]["emote"]}: \"effet colloc\" -> +1 saloperie\n")
-		return(0, 0, "")
-	
-	def effetCollocM(self, armyMembers):
-		if (len(armyMembers) > 1):
-			if (armyMembers[-2]["name"] == "Ulian"):
-				return(+1, 0, f"{armyMembers[-2]["emote"]}+{armyMembers[-1]["emote"]}: \"effet colloc\" -> +1 saloperie\n")
-		return(0, 0, "")
+	######################## DISCORD COMMANDS ########################
 
-	def effetCullocU(self, armyMembers):
-		if (len(armyMembers) > 1):
-			if (armyMembers[-2]["name"] == "Culoth"):
-				return(-1, 0, f"{armyMembers[-2]["emote"]}+{armyMembers[-1]["emote"]}: \"effet culloc\" -> -1 saloperie\n")
-		return(0, 0, "")
-	
-	def effetCullocM(self, armyMembers):
-		if (len(armyMembers) > 1):
-			if (armyMembers[-2]["name"] == "Culian"):
-				return(-1, 0, f"{armyMembers[-2]["emote"]}+{armyMembers[-1]["emote"]}: \"effet culloc\" -> -1 saloperie\n")
-		return(0, 0, "")
-	
 	@commands.command()
 	async def maitre(self, ctx):
 		"""Affiche le maître des saloperies et son record."""
@@ -155,11 +122,9 @@ class Army(commands.Cog):
 			armytotmembers = retarmy[1]
 			armyGold = retarmy[2]
 			await ctx.send(army)
-			if (retarmy[3] != ""):
-				await ctx.send(f"||{retarmy[3]}||")
 
-
-			self.database.addDBArmy(ctx.author, ctx.message.guild, ctx.message.id, time.time(), ctx.message.content, armytotmembers, armyGold)
+			explaination = {"type":"Army","lines":[{"line":"1","content":retarmy[3]}]}
+			self.database.addDBArmy(ctx.author, ctx.message.guild, ctx.message.id, time.time(), ctx.message.content, armytotmembers, armyGold, str(json.dumps(explaination)))
 
 			for emojinmb in ggr_utilities.numbersToEmojis(armytotmembers):
 				await ctx.message.add_reaction(emojinmb)
@@ -168,10 +133,10 @@ class Army(commands.Cog):
 				await ctx.message.add_reaction(ggr_emotes.WAD)
 				##self.eco.changeBallanceRoutine(ctx.author, armyGold) ##TODO: change call to eco ##########==
 				self.database.changeDBBalanceMoney(user=ctx.author, guild=ctx.guild, diff=armyGold)
+			await ctx.message.add_reaction("❓")
 		else:
 			await ctx.reply("Votre armée de saloperies n'est pas prête.\nRéessayez dans **" + str(math.trunc(self.hasUserCoolDownRoutine(ctx.author)["date"] - time.time())) + "** secondes.")
 			await ctx.message.add_reaction("❌")
-		await ctx.message.add_reaction("❓")
 
 	@commands.command()
 	async def megaarmy(self, ctx):
@@ -203,14 +168,18 @@ class Army(commands.Cog):
 
 				for emojinmb in ggr_utilities.numbersToEmojis(armyLines): #emojis number lines
 					await ctx.message.add_reaction(emojinmb)
-		
+
+
+				explaination = {"type":"MegaArmy","lines":[]}
+				## HERE REWORK THIS PART WITH ARRAY
 				for i, d in enumerate(armyDesc): #desciption
 					if (d != ""):
-						await ctx.send(f"ligne{i+1}\n||{d}||")
+						explaination["lines"].append({"line":f"{i+1}","content": d }) # += f'{{"line":{i+1},"content":{d}}},'    
+
 
 				ggr_utilities.logger("User " + ctx.author.name + " summoned " + str(armytotmembers) + " saloperies", self)
 
-				megaarmyID = self.database.addDBMegaArmy(ctx.author, ctx.guild, ctx.message.id, time.time(), ctx.message.content, armyLines, armytotmembers, armyGold)
+				megaarmyID = self.database.addDBMegaArmy(ctx.author, ctx.guild, ctx.message.id, time.time(), ctx.message.content, armyLines, armytotmembers, armyGold, explaination=str(json.dumps(explaination)))
 
 				await ctx.reply("Votre armée compte **" + str(armytotmembers) + "** saloperies. Beau travail.")
 				if armyGold > 0:
@@ -242,7 +211,7 @@ class Army(commands.Cog):
 
 	@commands.command()
 	async def drop(self, ctx):
-		data = {"title": "Longduzbot drop (< may 2024)",
+		data = {"title": "Longduzbot drop (< nov 2024)",
 		"sizes": [], "labels": []}
 
 		for s in self.saloperies:
@@ -254,7 +223,7 @@ class Army(commands.Cog):
 
 	@commands.command()
 	async def olddrop(self, ctx):
-		data = {"title": "Longduzbot old drop (> may 2024)",
+		data = {"title": "Longduzbot old drop (> nov 2024)",
 		  		"sizes": [10/3000, 50/101, 1/101, 50/101] ,
 		  		"labels": ["Saloperiedoree", "Ulian", "Guigor", "Moth"]}
 
@@ -264,6 +233,32 @@ class Army(commands.Cog):
 	######################### SHELL COMMANDS #########################
 
 	############################ ROUTINES ############################
+	def effetSaloperieDoree(self, armyMembers):
+		return(+9, +1, f'{{"emotes":"{armyMembers[-1]["emote"]}","name":"Saloperie dorée","cons":"+10 saloperies & +1 WAD"}}')
+
+	def effetCollocU(self, armyMembers):
+		if (len(armyMembers) > 1):
+			if (armyMembers[-2]["name"] == "Moth"):
+				return(+1, 0, {"emotes":f"{armyMembers[-2]["emote"]}+{armyMembers[-1]["emote"]}","name": "effet colloc", "cons": "+1 saloperie"})
+		return(0, 0, None)
+	
+	def effetCollocM(self, armyMembers):
+		if (len(armyMembers) > 1):
+			if (armyMembers[-2]["name"] == "Ulian"):
+				return(+1, 0, {"emotes":f"{armyMembers[-2]["emote"]}+{armyMembers[-1]["emote"]}","name": "effet colloc", "cons": "+1 saloperie"})
+		return(0, 0, None)
+
+	def effetCullocU(self, armyMembers):
+		if (len(armyMembers) > 1):
+			if (armyMembers[-2]["name"] == "Culoth"):
+				return(-1, 0, {"emotes":f"{armyMembers[-2]["emote"]}+{armyMembers[-1]["emote"]}","name": "effet culloc", "cons": "-1 saloperie"})
+		return(0, 0, None)
+	
+	def effetCullocM(self, armyMembers):
+		if (len(armyMembers) > 1):
+			if (armyMembers[-2]["name"] == "Culian"):
+				return(-1, 0, {"emotes":f"{armyMembers[-2]["emote"]}+{armyMembers[-1]["emote"]}","name": "effet culloc", "cons": "-1 saloperie"})
+		return(0, 0, None)
 
 	#TODO: make a function with this stuff
 	def loadFromFileCoolDownRoutine(self):
@@ -314,7 +309,6 @@ class Army(commands.Cog):
 		return self.saloperies[0] #if error
 
 	def draw_piechart_drop(self, data):
-
 		fg_color = "#ffffff"
 		bg_color = "#2F3136"
 		# emote = mpli.imread("culoth.png")
@@ -330,28 +324,27 @@ class Army(commands.Cog):
 		patches, texts =  ax.pie(data["sizes"], labels=data["labels"], startangle=180, labeldistance=1.05, frame=False,
 		wedgeprops = {"linewidth": 1, "edgecolor": "white"})
 		plt.setp(texts, color='white')
-
-		# plt.legend(fig, labels, loc="best")
-
-		# imagebox = OffsetImage(emote, zoom=0.2)
-		# ab = AnnotationBbox(imagebox, (1, 1), xycoords='axes fraction', frameon=False, pad=0)
-		# ab.xybox = (1, 1)
-		#ax.add_artist(ab)
-
-		# patches, texts = plt.pie(sizes, colors=colors, startangle=90)
-		# plt.legend(patches, labels, loc="best")
-
+  
 		ax.legend(patches, legend_data, loc= "lower left",  bbox_to_anchor=(-0.35, -0.1))
 		ax.set_title(data["title"], color=fg_color, fontsize=20)
 		plt.savefig('tmp/drop.png')
 
 	async def on_reaction_add(self, reaction: discord.Reaction, user):
-		print(f'User {user} added reaction {reaction} in channel {reaction.message.channel}')
-		# await bot_channel.send(content=f"A rating of {reaction} was placed in {reaction.message.channel} for link {reaction.message.content}")
+		if (user.id is not self.bot.user.id): #prevent the bot to activate itself
+			print(f'User {user} added reaction {reaction} in channel {reaction.message.channel}')
+			if (str(reaction.emoji) == "❓"):
+				explaination = self.database.getArmyMegaArmyExplaination(reaction.message.guild, reaction.message.id)
+				if (explaination is not None):
+					exp = json.loads(explaination)
+					print(exp)
+					embed=discord.Embed(title=f"**{exp["type"]}** | Détails:", color=ggr_utilities.ggr_green)
+					for line in exp["lines"]:
+						embed.add_field(name=f"ligne {line["line"]}", value=line["content"], inline=False)
+					await reaction.message.channel.send(embed=embed)
 
 	def spawnArmyRoutine(self):
 		armyMembers = []
-		effectsDesc = ""
+		effectsDesc = []
 		armyEffect = 0
 		armynbr = random.randint(10, 40)
 		armyGold = 0
@@ -363,19 +356,15 @@ class Army(commands.Cog):
 				effects = armyMember["effect"](armyMembers)
 				armyEffect += effects[0]
 				armyGold += effects[1]
-				effectsDesc += effects[2]
-
-			# if wadProbaNbr < 10:
-			# 	army += ggr_emotes.Saloperiedoree
-			# 	armynbr += 9 #Une saloperie doree vaut 10 saloperies classiques 
-			# 	armyGold += 1
+				if (effects[2] is not None):
+					effectsDesc.append(effects[2])
 
 		armyEmotes = ""
 		for e in armyMembers:
 			armyEmotes += e["emote"]
 
-		print(armynbr, armyEffect, armyGold)
-		print(effectsDesc)
+		# print(armynbr, armyEffect, armyGold)
+		# print(effectsDesc)
 		return [armyEmotes, armynbr + armyEffect, armyGold, effectsDesc]
 
 	def hasUserCoolDownRoutine(self, user):
