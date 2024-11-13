@@ -174,7 +174,7 @@ class Army(commands.Cog):
 				## HERE REWORK THIS PART WITH ARRAY
 				for i, d in enumerate(armyDesc): #desciption
 					if (d != ""):
-						explaination["lines"].append({"line":f"{i+1}","content": d }) # += f'{{"line":{i+1},"content":{d}}},'    
+						explaination["lines"].append({"line":f"{i+1}","content": d })  
 
 
 				ggr_utilities.logger("User " + ctx.author.name + " summoned " + str(armytotmembers) + " saloperies", self)
@@ -234,8 +234,7 @@ class Army(commands.Cog):
 
 	############################ ROUTINES ############################
 	def effetSaloperieDoree(self, armyMembers):
-		return(+9, +1, f'{{"emotes":"{armyMembers[-1]["emote"]}","name":"Saloperie dorée","cons":"+10 saloperies & +1 WAD"}}')
-
+		return(+9, +1, {"emotes":f"{armyMembers[-1]["emote"]}","name": "Saloperie dorée", "cons": "+10 saloperies & +1 WAD"})
 	def effetCollocU(self, armyMembers):
 		if (len(armyMembers) > 1):
 			if (armyMembers[-2]["name"] == "Moth"):
@@ -324,7 +323,7 @@ class Army(commands.Cog):
 		patches, texts =  ax.pie(data["sizes"], labels=data["labels"], startangle=180, labeldistance=1.05, frame=False,
 		wedgeprops = {"linewidth": 1, "edgecolor": "white"})
 		plt.setp(texts, color='white')
-  
+
 		ax.legend(patches, legend_data, loc= "lower left",  bbox_to_anchor=(-0.35, -0.1))
 		ax.set_title(data["title"], color=fg_color, fontsize=20)
 		plt.savefig('tmp/drop.png')
@@ -336,11 +335,25 @@ class Army(commands.Cog):
 				explaination = self.database.getArmyMegaArmyExplaination(reaction.message.guild, reaction.message.id)
 				if (explaination is not None):
 					exp = json.loads(explaination)
-					print(exp)
-					embed=discord.Embed(title=f"**{exp["type"]}** | Détails:", color=ggr_utilities.ggr_green)
-					for line in exp["lines"]:
-						embed.add_field(name=f"ligne {line["line"]}", value=line["content"], inline=False)
+					embed=discord.Embed(title=f"**{exp["type"]}** | Détails 1/{math.floor(len(exp["lines"])/3)}:", color=ggr_utilities.ggr_green)
+					for i, line in enumerate(exp["lines"]):
+						linecontent = ""
+						line_title = False
+						for j, content in enumerate(line["content"]):
+							if (j % 5 == 0 and j != 0):
+								embed.add_field(name=f'{"" if line_title else f"ligne {line["line"]}"}', value=linecontent, inline=False)
+								line_title = True #the title of the line has already been displayed
+								linecontent = ""
+							linecontent += f'{content["emotes"]} ➡️ *{content["name"]}* : **{content["cons"]}**\n'
+    
+						embed.add_field(name=f'{"" if line_title else f"ligne {line["line"]}"}', value=linecontent, inline=False)
+						if (i % 3 == 0 and i != 0):
+							await reaction.message.channel.send(embed=embed)
+							embed=discord.Embed(title=f"**{exp["type"]}** | Détails {math.floor(i/3 + 1)}/{math.floor(len(exp["lines"])/3)}:", color=ggr_utilities.ggr_green)
+
+				if (len(embed.fields) != 0):
 					await reaction.message.channel.send(embed=embed)
+
 
 	def spawnArmyRoutine(self):
 		armyMembers = []
