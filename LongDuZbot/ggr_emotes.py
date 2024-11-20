@@ -15,8 +15,8 @@ Salstealthy = "<:salstealthy:1103693547082895440>"
 Culian = "<:culian:1102566018229997658>"
 Culoth = "<:culoth:1102565865918058567>"
 Brandon = "<:BrAndon:1147986849688727632>"
+Alox = "<:Alox:1275812648721584148>"
 
-#Saloperiedoree = "<:SD:806652869150244884>"
 Saloperiedoree = "<a:SD:1176158053779918879>"
 
 WAD = "<:Lilian1:806653173136883764"

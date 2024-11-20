@@ -45,10 +45,11 @@ class Army(commands.Cog):
 		{"emote": ggr_emotes.Ulian, 			"name": "Ulian", 			"commonness": 1,		"effect": self.effetCollocU},
 		{"emote": ggr_emotes.Polpoth, 			"name": "Polpoth",	 		"commonness": 0.1, 		"effect": None},
 		{"emote": ggr_emotes.Guigor, 			"name": "Guigor", 			"commonness": 0.1, 		"effect": None},
+		{"emote": ggr_emotes.Alox, 				"name": "Alox", 			"commonness": 0.1, 		"effect": None},
 		{"emote": ggr_emotes.Salstealthy, 		"name": "Salstealthy", 		"commonness": 0.1,	 	"effect": None},
-		{"emote": ggr_emotes.Culian, 			"name": "Culian", 			"commonness": 0.15, 	"effect": self.effetCullocU},
-		{"emote": ggr_emotes.Culoth, 			"name": "Culoth", 			"commonness": 0.15, 	"effect": self.effetCullocM},
-		{"emote": ggr_emotes.Brandon,			"name": "Brandon", 			"commonness": 0.1, 		"effect": None},
+		{"emote": ggr_emotes.Culian, 			"name": "Culian", 			"commonness": 0.2, 		"effect": self.effetCullocU},
+		{"emote": ggr_emotes.Culoth, 			"name": "Culoth", 			"commonness": 0.2, 		"effect": self.effetCullocM},
+		{"emote": ggr_emotes.Brandon,			"name": "Brandon", 			"commonness": 0.05, 	"effect": self.effetBelgique},
 		{"emote": ggr_emotes.Saloperiedoree,	"name": "Saloperiedoree", 	"commonness": 0.01, 	"effect": self.effetSaloperieDoree},
 		{"emote": ggr_emotes.Moth, 				"name": "Moth", 			"commonness": 1, 		"effect": self.effetCollocM}
 		]
@@ -235,6 +236,7 @@ class Army(commands.Cog):
 	############################ ROUTINES ############################
 	def effetSaloperieDoree(self, armyMembers):
 		return(+9, +1, {"emotes":f"{armyMembers[-1]["emote"]}","name": "Saloperie dorée", "cons": "+10 saloperies & +1 WAD"})
+
 	def effetCollocU(self, armyMembers):
 		if (len(armyMembers) > 1):
 			if (armyMembers[-2]["name"] == "Moth"):
@@ -257,6 +259,9 @@ class Army(commands.Cog):
 		if (len(armyMembers) > 1):
 			if (armyMembers[-2]["name"] == "Culian"):
 				return(-1, 0, {"emotes":f"{armyMembers[-2]["emote"]}+{armyMembers[-1]["emote"]}","name": "effet culloc", "cons": "-1 saloperie"})
+		return(0, 0, None)
+
+	def effetBelgique(self, armyMembers):
 		return(0, 0, None)
 
 	#TODO: make a function with this stuff
